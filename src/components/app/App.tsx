@@ -1,9 +1,13 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import logo from 'assets/images/logo/exchange.svg'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+
+	React.useEffect(() => {
+		console.log(ccxt.exchanges);
+	}, []);
 
   return (
     <>
