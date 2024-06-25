@@ -1,33 +1,41 @@
-import React, { useState } from 'react'
-import logo from 'assets/images/logo/exchange.svg'
-import './App.css'
+import React, { useRef } from 'react';
+import './App.css';
+// import React, { useRef, useState } from 'react';
+// import logo from 'assets/images/logo/exchange.svg';
 
 function App() {
-  const [count, setCount] = useState(0)
+	const hasRun = useRef(false);
+
+  // const [count, setCount] = useState(0);
 
 	React.useEffect(() => {
-		console.log(ccxt.exchanges);
+		if (hasRun.current) return;
+
+		hasRun.current = true;
+
+		const initialize = async () => {
+			try {
+				// console.log(ccxt.exchanges);
+
+				const exchangeId = import.meta.env.VITE_EXCHANGE_ID;
+				const exchangeClass = ccxt[exchangeId];
+				const exchange = new exchangeClass ({
+					'apiKey': import.meta.env.VITE_EXCHANGE_API_KEY,
+					'secret': import.meta.env.VITE_EXCHANGE_API_SECRET,
+				});
+
+				// console.log(exchange.describe());
+				console.log(await exchange.fetchOpenOrders('BTC/USDC'));
+			} catch (exception) {
+				console.error(exception);
+			}
+		};
+
+		initialize();
 	}, []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={logo} className="logo" alt="Vite logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
