@@ -3,6 +3,8 @@ import './App.css';
 // import React, { useRef, useState } from 'react';
 // import logo from 'assets/images/logo/exchange.svg';
 // import ccxt from 'assets/scripts/ccxt/ccxt.browser'
+import Table from "./Table"
+
 
 function App() {
 	const hasRun = useRef(false);
@@ -48,7 +50,7 @@ function App() {
 
   return (
     <>
-
+		<Table/>
     </>
   )
 }
