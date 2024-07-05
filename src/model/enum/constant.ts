@@ -7,7 +7,8 @@ import { BaseEnum } from 'model/enum/base-enum';
  */
 export class Constant extends BaseEnum {
 
-	static example = new Constant('Example', 'Example description.', 'exampleValue');
+	static homePath = new Constant('Home', 'Home URL path.', '/');
+	static signInPath = new Constant('Sign In', 'Sign in URL path.', '/signIn');
 
 	title: string;
 

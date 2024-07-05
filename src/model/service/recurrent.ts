@@ -20,7 +20,7 @@ const recurrentFunctions = {
 
 				const status = response.data;
 
-				dispatch('api.client.updateStatus', status);
+				dispatch('api.updateStatus', status);
 			} catch (exception) {
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status == 401) {
@@ -44,9 +44,9 @@ const recurrentFunctions = {
 			try {
 				await apiPostAuthRefresh(undefined, handleUnAuthorized);
 
-				// const response = await apiPostAuthRefresh()
-				// const { token } = response.data
-				// dispatch('api.client.updateToken', token)
+				const response = await apiPostAuthRefresh()
+				const { token } = response.data
+				dispatch('api.updateToken', token)
 			} catch (exception) {
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status == 401) {
