@@ -12,9 +12,9 @@ if (rootReducer == null) {
 
 	rootReducer = (currentState: any, {
 		// @ts-ignore
-		type: any,
+		type,
 		// @ts-ignore
-		payload: any
+		payload
 	}) => {
 		// @ts-ignore
 		const reducer = reducers.getIn(actionTypes.getIn(type));

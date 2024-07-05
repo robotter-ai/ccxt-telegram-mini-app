@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-ts-comment */
-import { pushStack } from 'model/state/redux/stack/methods';
 import { Map } from 'model/helper/extendable-immutable/map';
+
+const { pushStack } = await import('model/state/redux/stack/methods');
 
 pushStack('api.updateToken', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);

@@ -1,3 +1,3 @@
-import 'model/storage/app';
-import 'model/state/redux';
-import 'model/service';
+await import('model/storage/app');
+await import('model/state/redux');
+await import('model/service');

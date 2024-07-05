@@ -1,6 +1,6 @@
-import './actions/types';
-import './actions/creators';
-// import './store'
-import './actions/bounds';
+await import('model/state/redux/actions/types');
+await import('model/state/redux/actions/creators');
+await import('model/state/redux/store');
+await import('model/state/redux/actions/bounds');
 
-import './stack';
+await import ('model/state/redux/stack');
