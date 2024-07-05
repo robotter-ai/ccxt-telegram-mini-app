@@ -17,14 +17,11 @@ export class Environment extends BaseEnum {
 		Environment.production,
 	]);
 
-	// @ts-ignore
-	private id: string;
+	id: string;
 
-	// @ts-ignore
-	private title: string;
+	title: string;
 
-	// @ts-ignore
-	private description: string;
+	description: string;
 
 	/**
 	 *

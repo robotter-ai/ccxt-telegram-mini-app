@@ -38,17 +38,13 @@ export class Status extends BaseEnum {
 		Status.unknown,
 	]);
 
-	// @ts-ignore
-	private id: string;
+	id: string;
 
-	// @ts-ignore
-	private title: string;
+	title: string;
 
-	// @ts-ignore
-	private message: string;
+	message: string;
 
-	// @ts-ignore
-	private value: unknown;
+	value: unknown;
 
 	/**
 	 *

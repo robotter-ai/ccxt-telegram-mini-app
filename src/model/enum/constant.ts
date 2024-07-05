@@ -9,14 +9,11 @@ export class Constant extends BaseEnum {
 
 	static example = new Constant('Example', 'Example description.', 'exampleValue');
 
-	// @ts-ignore
-	private title: string;
+	title: string;
 
-	// @ts-ignore
-	private description: string;
+	description: string;
 
-	// @ts-ignore
-	private value: unknown;
+	value: unknown;
 
 	/**
 	 *

@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Map } from 'model/helper/extendable-immutable/map';
+import { Status } from 'model/enum/status.ts';
 
 const map = new Map();
 
 map.setIn(
-	'api.funttastic.client.status',
-	JSON.parse(
-		JSON.stringify({
-			'fun-client': 'unknown',
-			'hb-gateway': 'unknown',
-			'hb-client': 'unknown',
-		}),
-	),
+	'api.status',
+	Status.running.id
 );
 
 // @ts-ignore
