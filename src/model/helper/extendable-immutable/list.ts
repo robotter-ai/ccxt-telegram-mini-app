@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-ts-comment */
+// @ts-ignore
 import { List as ExtendableList } from 'extendable-immutable';
 
 /**
@@ -13,6 +14,7 @@ export class List extends ExtendableList {
 	constructor(...args: any[]) {
 		super(...args);
 
+		// @ts-ignore
 		return this.asMutable();
 	}
 }
