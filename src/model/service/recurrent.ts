@@ -1,5 +1,5 @@
 import { dispatch } from 'model/state/redux/store';
-import { apiGetServiceStatus, apiPostAuthRefresh } from 'model/service/api/funttastic';
+import { apiGetServiceStatus, apiPostAuthRefresh } from 'model/service/api';
 import axios from 'axios';
 
 const executeAndSetInterval = (targetFunction: any, interval: number) => {

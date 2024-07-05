@@ -1,4 +1,4 @@
-import { Map } from '@/model/helper/extendable-immutable/map';
+import { Map } from 'model/helper/extendable-immutable/map';
 
 if (window.app == null) {
 	window.app = new Map().asMutable();

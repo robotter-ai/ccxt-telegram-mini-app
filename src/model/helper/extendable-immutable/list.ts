@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { List as ExtendableList } from 'extendable-immutable';
 
 /**
@@ -7,9 +8,9 @@ export class List extends ExtendableList {
 
 	/**
 	 *
-	 * @returns {*}
+	 * @param args
 	 */
-	constructor (...args) {
+	constructor(...args: any[]) {
 		super(...args);
 
 		return this.asMutable();

@@ -8,44 +8,44 @@ const actionBounds = app.getIn('redux.actions.bounds');
 const reducers = app.getIn('redux.reducers');
 const reduxStore = app.getIn('redux.store');
 
-export function split (input) {
+export function split(input) {
 	return input.split('.');
 }
 
-export function pushActionTypeApiStatus (status) {
+export function pushActionTypeApiStatus(status) {
 	actionTypeApiStatuses.setIn(status, status);
 }
 
-export function pushActionTypeApiSubAction (subAction) {
+export function pushActionTypeApiSubAction(subAction) {
 	actionTypeApiSubActions.setIn(subAction, subAction);
 }
 
-export function pushActionType (actionType) {
+export function pushActionType(actionType) {
 	actionTypes.setIn(actionType, actionType);
 }
 
-export function buildActionCreator (actionType) {
+export function buildActionCreator(actionType) {
 	return (payload) => ({
 		type: actionType,
 		payload
 	});
 }
 
-export function pushActionCreator (actionType, actionCreator) {
+export function pushActionCreator(actionType, actionCreator) {
 	actionCreators.setIn(actionTypes.getIn(actionType), actionCreator);
 }
 
-export function buildActionBound (actionCreator) {
+export function buildActionBound(actionCreator) {
 	return (payload) => {
 		reduxStore.dispatch(actionCreator(payload));
 	};
 }
 
-export function pushActionBound (actionType, actionBound) {
+export function pushActionBound(actionType, actionBound) {
 	actionBounds.setIn(actionTypes.getIn(actionType), actionBound);
 }
 
-export function buildReducer (actionType, preReducer) {
+export function buildReducer(actionType, preReducer) {
 	return (currentState, {
 		type = actionType,
 		payload
@@ -54,11 +54,11 @@ export function buildReducer (actionType, preReducer) {
 	};
 }
 
-export function pushReducer (actionType, reducer) {
+export function pushReducer(actionType, reducer) {
 	reducers.setIn(actionTypes.getIn(actionType), reducer);
 }
 
-export function pushStack (actionType, preReducer) {
+export function pushStack(actionType, preReducer) {
 	const actionCreator = buildActionCreator(actionType);
 	const actionBound = buildActionBound(actionCreator);
 	const reducer = buildReducer(actionType, preReducer);

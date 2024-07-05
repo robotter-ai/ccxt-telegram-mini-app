@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { BaseEnum } from 'model/enum/base-enum';
 
+// noinspection JSUnusedGlobalSymbols
 /**
  *
  */
@@ -23,7 +24,7 @@ export class Constant extends BaseEnum {
 	 * @param description
 	 * @param value
 	 */
-	constructor (title: string, description: string, value: unknown) {
+	constructor(title: string, description: string, value: unknown) {
 		super();
 
 		this.title = title;

@@ -7,9 +7,9 @@ let rootReducer = reducers.getIn('root');
 if (rootReducer == null) {
 	const actionTypes = app.getIn('redux.actions.types');
 
-	rootReducer = (currentState, {
-		type,
-		payload
+	rootReducer = (currentState: any, {
+		type: any,
+		payload: any
 	}) => {
 		const reducer = reducers.getIn(actionTypes.getIn(type));
 

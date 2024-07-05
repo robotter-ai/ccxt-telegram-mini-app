@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Map } from 'model/helper/extendable-immutable/map';
 
 const map = new Map();
@@ -13,6 +14,7 @@ map.setIn(
 	),
 );
 
+// @ts-ignore
 const initialState = map.toJS();
 
 export { initialState };

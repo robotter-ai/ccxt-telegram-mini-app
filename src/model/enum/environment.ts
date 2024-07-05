@@ -29,8 +29,10 @@ export class Environment extends BaseEnum {
 	/**
 	 *
 	 * @param id
+	 * @param title
+	 * @param description
 	 */
-	constructor (id: string, title: string, description: string) {
+	constructor(id: string, title: string, description: string) {
 		super();
 
 		this.id = id;
@@ -38,12 +40,12 @@ export class Environment extends BaseEnum {
 		this.description = description;
 	}
 
+	// noinspection JSUnusedGlobalSymbols
 	/**
 	 *
 	 * @param id
-	 * @returns {*}
 	 */
-	static getById (id: string) {
+	static getById(id: string) {
 		if (!id) {
 			throw Error(`Invalid environment ${id}.`);
 		}

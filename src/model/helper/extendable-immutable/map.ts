@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Map as MutableMap } from 'extendable-immutable';
 
 /**
@@ -7,9 +8,9 @@ export class Map extends MutableMap {
 
 	/**
 	 *
-	 * @returns {*}
+	 * @param args
 	 */
-	constructor (...args) {
+	constructor(...args: any[]) {
 		super(...args);
 
 		return this.asMutable();
@@ -18,9 +19,8 @@ export class Map extends MutableMap {
 	/**
 	 *
 	 * @param key
-	 * @returns {null}
 	 */
-	getIn (key) {
+	getIn(key: any) {
 		if (key == null) {
 			return null;
 		}
@@ -37,7 +37,7 @@ export class Map extends MutableMap {
 	 * @param key
 	 * @param value
 	 */
-	setIn (key, value) {
+	setIn(key: any, value: any) {
 		if (key == null) {
 			throw Error(`Invalid key ("${key}").`);
 		}

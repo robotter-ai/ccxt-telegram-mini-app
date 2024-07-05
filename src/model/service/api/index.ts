@@ -1,1 +1,1 @@
-export * from 'model/service/api/funttastic';
+export * from "model/service/api/api";

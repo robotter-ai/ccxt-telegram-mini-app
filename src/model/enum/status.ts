@@ -53,8 +53,11 @@ export class Status extends BaseEnum {
 	/**
 	 *
 	 * @param id
+	 * @param title
+	 * @param message
+	 * @param value
 	 */
-	constructor (id: string, title: string, message: string, value: unknown) {
+	constructor(id: string, title: string, message: string, value: unknown) {
 		super();
 
 		this.id = id;
@@ -66,9 +69,8 @@ export class Status extends BaseEnum {
 	/**
 	 *
 	 * @param id
-	 * @returns {*}
 	 */
-	static getById (id: string) {
+	static getById(id: string) {
 		if (!id) {
 			return Status.unknown;
 		}

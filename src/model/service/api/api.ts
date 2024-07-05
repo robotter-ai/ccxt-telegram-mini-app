@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-ts-comment,@typescript-eslint/no-unused-vars */
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { Environment } from 'model/enum/environment';
@@ -36,11 +36,13 @@ const callAPIorMockAPI = async (options: Options, handleUnAuthorized?: () => voi
 	}
 };
 
-async function callMockAPI (_options: Options): Promise<any> {
-	throw new Error("Not implemented");
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+async function callMockAPI(options: Options): Promise<any> {
+	throw new Error('Not implemented');
 }
 
-async function callAPI (options: Options): Promise<any> {
+async function callAPI(options: Options): Promise<any> {
 	const {
 		bearerToken,
 		...axiosOptions
@@ -62,9 +64,7 @@ async function callAPI (options: Options): Promise<any> {
 	};
 
 	try {
-		const response = await axios(config);
-
-		return response;
+		return await axios(config);
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			throw error;
@@ -74,6 +74,7 @@ async function callAPI (options: Options): Promise<any> {
 	}
 }
 
+// noinspection JSUnusedGlobalSymbols
 export const apiPostAuthSignIn = async (data: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'POST',
@@ -82,6 +83,7 @@ export const apiPostAuthSignIn = async (data: any, handleUnAuthorized?: () => vo
 	}, handleUnAuthorized);
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const apiPostAuthSignOut = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'POST',
@@ -106,6 +108,7 @@ export const apiGetServiceStatus = async (data?: any, handleUnAuthorized?: () =>
 	}, handleUnAuthorized);
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const apiPostRun = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'POST',
