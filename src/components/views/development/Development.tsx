@@ -14,9 +14,7 @@ const mapStateToProps = (state: any, props: any) => ({
 	data: state.api.orders.open,
 })
 
-const DevelopmentStructure = () => {
-	// @ts-ignore
-	const [ data, setData ] = useState(null as any);
+const DevelopmentStructure = (state: any) => {
 	const [ loading, setLoading ] = useState(true);
 	const [ error, setError ] = useState(null as any);
 
@@ -58,7 +56,6 @@ const DevelopmentStructure = () => {
 						}
 
 						const payload = response.data;
-						// setData(payload.result);
 
 						dispatch('api.updateOpenOrders', payload);
 					} catch (exception) {
@@ -96,7 +93,7 @@ const DevelopmentStructure = () => {
 	return (
 		<div>
 			<h1>Data from API</h1>
-			<pre>{JSON.stringify(data, null, 2)}</pre>
+			<pre>{JSON.stringify(state.data, null, 2)}</pre>
 		</div>
 	);
 };
