@@ -3,10 +3,19 @@
 
 import { useEffect, useState } from 'react';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
-import 'model/initializer';
 import { apiPostAuthSignIn, apiPostRun } from 'model/service/api';
+import { dispatch } from 'model/state/redux/store';
+import axios from 'axios';
 
-const Development = () => {
+import { connect } from 'react-redux'
+
+// @ts-ignore
+const mapStateToProps = (state: any, props: any) => ({
+	data: state.api.orders.open,
+})
+
+const DevelopmentStructure = () => {
+	// @ts-ignore
 	const [ data, setData ] = useState(null as any);
 	const [ loading, setLoading ] = useState(true);
 	const [ error, setError ] = useState(null as any);
@@ -27,25 +36,45 @@ const Development = () => {
 					}
 				});
 
-				const { configure } = await import('model/service/recurrent');
+				const { configure, executeAndSetInterval } = await import('model/service/recurrent');
 				configure(handleUnAuthorized);
 
-				const response = await apiPostRun({
-					'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-					'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					'method': 'fetch_ticker',
-					'parameters': {
-						'symbol': 'BTC/USDT'
+				let intervalId: any;
+
+				const targetFunction = async () => {
+					try {
+						const response = await apiPostRun({
+							'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
+							'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+							'method': 'fetch_open_orders',
+							'parameters': {
+								'symbol': 'BTC/USDT'
+							}
+						}, handleUnAuthorized);
+
+						if (!(response.status === 200)) {
+							// noinspection ExceptionCaughtLocallyJS
+							throw new Error('Network response was not OK');
+						}
+
+						const payload = response.data;
+						// setData(payload.result);
+
+						dispatch('api.updateOpenOrders', payload);
+					} catch (exception) {
+						if (axios.isAxiosError(exception)) {
+							if (exception?.response?.status == 401) {
+								clearInterval(intervalId);
+
+								return;
+							}
+						}
+
+						console.error(exception);
 					}
-				});
+				};
 
-				if (!(response.status === 200)) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error('Network response was not OK');
-				}
-
-				const data = await response.data;
-				setData(data);
+				intervalId = executeAndSetInterval(targetFunction, 5000);
 			} catch (error: any) {
 				setError(error);
 			} finally {
@@ -72,4 +101,6 @@ const Development = () => {
 	);
 };
 
-export default Development;
+const Development = connect(mapStateToProps)(DevelopmentStructure)
+
+export default Development

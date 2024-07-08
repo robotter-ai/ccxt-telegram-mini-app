@@ -55,3 +55,23 @@ pushStack('api.signOut', (currentState: any, payload: any) => {
 
 	return nextState;
 });
+
+// noinspection JSUnusedLocalSymbols
+pushStack('api.updateOpenOrders', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.orders.open',
+			payload.result
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	console.log('api.updateOpenOrders', nextState.api.orders.open);
+
+	return nextState;
+});

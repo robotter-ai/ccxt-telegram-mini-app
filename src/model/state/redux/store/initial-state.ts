@@ -9,6 +9,11 @@ map.setIn(
 	Status.running.id
 );
 
+map.setIn(
+	'api.orders.open',
+	[]
+)
+
 // @ts-ignore
 const initialState = map.toJS();
 
