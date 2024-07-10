@@ -5,6 +5,16 @@ import { Status } from 'model/enum/status.ts';
 const map = new Map();
 
 map.setIn(
+	'api.isSignedIn',
+	false
+);
+
+map.setIn(
+	'api.token',
+	null
+);
+
+map.setIn(
 	'api.status',
 	Status.running.id
 );

@@ -85,7 +85,7 @@ const OrderStructure = (state: any) => {
 					'exchangeOptions': {
 						'subAccountId': `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`,
 					}
-				});
+				}, handleUnAuthorized);
 
 				const { configure, executeAndSetInterval } = await import('model/service/recurrent');
 				configure(handleUnAuthorized);

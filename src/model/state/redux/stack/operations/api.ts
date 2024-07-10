@@ -45,12 +45,40 @@ pushStack('api.updateStatus', (currentState: any, payload: any) => {
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
+pushStack('api.signIn', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState.setIn(
+			'api.token',
+			payload
+		);
+
+		nextState.setIn(
+			'api.isSignedIn',
+			true
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	return nextState;
+});
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 pushStack('api.signOut', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
 
 	nextState.setIn(
 		'api.token',
 		null
+	);
+
+	nextState.setIn(
+		'api.signedIn',
+		false
 	);
 
 	// @ts-ignore
