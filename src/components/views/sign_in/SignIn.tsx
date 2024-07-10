@@ -6,6 +6,19 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostAuthSignIn } from 'model/service/api';
 import { connect } from 'react-redux';
 import { dispatch } from 'model/state/redux/store';
+import {
+	Container,
+	Typography,
+	TextField,
+	Button,
+	CircularProgress,
+	Box,
+	CssBaseline,
+	Paper,
+	Avatar
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -37,6 +50,19 @@ const SignInSchema = Yup.object().shape({
 const sanitizeInput = (input: string) => {
 	return DOMPurify.sanitize(input);
 };
+
+const theme = createTheme({
+	palette: {
+		mode: 'dark',
+		primary: {
+			main: '#90caf9',
+		},
+		background: {
+			default: '#121212',
+			paper: '#1d1d1d',
+		},
+	},
+});
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -83,43 +109,90 @@ const SignInStructure = (props: any) => {
 	};
 
 	return (
-		<div>
-			{loading && <div>Loading...</div>}
-			{error && <div>Error: {error.message}</div>}
-			<Formik
-				initialValues={{ apiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`, apiSecret: `${import.meta.env.VITE_EXCHANGE_API_KEY}`, subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}` }}
-				validationSchema={SignInSchema}
-				onSubmit={async (values, { setSubmitting }) => {
-					await signIn(values.apiKey, values.apiSecret, Number(values.subAccountId));
-					setSubmitting(false);
-				}}
-			>
-				{({ isSubmitting }) => (
-					<Form>
-						<div>
-							<label htmlFor="apiKey">API Key</label>
-							<Field type="text" name="apiKey" />
-							<ErrorMessage name="apiKey" component="div" />
-						</div>
-						<div>
-							<label htmlFor="apiSecret">API Secret</label>
-							<Field type="password" name="apiSecret" />
-							<ErrorMessage name="apiSecret" component="div" />
-						</div>
-						<div>
-							<label htmlFor="subAccountId">Sub Account ID</label>
-							<Field type="text" name="subAccountId" />
-							<ErrorMessage name="subAccountId" component="div" />
-						</div>
-						<div>
-							<button type="submit" disabled={isSubmitting}>
-								Submit
-							</button>
-						</div>
-					</Form>
-				)}
-			</Formik>
-		</div>
+		<ThemeProvider theme={theme}>
+			<CssBaseline />
+			<Container component="main" maxWidth="xs">
+				<Paper elevation={6} sx={{ padding: 2, marginTop: 8 }}>
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center',
+						}}
+					>
+						<Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+							<LockOutlinedIcon />
+						</Avatar>
+						<Typography component="h1" variant="h5">
+							Sign In
+						</Typography>
+						{loading && <CircularProgress sx={{ mt: 2 }} />}
+						{error && <Typography color="error">{error.message}</Typography>}
+						<Formik
+							initialValues={{
+								apiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
+								apiSecret: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
+								subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`
+							}}
+							validationSchema={SignInSchema}
+							onSubmit={async (values, { setSubmitting }) => {
+								await signIn(values.apiKey, values.apiSecret, Number(values.subAccountId));
+								setSubmitting(false);
+							}}
+						>
+							{({ isSubmitting }) => (
+								<Form>
+									<Field
+										name="apiKey"
+										as={TextField}
+										variant="outlined"
+										margin="normal"
+										fullWidth
+										label="API Key"
+										autoComplete="apiKey"
+										type="password"
+										autoFocus
+										helperText={<ErrorMessage name="apiKey" />}
+									/>
+									<Field
+										name="apiSecret"
+										as={TextField}
+										variant="outlined"
+										margin="normal"
+										fullWidth
+										label="API Secret"
+										type="password"
+										autoComplete="apiSecret"
+										helperText={<ErrorMessage name="apiSecret" />}
+									/>
+									<Field
+										name="subAccountId"
+										as={TextField}
+										variant="outlined"
+										margin="normal"
+										fullWidth
+										label="Sub Account ID"
+										type="password"
+										autoComplete="subAccountId"
+										helperText={<ErrorMessage name="subAccountId" />}
+									/>
+									<Button
+										type="submit"
+										fullWidth
+										variant="contained"
+										color="primary"
+										disabled={isSubmitting}
+										sx={{ mt: 3, mb: 2 }}
+									>
+										Submit
+									</Button>
+								</Form>
+							)}
+						</Formik>
+					</Box>
+				</Paper>
+			</Container>
+		</ThemeProvider>
 	);
 };
 
