@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { BaseEnum } from 'model/enum/base-enum';
+import { BaseEnum } from 'model/enum/base_enum.ts';
 
 import { List } from 'model/helper/extendable-immutable/list';
 

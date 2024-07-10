@@ -1,10 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './Root.css'
-import App from 'components/app/App.tsx'
-// import { Provider } from 'react-redux'
-// import { Router } from 'react-router'
-// import { reduxStore } from 'model/state/redux/store'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './Root.css';
+import 'model/initializer';
+import { Router } from 'components/router/Router';
+import { Provider } from 'react-redux';
+
+const reduxStore = (await import('model/state/redux/store')).reduxStore;
 
 ReactDOM.createRoot(document.getElementById('root')!)
 	.render(
