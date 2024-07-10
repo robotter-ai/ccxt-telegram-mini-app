@@ -184,11 +184,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 			{numSelected > 0 ? (
 				<Tooltip title="Cancel selected open orders">
 					<Chip
+						icon={<DeleteIcon />}
 						label="Cancel selected"
 						onClick={handleCancelSelectedOpenOrdersClick}
-						onDelete={handleCancelSelectedOpenOrdersClick}
-						deleteIcon={<DeleteIcon />}
-						variant="outlined"
+						// onDelete={handleCancelSelectedOpenOrdersClick}
 					/>
 				</Tooltip>
 			) : (
@@ -210,7 +209,7 @@ interface Props {
 export default function OrdersTable({ rows }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
-	const [selected, setSelected] = React.useState<readonly number[]>([]);
+	const [selected, setSelected] = React.useState<readonly string[] | number[]>([]);
 	const [page, setPage] = React.useState(0);
 	const [dense, setDense] = React.useState(false);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -232,7 +231,7 @@ export default function OrdersTable({ rows }: Props) {
 	};
 
 	// @ts-ignore
-	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+	const handleClick = (event: React.MouseEvent<unknown>, id: string | number) => {
 		const selectedIndex = selected.indexOf(id);
 		let newSelected: readonly number[] = [];
 
@@ -262,7 +261,7 @@ export default function OrdersTable({ rows }: Props) {
 		setDense(event.target.checked);
 	};
 
-	const isSelected = (id: number) => selected.indexOf(id) !== -1;
+	const isSelected = (id: string | number) => selected.indexOf(id) !== -1;
 
 	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
