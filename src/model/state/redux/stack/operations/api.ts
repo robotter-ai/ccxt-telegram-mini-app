@@ -17,6 +17,7 @@ pushStack('api.updateToken', (currentState: any, payload: any) => {
 	nextState = nextState.toJS();
 
 	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
 	console.log('api.updateToken', nextState.api.token);
 
 	return nextState;
@@ -36,11 +37,13 @@ pushStack('api.updateStatus', (currentState: any, payload: any) => {
 	nextState = nextState.toJS();
 
 	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
 	console.log('api.updateStatus', nextState.api.status);
 
 	return nextState;
 });
 
+// @ts-ignore
 // noinspection JSUnusedLocalSymbols
 pushStack('api.signOut', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
@@ -63,7 +66,7 @@ pushStack('api.updateOpenOrders', (currentState: any, payload: any) => {
 	if (payload) {
 		nextState = nextState.setIn(
 			'api.orders.open',
-			payload.result
+			payload
 		);
 	}
 
@@ -71,6 +74,7 @@ pushStack('api.updateOpenOrders', (currentState: any, payload: any) => {
 	nextState = nextState.toJS();
 
 	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
 	console.log('api.updateOpenOrders', nextState.api.orders.open);
 
 	return nextState;

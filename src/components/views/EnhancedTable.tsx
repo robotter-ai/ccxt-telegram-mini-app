@@ -185,6 +185,7 @@ export default function EnhancedTable({ rows }: Props) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+	// @ts-ignore
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -200,7 +201,8 @@ export default function EnhancedTable({ rows }: Props) {
     setSelected([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+  // @ts-ignore
+	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly number[] = [];
 
@@ -216,6 +218,7 @@ export default function EnhancedTable({ rows }: Props) {
     setSelected(newSelected);
   };
 
+	// @ts-ignore
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };

@@ -3,7 +3,7 @@
 
 import { app } from 'model/storage/app';
 import { reducers } from 'model/state/redux/reducers/index';
-import { initialState } from 'model/state/redux/store/initial-state';
+import { initialState } from 'model/state/redux/store/initial_state';
 
 let rootReducer = reducers.getIn('root');
 

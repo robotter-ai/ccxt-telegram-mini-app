@@ -6,7 +6,7 @@ const { app } = await import('model/storage/app');
 
 if (app.getIn('redux.store') == null) {
 	const { storeFactory } = await import('model/state/redux/store/store.factory');
-	const { initialState } = await import('model/state/redux/store/initial-state');
+	const { initialState } = await import('model/state/redux/store/initial_state');
 	const { subscribers } = await import('model/state/redux/store/subscribers');
 
 	const store = storeFactory(initialState);

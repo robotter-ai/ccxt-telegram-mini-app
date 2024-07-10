@@ -10,9 +10,8 @@ const reduxStore = (await import('model/state/redux/store')).reduxStore;
 ReactDOM.createRoot(document.getElementById('root')!)
 	.render(
 		<React.StrictMode>
-			{/* <Provider store={reduxStore}>
+			<Provider store={reduxStore}>
 				<Router/>
-			</Provider> */}
-			<App/>
+			</Provider>
 		</React.StrictMode>,
 	);
