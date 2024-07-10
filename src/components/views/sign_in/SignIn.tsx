@@ -15,9 +15,13 @@ import {
 	Box,
 	CssBaseline,
 	Paper,
-	Avatar
+	Avatar,
+	IconButton,
+	InputAdornment,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 // @ts-ignore
@@ -69,6 +73,9 @@ const theme = createTheme({
 const SignInStructure = (props: any) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null as any);
+	const [showApiKey, setShowApiKey] = useState(false);
+	const [showApiSecret, setShowApiSecret] = useState(false);
+	const [showSubAccountId, setShowSubAccountId] = useState(false);
 
 	const handleUnAuthorized = useHandleUnauthorized();
 
@@ -106,6 +113,10 @@ const SignInStructure = (props: any) => {
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const handleClickShowPassword = (setShowPassword: any) => {
+		setShowPassword((show: boolean) => !show);
 	};
 
 	return (
@@ -150,8 +161,21 @@ const SignInStructure = (props: any) => {
 										fullWidth
 										label="API Key"
 										autoComplete="apiKey"
-										type="password"
+										type={showApiKey ? 'text' : 'password'}
 										autoFocus
+										InputProps={{
+											endAdornment: (
+												<InputAdornment position="end">
+													<IconButton
+														aria-label="toggle API key visibility"
+														onClick={() => handleClickShowPassword(setShowApiKey)}
+														edge="end"
+													>
+														{showApiKey ? <VisibilityOff /> : <Visibility />}
+													</IconButton>
+												</InputAdornment>
+											),
+										}}
 										helperText={<ErrorMessage name="apiKey" />}
 									/>
 									<Field
@@ -161,8 +185,21 @@ const SignInStructure = (props: any) => {
 										margin="normal"
 										fullWidth
 										label="API Secret"
-										type="password"
+										type={showApiSecret ? 'text' : 'password'}
 										autoComplete="apiSecret"
+										InputProps={{
+											endAdornment: (
+												<InputAdornment position="end">
+													<IconButton
+														aria-label="toggle API secret visibility"
+														onClick={() => handleClickShowPassword(setShowApiSecret)}
+														edge="end"
+													>
+														{showApiSecret ? <VisibilityOff /> : <Visibility />}
+													</IconButton>
+												</InputAdornment>
+											),
+										}}
 										helperText={<ErrorMessage name="apiSecret" />}
 									/>
 									<Field
@@ -172,8 +209,21 @@ const SignInStructure = (props: any) => {
 										margin="normal"
 										fullWidth
 										label="Sub Account ID"
-										type="password"
+										type={showSubAccountId ? 'text' : 'password'}
 										autoComplete="subAccountId"
+										InputProps={{
+											endAdornment: (
+												<InputAdornment position="end">
+													<IconButton
+														aria-label="toggle sub account ID visibility"
+														onClick={() => handleClickShowPassword(setShowSubAccountId)}
+														edge="end"
+													>
+														{showSubAccountId ? <VisibilityOff /> : <Visibility />}
+													</IconButton>
+												</InputAdornment>
+											),
+										}}
 										helperText={<ErrorMessage name="subAccountId" />}
 									/>
 									<Button
