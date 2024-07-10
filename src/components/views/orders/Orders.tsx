@@ -8,7 +8,7 @@ import { dispatch } from 'model/state/redux/store';
 import axios from 'axios';
 
 import { connect } from 'react-redux'
-import EnhancedTable from 'components/views/EnhancedTable.tsx';
+import OrdersTable from 'components/views/orders/OrdersTable';
 
 // @ts-ignore
 const mapStateToProps = (state: any, props: any) => ({
@@ -20,6 +20,58 @@ const OrderStructure = (state: any) => {
 	const [ error, setError ] = useState(null as any);
 
 	const handleUnAuthorized = useHandleUnauthorized();
+
+	const cancelOpenOrder = async (orderId: any) => {
+		if (!orderId)
+			return;
+
+		const response = await apiPostRun({
+			'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
+			'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			'method': 'cancel_open_orders',
+			'parameters': {
+				'orderId': orderId
+			}
+		}, handleUnAuthorized);
+
+		if (!(response.status === 200)) {
+			// noinspection ExceptionCaughtLocallyJS
+			throw new Error('Network response was not OK');
+		}
+
+		const payload = response.data;
+
+		console.log(payload);
+	}
+
+	const cancelOpenOrders = async (ordersIds: [any]) => {
+		if (!ordersIds || !(ordersIds.length > 0))
+			return;
+
+		const promises = ordersIds.map(async (orderId: any) => {
+			return await cancelOpenOrder(orderId);
+		});
+
+		const results = await Promise.all(promises);
+
+		console.log(results);
+	}
+
+	const cancelAllOpenOrders = async () => {
+		const response = await apiPostRun({
+			'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
+			'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			'method': 'cancel_open_orders',
+			'parameters': null
+		}, handleUnAuthorized);
+
+		if (!(response.status === 200)) {
+			// noinspection ExceptionCaughtLocallyJS
+			throw new Error('Network response was not OK');
+		}
+
+		// const payload = response.data;
+	}
 
 	useEffect(() => {
 		// @ts-ignore
@@ -103,7 +155,12 @@ const OrderStructure = (state: any) => {
 
 	return (
 		<div>
-			<EnhancedTable rows={state.openOrders} />
+			<OrdersTable
+				rows={state.openOrders}
+				handleCancelOpenOrderClick={cancelOpenOrder}
+				handleCancelOpenOrdersClick={cancelOpenOrders}
+				handleCancelAllOpenOrdersClick={cancelAllOpenOrders}
+			/>
 		</div>
 	);
 };
