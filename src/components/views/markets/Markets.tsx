@@ -5,7 +5,7 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import './Template.css'
+import './Markets.css';
 
 const mapStateToProps = (state: any, props: any) => ({
 	stateValue: state.api.data,

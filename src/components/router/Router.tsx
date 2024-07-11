@@ -4,6 +4,8 @@ import { Orders } from 'components/views/orders/Orders.tsx';
 import { Development } from 'components/views/development/Development';
 import { SignIn } from 'components/views/sign_in/SignIn';
 import { connect } from 'react-redux';
+import { Markets } from 'components/views/markets/Markets.tsx';
+import { Market } from 'components/views/market/Market.tsx';
 
 const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
@@ -47,9 +49,12 @@ class RouterStructure extends React.Component<RouterProps> {
 					{/*
 						User
 					*/}
-					<Route path="/" element={<Navigate to="/orders" />} />
+					<Route path="/" element={<Navigate to="/market" />} />
 					<Route path="/home" element={<Navigate to="/" />} />
 					<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
+					<Route path="/markets" element={<NormalizedRoute element={isSignedIn ? <Markets /> : <Navigate to="/signIn" />} />} />
+					<Route path="/market" element={<NormalizedRoute element={<Market />} />} />
+					{/* <Route path="/market" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} /> */}
 
 					{/*
 						Development
