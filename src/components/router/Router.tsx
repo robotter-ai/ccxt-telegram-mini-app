@@ -1,6 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Navigate, useLocation, BrowserRouter, Routes, Route } from 'react-router-dom';
 import Orders from 'components/views/orders/Orders.tsx';
 import DevelopmentHome from 'components/views/development/Development';
 import SignIn from 'components/views/sign_in/SignIn';
@@ -14,57 +13,60 @@ interface RouterProps {
 	isSignedIn: boolean;
 }
 
+// Function to normalize route to camelCase
+const normalizeRoute = (route: string) => {
+	return route
+		.toLowerCase()
+		.replace(/[-_](.)/g, (_, char) => char.toUpperCase());
+};
+
+// Custom component to handle normalized routes
+const NormalizedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
+	const location = useLocation();
+	const normalizedPath = normalizeRoute(location.pathname);
+
+	if (normalizedPath !== location.pathname) {
+		return <Navigate to={normalizedPath} />;
+	}
+
+	return <>{element}</>;
+};
+
 class RouterStructure extends React.Component<RouterProps> {
 	render() {
 		const { isSignedIn } = this.props;
 
-		const SignInRedirect = () => <Navigate to="/signIn" />;
-		const RootRedirect = () => <Navigate to="/" />;
-
-		// @ts-ignore
-		const normalizeRoute = (route: string) => {
-			return route
-				.toLowerCase()
-				.replace(/[-_](.)/g, (_, char) => char.toUpperCase());
-		};
-
 		return (
 			<BrowserRouter>
-				<div>
-					<Routes>
-						{/*
-							Public
-						*/}
-						<Route path="/signIn" element={<SignIn />} />
+				<Routes>
+					{/*
+						Public
+					*/}
+					<Route path="/signIn" element={<SignIn />} />
 
-						{/*
-							User
-						*/}
-						<Route path="/" element={<Navigate to="/orders" />} />
-						<Route path="/home" element={<Navigate to="/" />} />
-						<Route path="/orders" element={isSignedIn ? <Orders /> : <SignInRedirect />} />
+					{/*
+						User
+					*/}
+					<Route path="/" element={<Navigate to="/orders" />} />
+					<Route path="/home" element={<Navigate to="/" />} />
+					<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
 
-						{/*
-							Development
-						*/}
-						<Route path="/development" element={isSignedIn ? <DevelopmentHome /> : <SignInRedirect />} />
+					{/*
+						Development
+					*/}
+					<Route path="/development" element={<NormalizedRoute element={isSignedIn ? <DevelopmentHome /> : <Navigate to="/signIn" />} />} />
 
-						{/*
-							Redirect unknown routes
-						*/}
-						<Route
-							path="*"
-							element={
-								isSignedIn ? <RootRedirect /> : <SignInRedirect />
-							}
-						/>
-					</Routes>
-				</div>
+					{/*
+						Redirect unknown routes
+					*/}
+					<Route
+						path="*"
+						element={<NormalizedRoute element={isSignedIn ? <Navigate to="/" /> : <Navigate to="/signIn" />} />}
+					/>
+				</Routes>
 			</BrowserRouter>
 		);
 	}
 }
 
-const Router = connect(mapStateToProps)(RouterStructure);
-
-export default Router;
+export const Router = connect(mapStateToProps)(RouterStructure);
