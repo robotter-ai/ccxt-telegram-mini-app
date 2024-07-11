@@ -16,7 +16,7 @@ interface TemplateProps {
 	data: any;
 }
 
-const TemplateStructure = ({ data }: TemplateProps) => {
+const MarketsStructure = ({ data }: TemplateProps) => {
 	const [ loading, setLoading ] = useState(true);
 	const [ error, setError ] = useState(null as any);
 
@@ -88,4 +88,4 @@ const TemplateStructure = ({ data }: TemplateProps) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Template = connect(mapStateToProps)(TemplateStructure)
+export const Markets = connect(mapStateToProps)(MarketsStructure)
