@@ -33,21 +33,6 @@ interface Data {
 	actions: any;
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const handleCancelOpenOrderClick = async (orderId: any) => {
-};
-
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const handleCancelSelectedOpenOrdersClick = async (ordersIds: [any]) => {
-};
-
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const handleCancelAllOpenOrdersClick = async () => {
-};
-
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -126,7 +111,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 						indeterminate={numSelected > 0 && numSelected < rowCount}
 						checked={rowCount > 0 && numSelected === rowCount}
 						onChange={onSelectAllClick}
-						inputProps={{ 'aria-label': 'select all desserts' }}
+						inputProps={{ 'aria-label': 'select all orders' }}
 					/>
 				</TableCell>
 				{headCells.map((headCell) => (
@@ -157,10 +142,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 interface EnhancedTableToolbarProps {
 	numSelected: number;
+	onCancelSelectedOpenOrdersClick: () => void;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-	const { numSelected } = props;
+	const { numSelected, onCancelSelectedOpenOrdersClick } = props;
 
 	return (
 		<Toolbar
@@ -178,7 +164,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 				</Typography>
 			) : (
 				<Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-					Cube
+					Orders
 				</Typography>
 			)}
 			{numSelected > 0 ? (
@@ -186,8 +172,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 					<Chip
 						icon={<DeleteIcon />}
 						label="Cancel selected"
-						onClick={handleCancelSelectedOpenOrdersClick}
-						// onDelete={handleCancelSelectedOpenOrdersClick}
+						onClick={onCancelSelectedOpenOrdersClick}
+						variant="outlined"
 					/>
 				</Tooltip>
 			) : (
@@ -201,12 +187,12 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
 interface Props {
 	rows: Data[];
-	handleCancelOpenOrderClick: any;
-	handleCancelOpenOrdersClick: any;
-	handleCancelAllOpenOrdersClick: any;
+	cancelOpenOrder: (orderId: string | number) => void;
+	cancelOpenOrders: (orderIds: (string | number)[]) => void;
+	cancelAllOpenOrders: () => void;
 }
 
-export default function OrdersTable({ rows }: Props) {
+export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, cancelAllOpenOrders }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
 	const [selected, setSelected] = React.useState<readonly string[] | number[]>([]);
@@ -214,7 +200,6 @@ export default function OrdersTable({ rows }: Props) {
 	const [dense, setDense] = React.useState(false);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-	// @ts-ignore
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
@@ -230,10 +215,9 @@ export default function OrdersTable({ rows }: Props) {
 		setSelected([]);
 	};
 
-	// @ts-ignore
 	const handleClick = (event: React.MouseEvent<unknown>, id: string | number) => {
 		const selectedIndex = selected.indexOf(id);
-		let newSelected: readonly number[] = [];
+		let newSelected: readonly (string | number)[] = [];
 
 		if (selectedIndex === -1) {
 			newSelected = newSelected.concat(selected, id);
@@ -247,7 +231,6 @@ export default function OrdersTable({ rows }: Props) {
 		setSelected(newSelected);
 	};
 
-	// @ts-ignore
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
 	};
@@ -270,10 +253,20 @@ export default function OrdersTable({ rows }: Props) {
 		[order, orderBy, page, rowsPerPage, rows]
 	);
 
+	const handleCancelOpenOrderClick = (orderId: string | number) => (event: React.MouseEvent) => {
+		event.stopPropagation();
+		cancelOpenOrder(orderId);
+	};
+
+	const handleCancelSelectedOpenOrdersClick = () => {
+		cancelOpenOrders(selected);
+		setSelected([]);
+	};
+
 	return (
 		<Box sx={{ width: '100%' }}>
 			<Paper sx={{ width: '100%', mb: 2 }}>
-				<EnhancedTableToolbar numSelected={selected.length} />
+				<EnhancedTableToolbar numSelected={selected.length} onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick} />
 				<TableContainer>
 					<Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
 						<EnhancedTableHead
@@ -319,8 +312,8 @@ export default function OrdersTable({ rows }: Props) {
 											<Tooltip title="Cancel this open order">
 												<Chip
 													label="Cancel order"
-													onClick={handleCancelOpenOrderClick}
-													onDelete={handleCancelOpenOrderClick}
+													onClick={handleCancelOpenOrderClick(row.id)}
+													onDelete={handleCancelOpenOrderClick(row.id)}
 													deleteIcon={<DeleteIcon />}
 													variant="outlined"
 												/>
@@ -331,7 +324,7 @@ export default function OrdersTable({ rows }: Props) {
 							})}
 							{emptyRows > 0 && (
 								<TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-									<TableCell colSpan={6} />
+									<TableCell colSpan={8} />
 								</TableRow>
 							)}
 						</TableBody>
