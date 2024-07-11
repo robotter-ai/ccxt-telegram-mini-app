@@ -263,6 +263,4 @@ const SignInStructure = (props: any) => {
 	);
 };
 
-const SignIn = connect(mapStateToProps)(SignInStructure);
-
-export default SignIn;
+export const SignIn = connect(mapStateToProps)(SignInStructure);

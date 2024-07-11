@@ -98,6 +98,4 @@ const DevelopmentStructure = (state: any) => {
 	);
 };
 
-const Development = connect(mapStateToProps)(DevelopmentStructure)
-
-export default Development
+export const Development = connect(mapStateToProps)(DevelopmentStructure)

@@ -165,6 +165,4 @@ const OrderStructure = (state: any) => {
 	);
 };
 
-const Orders = connect(mapStateToProps)(OrderStructure)
-
-export default Orders
+export const Orders = connect(mapStateToProps)(OrderStructure)

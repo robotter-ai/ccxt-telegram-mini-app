@@ -5,6 +5,7 @@ import 'model/initializer';
 import { Router } from 'components/router/Router';
 import { Provider } from 'react-redux';
 
+// noinspection UnnecessaryLocalVariableJS
 const reduxStore = (await import('model/state/redux/store')).reduxStore;
 
 ReactDOM.createRoot(document.getElementById('root')!)

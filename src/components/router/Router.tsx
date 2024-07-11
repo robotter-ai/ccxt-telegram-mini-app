@@ -1,8 +1,8 @@
 import React from 'react';
 import { Navigate, useLocation, BrowserRouter, Routes, Route } from 'react-router-dom';
-import Orders from 'components/views/orders/Orders.tsx';
-import DevelopmentHome from 'components/views/development/Development';
-import SignIn from 'components/views/sign_in/SignIn';
+import { Orders } from 'components/views/orders/Orders.tsx';
+import { Development } from 'components/views/development/Development';
+import { SignIn } from 'components/views/sign_in/SignIn';
 import { connect } from 'react-redux';
 
 const mapStateToProps = (state: any) => ({
@@ -54,7 +54,7 @@ class RouterStructure extends React.Component<RouterProps> {
 					{/*
 						Development
 					*/}
-					<Route path="/development" element={<NormalizedRoute element={isSignedIn ? <DevelopmentHome /> : <Navigate to="/signIn" />} />} />
+					<Route path="/development" element={<NormalizedRoute element={isSignedIn ? <Development /> : <Navigate to="/signIn" />} />} />
 
 					{/*
 						Redirect unknown routes
