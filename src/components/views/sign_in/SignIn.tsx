@@ -6,6 +6,7 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostAuthSignIn } from 'model/service/api';
 import { connect } from 'react-redux';
 import { dispatch } from 'model/state/redux/store';
+import { useNavigate } from 'react-router-dom';
 import {
 	Container,
 	Typography,
@@ -18,6 +19,7 @@ import {
 	Avatar,
 	IconButton,
 	InputAdornment,
+	Snackbar,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Visibility from '@mui/icons-material/Visibility';
@@ -72,12 +74,14 @@ const theme = createTheme({
 // noinspection JSUnusedLocalSymbols
 const SignInStructure = (props: any) => {
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null as any);
+	const [error, setError] = useState<any>(null);
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [showApiSecret, setShowApiSecret] = useState(false);
 	const [showSubAccountId, setShowSubAccountId] = useState(false);
+	const [openSnackbar, setOpenSnackbar] = useState(false);
 
 	const handleUnAuthorized = useHandleUnauthorized();
+	const navigate = useNavigate();
 
 	const signIn = async (apiKey: string, apiSecret: string, subAccountId: number) => {
 		setLoading(true);
@@ -108,8 +112,11 @@ const SignInStructure = (props: any) => {
 
 			const { configure } = await import('model/service/recurrent');
 			configure(handleUnAuthorized);
+
+			navigate('/');
 		} catch (error: any) {
 			setError(error);
+			setOpenSnackbar(true);
 		} finally {
 			setLoading(false);
 		}
@@ -117,6 +124,10 @@ const SignInStructure = (props: any) => {
 
 	const handleClickShowPassword = (setShowPassword: any) => {
 		setShowPassword((show: boolean) => !show);
+	};
+
+	const handleCloseSnackbar = () => {
+		setOpenSnackbar(false);
 	};
 
 	return (
@@ -241,6 +252,12 @@ const SignInStructure = (props: any) => {
 						</Formik>
 					</Box>
 				</Paper>
+				<Snackbar
+					open={openSnackbar}
+					autoHideDuration={6000}
+					onClose={handleCloseSnackbar}
+					message={error ? error.message : 'An error occurred'}
+				/>
 			</Container>
 		</ThemeProvider>
 	);
