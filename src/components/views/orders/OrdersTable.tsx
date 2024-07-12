@@ -64,7 +64,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 		if (order !== 0) {
 			return order;
 		}
-		return a[1] - b[1];
+		return (a[1] - b[1]);
 	});
 	return stabilizedThis.map((el) => el[0]);
 }
@@ -143,10 +143,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
 	numSelected: number;
 	onCancelSelectedOpenOrdersClick: () => void;
+	onCancelAllOpenOrdersClick: () => void;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-	const { numSelected, onCancelSelectedOpenOrdersClick } = props;
+	const { numSelected, onCancelSelectedOpenOrdersClick, onCancelAllOpenOrdersClick } = props;
 
 	return (
 		<Toolbar
@@ -177,8 +178,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 					/>
 				</Tooltip>
 			) : (
-				<Tooltip title="Filter list">
-					<IconButton>Filter Icon</IconButton>
+				<Tooltip title="Cancel all open orders">
+					<IconButton onClick={onCancelAllOpenOrdersClick}>
+						<DeleteIcon />
+					</IconButton>
 				</Tooltip>
 			)}
 		</Toolbar>
@@ -253,20 +256,28 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 		[order, orderBy, page, rowsPerPage, rows]
 	);
 
-	const handleCancelOpenOrderClick = (orderId: string | number) => (event: React.MouseEvent) => {
+	const handleCancelOpenOrderClick = (orderId: string | number) => async (event: React.MouseEvent) => {
 		event.stopPropagation();
-		cancelOpenOrder(orderId);
+		await cancelOpenOrder(orderId);
 	};
 
-	const handleCancelSelectedOpenOrdersClick = () => {
-		cancelOpenOrders(selected);
+	const handleCancelSelectedOpenOrdersClick = async () => {
+		await cancelOpenOrders(selected);
 		setSelected([]);
+	};
+
+	const handleCancelAllOpenOrdersClick = async () => {
+		await cancelAllOpenOrders();
 	};
 
 	return (
 		<Box sx={{ width: '100%' }}>
 			<Paper sx={{ width: '100%', mb: 2 }}>
-				<EnhancedTableToolbar numSelected={selected.length} onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick} />
+				<EnhancedTableToolbar
+					numSelected={selected.length}
+					onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick}
+					onCancelAllOpenOrdersClick={handleCancelAllOpenOrdersClick}
+				/>
 				<TableContainer>
 					<Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
 						<EnhancedTableHead
@@ -313,7 +324,6 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 												<Chip
 													label="Cancel order"
 													onClick={handleCancelOpenOrderClick(row.id)}
-													onDelete={handleCancelOpenOrderClick(row.id)}
 													deleteIcon={<DeleteIcon />}
 													variant="outlined"
 												/>

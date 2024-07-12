@@ -1,91 +1,98 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment */
-// noinspection JSUnusedLocalSymbols
-
 import { useEffect, useState } from 'react';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostAuthSignIn, apiPostRun } from 'model/service/api';
-import { dispatch } from 'model/state/redux/store';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-
-import { connect } from 'react-redux'
 import OrdersTable from 'components/views/orders/OrdersTable';
 
-// @ts-ignore
-const mapStateToProps = (state: any, props: any) => ({
-	openOrders: state.api.orders.open,
-})
-
-const OrderStructure = (state: any) => {
-	const [ loading, setLoading ] = useState(true);
-	const [ error, setError ] = useState(null as any);
-
+const Orders = () => {
+	const openOrders = useSelector((state: any) => state.api.orders.open);
+	const dispatch = useDispatch();
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null as any);
 	const handleUnAuthorized = useHandleUnauthorized();
 
+	// Closure to keep track of canceled orders
+	let canceledOrders = new Set();
+
 	const cancelOpenOrder = async (orderId: any) => {
-		if (!orderId)
-			return;
+		if (!orderId) return;
 
-		const response = await apiPostRun({
-			'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-			'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-			'method': 'cancel_open_orders',
-			'parameters': {
-				'orderId': orderId
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'cancel_order',
+					parameters: {
+						orderId: orderId,
+						symbol: 'BTC/USDT',
+					},
+				},
+				handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				throw new Error('Network response was not OK');
 			}
-		}, handleUnAuthorized);
 
-		if (!(response.status === 200)) {
-			// noinspection ExceptionCaughtLocallyJS
-			throw new Error('Network response was not OK');
+			// Add the canceled order ID to the set
+			canceledOrders.add(orderId);
+
+			// Update the state to remove the canceled order
+			dispatch({ type: 'api.updateOpenOrders', payload: openOrders.filter((order: any) => order.id !== orderId) });
+		} catch (error) {
+			console.error('Failed to cancel order:', error);
 		}
+	};
 
-		const payload = response.data;
+	const cancelOpenOrders = async (orderIds: any[]) => {
+		if (!orderIds || !(orderIds.length > 0)) return;
 
-		console.log(payload);
-	}
-
-	const cancelOpenOrders = async (ordersIds: [any]) => {
-		if (!ordersIds || !(ordersIds.length > 0))
-			return;
-
-		const promises = ordersIds.map(async (orderId: any) => {
-			return await cancelOpenOrder(orderId);
-		});
-
-		const results = await Promise.all(promises);
-
-		console.log(results);
-	}
+		const promises = orderIds.map(async (orderId: any) => await cancelOpenOrder(orderId));
+		await Promise.all(promises);
+	};
 
 	const cancelAllOpenOrders = async () => {
-		const response = await apiPostRun({
-			'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-			'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-			'method': 'cancel_open_orders',
-			'parameters': null
-		}, handleUnAuthorized);
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'cancel_all_orders',
+					parameters: {
+						symbol: 'BTC/USDT',
+					},
+				},
+				handleUnAuthorized
+			);
 
-		if (!(response.status === 200)) {
-			// noinspection ExceptionCaughtLocallyJS
-			throw new Error('Network response was not OK');
+			if (response.status !== 200) {
+				throw new Error('Network response was not OK');
+			}
+
+			// Track all open orders as canceled
+			openOrders.forEach((order: any) => canceledOrders.add(order.id));
+
+			// Clear all orders from the state
+			dispatch({ type: 'api.updateOpenOrders', payload: [] });
+		} catch (error) {
+			console.error('Failed to cancel all orders:', error);
 		}
-
-		// const payload = response.data;
-	}
+	};
 
 	useEffect(() => {
-		// @ts-ignore
 		const fetchData = async () => {
 			try {
 				await apiPostAuthSignIn({
-					'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-					'exchangeEnvironment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					'exchangeApiKey': `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
-					'exchangeApiSecret': `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
-					'exchangeOptions': {
-						'subAccountId': `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`,
-					}
-				}, handleUnAuthorized);
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					exchangeApiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
+					exchangeApiSecret: `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
+					exchangeOptions: {
+						subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`,
+					},
+				});
 
 				const { configure, executeAndSetInterval } = await import('model/service/recurrent');
 				configure(handleUnAuthorized);
@@ -94,38 +101,44 @@ const OrderStructure = (state: any) => {
 
 				const targetFunction = async () => {
 					try {
-						const response = await apiPostRun({
-							'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-							'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-							'method': 'fetch_open_orders',
-							'parameters': {
-								'symbol': 'BTC/USDT'
-							}
-						}, handleUnAuthorized);
+						const response = await apiPostRun(
+							{
+								exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+								environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+								method: 'fetch_open_orders',
+								parameters: {
+									symbol: 'BTC/USDT',
+								},
+							},
+							handleUnAuthorized
+						);
 
-						if (!(response.status === 200)) {
-							// noinspection ExceptionCaughtLocallyJS
+						if (response.status !== 200) {
 							throw new Error('Network response was not OK');
 						}
 
 						const payload = response.data;
 
-						const output = payload.result.map((order: any, index: any) => ({
-							id: index,
-							market: order.symbol,
-							status: order.status,
-							side: order.side,
-							amount: order.amount,
-							price: order.price,
-							datetime: new Date(order.timestamp).toLocaleString(),
-						}));
+						// Filter out locally tracked canceled orders
+						const output = payload.result
+							.filter((order: any) => !canceledOrders.has(order.id))
+							.map((order: any) => ({
+								checkbox: false,
+								id: order.id,
+								market: order.symbol,
+								status: order.status,
+								side: order.side,
+								amount: order.amount,
+								price: order.price,
+								datetime: new Date(order.timestamp).toLocaleString(),
+								actions: null,
+							}));
 
-						dispatch('api.updateOpenOrders', output);
+						dispatch({ type: 'api.updateOpenOrders', payload: output });
 					} catch (exception) {
 						if (axios.isAxiosError(exception)) {
-							if (exception?.response?.status == 401) {
+							if (exception?.response?.status === 401) {
 								clearInterval(intervalId);
-
 								return;
 							}
 						}
@@ -156,13 +169,13 @@ const OrderStructure = (state: any) => {
 	return (
 		<div>
 			<OrdersTable
-				rows={state.openOrders}
-				handleCancelOpenOrderClick={cancelOpenOrder}
-				handleCancelOpenOrdersClick={cancelOpenOrders}
-				handleCancelAllOpenOrdersClick={cancelAllOpenOrders}
+				rows={openOrders}
+				cancelOpenOrder={cancelOpenOrder}
+				cancelOpenOrders={cancelOpenOrders}
+				cancelAllOpenOrders={cancelAllOpenOrders}
 			/>
 		</div>
 	);
 };
 
-export const Orders = connect(mapStateToProps)(OrderStructure)
+export default Orders;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation, BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Orders } from 'components/views/orders/Orders.tsx';
+import  Orders  from 'components/views/orders/Orders.tsx';
 import { Development } from 'components/views/development/Development';
 import { SignIn } from 'components/views/sign_in/SignIn';
 import { connect } from 'react-redux';
@@ -49,7 +49,7 @@ class RouterStructure extends React.Component<RouterProps> {
 					{/*
 						User
 					*/}
-					<Route path="/" element={<Navigate to="/market" />} />
+					<Route path="/" element={<Navigate to="/orders" />} />
 					<Route path="/home" element={<Navigate to="/" />} />
 					<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
 					<Route path="/markets" element={<NormalizedRoute element={isSignedIn ? <Markets /> : <Navigate to="/signIn" />} />} />
