@@ -25,7 +25,7 @@ const Orders = () => {
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'cancel_order',
 					parameters: {
-						orderId: orderId,
+						id: orderId,
 						symbol: 'BTC/USDT',
 					},
 				},
