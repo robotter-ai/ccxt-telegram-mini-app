@@ -5,20 +5,20 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
+import MarketsTable from 'components/views/markets/MarketsTable'; // Adjust the import path as needed
 import './Markets.css';
 
 const mapStateToProps = (state: any, props: any) => ({
-	stateValue: state.api.data,
-	propsValue: props.value,
-})
+	markets: state.api.markets,
+});
 
-interface TemplateProps {
-	data: any;
+interface MarketsStructureProps {
+	markets: any;
 }
 
-const MarketsStructure = ({ data }: TemplateProps) => {
-	const [ loading, setLoading ] = useState(true);
-	const [ error, setError ] = useState(null as any);
+const MarketsStructure = ({ markets }: MarketsStructureProps) => {
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null as any);
 
 	const handleUnAuthorized = useHandleUnauthorized();
 
@@ -29,29 +29,36 @@ const MarketsStructure = ({ data }: TemplateProps) => {
 
 				const targetFunction = async () => {
 					try {
-						const response = await apiPostRun({
-							'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-							'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-							'method': '<apiFunction>',
-							'parameters': {
-								param1: '<param1Value>',
-								param2: '<param2Value>'
-							}
-						}, handleUnAuthorized);
+						const response = await apiPostRun(
+							{
+								exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+								environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+								method: 'fetch_markets',
+								parameters: {},
+							},
+							handleUnAuthorized
+						);
 
 						if (!(response.status === 200)) {
-							// noinspection ExceptionCaughtLocallyJS
 							throw new Error('Network response was not OK');
 						}
 
 						const payload = response.data.result;
 
-						dispatch('api.updateData', payload);
+						const formattedMarkets = payload.map((market: any) => ({
+							id: market.id,
+							symbol: market.symbol,
+							base: market.base,
+							quote: market.quote,
+							active: market.active,
+							precision: market.precision.amount,
+						}));
+
+						dispatch('api.updateMarkets', formattedMarkets);
 					} catch (exception) {
 						if (axios.isAxiosError(exception)) {
-							if (exception?.response?.status == 401) {
+							if (exception?.response?.status === 401) {
 								clearInterval(intervalId);
-
 								return;
 							}
 						}
@@ -60,7 +67,8 @@ const MarketsStructure = ({ data }: TemplateProps) => {
 					}
 				};
 
-				intervalId = executeAndSetInterval(targetFunction, 5000);
+				intervalId = executeAndSetInterval(targetFunction, 30000);
+				targetFunction();
 			} catch (error: any) {
 				setError(error);
 			} finally {
@@ -68,7 +76,6 @@ const MarketsStructure = ({ data }: TemplateProps) => {
 			}
 		};
 
-		// noinspection JSIgnoredPromiseFromCall
 		fetchData();
 	}, []);
 
@@ -82,10 +89,9 @@ const MarketsStructure = ({ data }: TemplateProps) => {
 
 	return (
 		<div>
-			<pre>{JSON.stringify(data, null, 2)}</pre>
+			<MarketsTable rows={markets} />
 		</div>
 	);
 };
 
-// noinspection JSUnusedGlobalSymbols
-export const Markets = connect(mapStateToProps)(MarketsStructure)
+export const Markets = connect(mapStateToProps)(MarketsStructure);

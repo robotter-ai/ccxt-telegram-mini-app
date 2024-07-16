@@ -24,6 +24,11 @@ map.setIn(
 	[]
 )
 
+map.setIn(
+	'api.markets',
+	[]
+)
+
 // @ts-ignore
 const initialState = map.toJS();
 

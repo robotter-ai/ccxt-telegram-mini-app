@@ -52,7 +52,7 @@ class RouterStructure extends React.Component<RouterProps> {
 					<Route path="/" element={<Navigate to="/orders" />} />
 					<Route path="/home" element={<Navigate to="/" />} />
 					<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
-					<Route path="/markets" element={<NormalizedRoute element={isSignedIn ? <Markets /> : <Navigate to="/signIn" />} />} />
+					<Route path="/markets" element={<NormalizedRoute element={<Markets />} />} />
 					<Route path="/market" element={<NormalizedRoute element={<Market />} />} />
 					{/* <Route path="/market" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} /> */}
 
