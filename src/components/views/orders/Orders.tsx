@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
-import { apiPostAuthSignIn, apiPostRun } from 'model/service/api';
+import { apiPostRun } from 'model/service/api';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import OrdersTable from 'components/views/orders/OrdersTable';
 import { toast } from 'react-toastify';
 
@@ -85,72 +84,46 @@ const Orders = () => {
 		}
 	};
 
+	let hasInitialized = false;
+
 	useEffect(() => {
+		if (hasInitialized) return;
+
 		const fetchData = async () => {
 			try {
-				await apiPostAuthSignIn({
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					exchangeApiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
-					exchangeApiSecret: `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
-					exchangeOptions: {
-						subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`,
+				const response = await apiPostRun(
+					{
+						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+						method: 'fetch_open_orders',
+						parameters: {
+							symbol: 'BTC/USDT',
+						},
 					},
-				});
+					handleUnAuthorized
+				);
 
-				const { configure, executeAndSetInterval } = await import('model/service/recurrent');
-				configure(handleUnAuthorized);
+				if (response.status !== 200) {
+					throw new Error('Network response was not OK');
+				}
 
-				let intervalId: any;
+				const payload = response.data;
 
-				const targetFunction = async () => {
-					try {
-						const response = await apiPostRun(
-							{
-								exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-								environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-								method: 'fetch_open_orders',
-								parameters: {
-									symbol: 'BTC/USDT',
-								},
-							},
-							handleUnAuthorized
-						);
+				const output = payload.result
+					.filter((order: any) => !canceledOrders.has(order.id))
+					.map((order: any) => ({
+						checkbox: false,
+						id: order.id,
+						market: order.symbol,
+						status: order.status,
+						side: order.side,
+						amount: order.amount,
+						price: order.price,
+						datetime: new Date(order.timestamp).toLocaleString(),
+						actions: null,
+					}));
 
-						if (response.status !== 200) {
-							throw new Error('Network response was not OK');
-						}
-
-						const payload = response.data;
-
-						const output = payload.result
-							.filter((order: any) => !canceledOrders.has(order.id))
-							.map((order: any) => ({
-								checkbox: false,
-								id: order.id,
-								market: order.symbol,
-								status: order.status,
-								side: order.side,
-								amount: order.amount,
-								price: order.price,
-								datetime: new Date(order.timestamp).toLocaleString(),
-								actions: null,
-							}));
-
-						dispatch({ type: 'api.updateOpenOrders', payload: output });
-					} catch (exception) {
-						if (axios.isAxiosError(exception)) {
-							if (exception?.response?.status === 401) {
-								clearInterval(intervalId);
-								return;
-							}
-						}
-
-						console.error(exception);
-					}
-				};
-
-				intervalId = executeAndSetInterval(targetFunction, 5000);
+				dispatch({ type: 'api.updateOpenOrders', payload: output });
 			} catch (error: any) {
 				setError(error);
 			} finally {
@@ -159,6 +132,8 @@ const Orders = () => {
 		};
 
 		fetchData();
+
+		hasInitialized = true;
 	}, []);
 
 	if (loading) {

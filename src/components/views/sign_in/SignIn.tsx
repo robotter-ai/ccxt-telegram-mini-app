@@ -76,7 +76,9 @@ const theme = createTheme({
 const SignInStructure = (props: any) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<any>(null);
-	const [telegramUser, setTelegramUser] = useState<any>({});
+	const [telegramUser, setTelegramUser] = useState<any>({
+		id: import.meta.env.VITE_TELEGRAM_USER_ID
+	});
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [showApiSecret, setShowApiSecret] = useState(false);
 	const [showSubAccountId, setShowSubAccountId] = useState(false);
@@ -85,7 +87,11 @@ const SignInStructure = (props: any) => {
 	const handleUnAuthorized = useHandleUnauthorized();
 	const navigate = useNavigate();
 
+	let hasInitialized = false;
+
 	useEffect(() => {
+		if (hasInitialized) return;
+
 		if (Telegram && Telegram.WebApp) {
 			Telegram.WebApp.ready();
 
@@ -97,6 +103,8 @@ const SignInStructure = (props: any) => {
 				setTelegramUser(telegramUser);
 			}
 		}
+
+		hasInitialized = true;
 	}, []);
 
 	const signIn = async (apiKey: string, apiSecret: string, subAccountId: number) => {
@@ -108,7 +116,7 @@ const SignInStructure = (props: any) => {
 				{
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					telegramUserId: `${sanitizeInput(telegramUser.id)}`,
+					userTelegramId: `${sanitizeInput(telegramUser.id)}`,
 					exchangeApiKey: `${sanitizeInput(apiKey)}`,
 					exchangeApiSecret: `${sanitizeInput(apiSecret)}`,
 					exchangeOptions: {
@@ -170,7 +178,7 @@ const SignInStructure = (props: any) => {
 						<Formik
 							initialValues={{
 								apiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
-								apiSecret: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
+								apiSecret: `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
 								subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`
 							}}
 							validationSchema={SignInSchema}
