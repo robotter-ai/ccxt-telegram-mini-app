@@ -22,7 +22,11 @@ const TemplateStructure = ({ data }: TemplateProps) => {
 
 	const handleUnAuthorized = useHandleUnauthorized();
 
+	let hasInitialized = false;
+
 	useEffect(() => {
+		if (hasInitialized) return;
+
 		const fetchData = async () => {
 			try {
 				let intervalId: any;
@@ -70,6 +74,8 @@ const TemplateStructure = ({ data }: TemplateProps) => {
 
 		// noinspection JSIgnoredPromiseFromCall
 		fetchData();
+
+		hasInitialized = true;
 	}, []);
 
 	if (loading) {
