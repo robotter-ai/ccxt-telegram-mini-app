@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// @ts-ignore
+import { useEffect, useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import DOMPurify from 'dompurify';
@@ -75,6 +76,7 @@ const theme = createTheme({
 const SignInStructure = (props: any) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<any>(null);
+	const [telegramUser, setTelegramUser] = useState<any>({});
 	const [showApiKey, setShowApiKey] = useState(false);
 	const [showApiSecret, setShowApiSecret] = useState(false);
 	const [showSubAccountId, setShowSubAccountId] = useState(false);
@@ -82,6 +84,20 @@ const SignInStructure = (props: any) => {
 
 	const handleUnAuthorized = useHandleUnauthorized();
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (Telegram && Telegram.WebApp) {
+			Telegram.WebApp.ready();
+
+			const telegramUser = Telegram.WebApp.initDataUnsafe.user;
+
+			console.log('telegramUser', telegramUser);
+
+			if (telegramUser) {
+				setTelegramUser(telegramUser);
+			}
+		}
+	}, []);
 
 	const signIn = async (apiKey: string, apiSecret: string, subAccountId: number) => {
 		setLoading(true);
@@ -92,6 +108,7 @@ const SignInStructure = (props: any) => {
 				{
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					telegramUserId: `${sanitizeInput(telegramUser.id)}`,
 					exchangeApiKey: `${sanitizeInput(apiKey)}`,
 					exchangeApiSecret: `${sanitizeInput(apiSecret)}`,
 					exchangeOptions: {
