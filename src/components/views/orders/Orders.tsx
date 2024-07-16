@@ -4,6 +4,7 @@ import { apiPostAuthSignIn, apiPostRun } from 'model/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import OrdersTable from 'components/views/orders/OrdersTable';
+import { toast } from 'react-toastify';
 
 const Orders = () => {
 	const openOrders = useSelector((state: any) => state.api.orders.open);
@@ -12,7 +13,6 @@ const Orders = () => {
 	const [error, setError] = useState(null as any);
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	// Closure to keep track of canceled orders
 	let canceledOrders = new Set();
 
 	const cancelOpenOrder = async (orderId: any) => {
@@ -36,13 +36,14 @@ const Orders = () => {
 				throw new Error('Network response was not OK');
 			}
 
-			// Add the canceled order ID to the set
 			canceledOrders.add(orderId);
 
-			// Update the state to remove the canceled order
 			dispatch({ type: 'api.updateOpenOrders', payload: openOrders.filter((order: any) => order.id !== orderId) });
+
+			toast.success(`Order ${orderId} canceled successfully!`);
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
+			toast.error(`Failed to cancel order ${orderId}.`);
 		}
 	};
 
@@ -51,6 +52,8 @@ const Orders = () => {
 
 		const promises = orderIds.map(async (orderId: any) => await cancelOpenOrder(orderId));
 		await Promise.all(promises);
+
+		toast.success('Selected orders canceled successfully!');
 	};
 
 	const cancelAllOpenOrders = async () => {
@@ -71,13 +74,14 @@ const Orders = () => {
 				throw new Error('Network response was not OK');
 			}
 
-			// Track all open orders as canceled
 			openOrders.forEach((order: any) => canceledOrders.add(order.id));
 
-			// Clear all orders from the state
 			dispatch({ type: 'api.updateOpenOrders', payload: [] });
+
+			toast.success('All orders canceled successfully!');
 		} catch (error) {
 			console.error('Failed to cancel all orders:', error);
+			toast.error('Failed to cancel all orders.');
 		}
 	};
 
@@ -119,7 +123,6 @@ const Orders = () => {
 
 						const payload = response.data;
 
-						// Filter out locally tracked canceled orders
 						const output = payload.result
 							.filter((order: any) => !canceledOrders.has(order.id))
 							.map((order: any) => ({

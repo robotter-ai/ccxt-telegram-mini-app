@@ -78,6 +78,7 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
+	{ id: 'id', label: 'ID', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'market', label: 'Market', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'status', label: 'Status', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'side', label: 'Side', align: 'center', numeric: false, disablePadding: false },
@@ -180,7 +181,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 			) : (
 				<Tooltip title="Cancel all open orders">
 					<IconButton onClick={onCancelAllOpenOrdersClick}>
-						<DeleteIcon />
+						Cancel All Orders <DeleteIcon />
 					</IconButton>
 				</Tooltip>
 			)}
@@ -312,8 +313,9 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 											/>
 										</TableCell>
 										<TableCell align="left" component="th" id={labelId} scope="row" padding="none">
-											{row.market}
+											{row.id}
 										</TableCell>
+										<TableCell align="left">{row.market}</TableCell>
 										<TableCell align="left">{row.status}</TableCell>
 										<TableCell align="left">{row.side}</TableCell>
 										<TableCell align="right">{row.amount}</TableCell>
@@ -334,7 +336,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 							})}
 							{emptyRows > 0 && (
 								<TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-									<TableCell colSpan={8} />
+									<TableCell colSpan={9} />
 								</TableRow>
 							)}
 						</TableBody>
