@@ -1,19 +1,15 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Navigate, useLocation, BrowserRouter, Routes, Route } from 'react-router-dom';
-import  Orders  from 'components/views/orders/Orders.tsx';
+import { Orders } from 'components/views/orders/Orders.tsx';
 import { Development } from 'components/views/development/Development';
 import { SignIn } from 'components/views/sign_in/SignIn';
-import { connect } from 'react-redux';
 import { Markets } from 'components/views/markets/Markets.tsx';
 import { Market } from 'components/views/market/Market.tsx';
 
 const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
 });
-
-interface RouterProps {
-	isSignedIn: boolean;
-}
 
 // Function to normalize route to camelCase
 const normalizeRoute = (route: string) => {
@@ -23,7 +19,7 @@ const normalizeRoute = (route: string) => {
 };
 
 // Custom component to handle normalized routes
-const NormalizedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
+const NormalizedRouteStructure: React.FC<{ element: React.ReactNode, checkAuthentication?: boolean, isSignedIn: boolean }> = ({ element, checkAuthentication = false, isSignedIn = false }) => {
 	const location = useLocation();
 	const normalizedPath = normalizeRoute(location.pathname);
 
@@ -31,10 +27,17 @@ const NormalizedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) =>
 		return <Navigate to={normalizedPath} />;
 	}
 
+	if (checkAuthentication && !isSignedIn) {
+		const redirectUrl = `${location.pathname}${location.search}`;
+		return <Navigate to={`/signIn?redirect=${encodeURIComponent(redirectUrl)}`} />;
+	}
+
 	return <>{element}</>;
 };
 
-const RouterStructure = ({ isSignedIn }: RouterProps) => {
+const NormalizedRoute = connect(mapStateToProps)(NormalizedRouteStructure)
+
+const RouterStructure = () => {
 	return (
 		<BrowserRouter>
 			<Routes>
@@ -48,26 +51,26 @@ const RouterStructure = ({ isSignedIn }: RouterProps) => {
 				*/}
 				<Route path="/" element={<Navigate to="/markets" />} />
 				<Route path="/home" element={<Navigate to="/" />} />
-				<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
-				<Route path="/markets" element={<NormalizedRoute element={isSignedIn ? <Markets /> : <Navigate to="/signIn" />} />} />
-				<Route path="/market" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} />
-				<Route path="/market/:marketId" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} />
+				<Route path="/orders" element={<NormalizedRoute element={<Orders />} checkAuthentication />} />
+				<Route path="/markets" element={<NormalizedRoute element={<Markets />} checkAuthentication />} />
+				<Route path="/market" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
+				<Route path="/market/:marketId" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
 
 				{/*
 					Development
 				*/}
-				<Route path="/development" element={<NormalizedRoute element={isSignedIn ? <Development /> : <Navigate to="/signIn" />} />} />
+				<Route path="/development" element={<NormalizedRoute element={<Development />} checkAuthentication />} />
 
 				{/*
 					Redirect unknown routes
 				*/}
 				<Route
 					path="*"
-					element={<NormalizedRoute element={isSignedIn ? <Navigate to="/" /> : <Navigate to="/signIn" />} />}
+					element={<NormalizedRoute element={<Navigate to="/" />} checkAuthentication />}
 				/>
 			</Routes>
 		</BrowserRouter>
 	);
-}
+};
 
 export const Router = connect(mapStateToProps)(RouterStructure);
