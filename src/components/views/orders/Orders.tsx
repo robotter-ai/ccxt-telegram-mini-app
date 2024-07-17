@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import OrdersTable from 'components/views/orders/OrdersTable';
 import { toast } from 'react-toastify';
 
-const Orders = () => {
+export const Orders = () => {
 	const openOrders = useSelector((state: any) => state.api.orders.open);
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(true);
@@ -155,5 +155,3 @@ const Orders = () => {
 		</div>
 	);
 };
-
-export default Orders;

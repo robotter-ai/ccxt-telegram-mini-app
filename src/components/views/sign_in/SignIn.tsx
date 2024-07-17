@@ -7,7 +7,7 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostAuthSignIn } from 'model/service/api';
 import { connect } from 'react-redux';
 import { dispatch } from 'model/state/redux/store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
 	Container,
 	Typography,
@@ -71,9 +71,18 @@ const theme = createTheme({
 	},
 });
 
+interface SignInProps {
+	isSignedIn: any;
+}
+
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-const SignInStructure = (props: any) => {
+const SignInStructure = ({ isSignedIn }: SignInProps) => {
+	const navigate = useNavigate();
+
+	const [searchParams] = useSearchParams();
+	const queryRedirect = searchParams.get('redirect');
+
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<any>(null);
 	const [telegramUser, setTelegramUser] = useState<any>({
@@ -85,7 +94,6 @@ const SignInStructure = (props: any) => {
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 
 	const handleUnAuthorized = useHandleUnauthorized();
-	const navigate = useNavigate();
 
 	let hasInitialized = false;
 
@@ -138,7 +146,11 @@ const SignInStructure = (props: any) => {
 			const { configure } = await import('model/service/recurrent');
 			configure(handleUnAuthorized);
 
-			navigate('/');
+			if (queryRedirect) {
+				navigate(queryRedirect);
+			} else {
+				navigate('/');
+			}
 		} catch (error: any) {
 			setError(error);
 			setOpenSnackbar(true);
