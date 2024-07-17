@@ -29,6 +29,11 @@ map.setIn(
 	[]
 )
 
+map.setIn(
+	'api.market.candles',
+	[]
+)
+
 // @ts-ignore
 const initialState = map.toJS();
 

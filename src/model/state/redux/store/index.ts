@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- *
- */
 const { app } = await import('model/storage/app');
 
 if (app.getIn('redux.store') == null) {
