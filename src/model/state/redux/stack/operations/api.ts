@@ -128,3 +128,24 @@ pushStack('api.updateMarkets', (currentState: any, payload: any) => {
 
 	return nextState;
 });
+
+// noinspection JSUnusedLocalSymbols
+pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.market.candles',
+			[...nextState.getIn('api.market.candles'), payload]
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.updateMarketCandles', nextState.api.market.candles);
+
+	return nextState;
+});
