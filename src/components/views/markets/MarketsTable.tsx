@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface Data {
 	id: number;
@@ -73,7 +74,7 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-	{ id: 'id', label: 'ID', align: 'center', numeric: false, disablePadding: false },
+	{ id: 'id', label: 'ID', align: 'center', numeric: true, disablePadding: false },
 	{ id: 'symbol', label: 'Symbol', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'base', label: 'Base Asset', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'quote', label: 'Quote Asset', align: 'center', numeric: false, disablePadding: false },
@@ -175,6 +176,7 @@ export default function MarketsTable({ rows }: Props) {
 	const [page, setPage] = React.useState(0);
 	const [dense, setDense] = React.useState(false);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const navigate = useNavigate();
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -191,20 +193,8 @@ export default function MarketsTable({ rows }: Props) {
 		setSelected([]);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, id: string | number) => {
-		const selectedIndex = selected.indexOf(id);
-		let newSelected: readonly (string | number)[] = [];
-
-		if (selectedIndex === -1) {
-			newSelected = newSelected.concat(selected, id);
-		} else if (selectedIndex === 0) {
-			newSelected = newSelected.concat(selected.slice(1));
-		} else if (selectedIndex === selected.length - 1) {
-			newSelected = newSelected.concat(selected.slice(0, -1));
-		} else if (selectedIndex > 0) {
-			newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-		}
-		setSelected(newSelected);
+	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+		navigate(`/market/BINANCE:ETHUSDT`);
 	};
 
 	const handleChangePage = (event: unknown, newPage: number) => {
@@ -220,7 +210,7 @@ export default function MarketsTable({ rows }: Props) {
 		setDense(event.target.checked);
 	};
 
-	const isSelected = (id: string | number) => selected.indexOf(id) !== -1;
+	const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
 	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -246,7 +236,7 @@ export default function MarketsTable({ rows }: Props) {
 						<TableBody>
 							{visibleRows.map((row, index) => {
 								const isItemSelected = isSelected(row.id);
-								const labelId = `enhanced-table-checkbox-${row.id}-${row.symbol}`;
+								const labelId = `enhanced-table-checkbox-${index}`;
 
 								return (
 									<TableRow
@@ -255,7 +245,7 @@ export default function MarketsTable({ rows }: Props) {
 										role="checkbox"
 										aria-checked={isItemSelected}
 										tabIndex={-1}
-										key={`${row.id}-${row.symbol}`}
+										key={row.id}
 										selected={isItemSelected}
 										sx={{ cursor: 'pointer' }}
 									>
@@ -269,9 +259,9 @@ export default function MarketsTable({ rows }: Props) {
 										<TableCell align="center" component="th" id={labelId} scope="row" padding="none">
 											{row.id}
 										</TableCell>
-										<TableCell align="center">{row.symbol}</TableCell>
-										<TableCell align="center">{row.base}</TableCell>
-										<TableCell align="center">{row.quote}</TableCell>
+										<TableCell align="left">{row.symbol}</TableCell>
+										<TableCell align="left">{row.base}</TableCell>
+										<TableCell align="left">{row.quote}</TableCell>
 										<TableCell align="center">{row.active ? 'Yes' : 'No'}</TableCell>
 										<TableCell align="right">{row.precision}</TableCell>
 									</TableRow>
