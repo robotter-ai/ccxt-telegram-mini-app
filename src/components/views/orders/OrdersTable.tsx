@@ -1,25 +1,4 @@
 import * as React from 'react';
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { visuallyHidden } from '@mui/utils';
-import { Chip } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Data {
 	checkbox: boolean;
@@ -104,40 +83,27 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 	};
 
 	return (
-		<TableHead>
-			<TableRow>
-				<TableCell padding="checkbox">
-					<Checkbox
-						color="primary"
-						indeterminate={numSelected > 0 && numSelected < rowCount}
-						checked={rowCount > 0 && numSelected === rowCount}
-						onChange={onSelectAllClick}
-						inputProps={{ 'aria-label': 'select all orders' }}
-					/>
-				</TableCell>
-				{headCells.map((headCell) => (
-					<TableCell
-						key={headCell.id}
-						align={headCell.align}
-						padding={headCell.disablePadding ? 'none' : 'normal'}
-						sortDirection={orderBy === headCell.id ? order : false}
-					>
-						<TableSortLabel
-							active={orderBy === headCell.id}
-							direction={orderBy === headCell.id ? order : 'asc'}
-							onClick={createSortHandler(headCell.id)}
-						>
-							{headCell.label}
-							{orderBy === headCell.id ? (
-								<Box component="span" sx={visuallyHidden}>
-									{order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-								</Box>
-							) : null}
-						</TableSortLabel>
-					</TableCell>
-				))}
-			</TableRow>
-		</TableHead>
+		<thead className="bg-gray-800">
+		<tr>
+			<th className="p-4">
+				<input
+					type="checkbox"
+					className="form-checkbox text-orange-500"
+					checked={rowCount > 0 && numSelected === rowCount}
+					onChange={onSelectAllClick}
+				/>
+			</th>
+			{headCells.map((headCell) => (
+				<th
+					key={headCell.id}
+					className="px-6 py-3 text-xs font-medium text-white tracking-wider text-center"
+					onClick={createSortHandler(headCell.id)}
+				>
+					{headCell.label}
+				</th>
+			))}
+		</tr>
+		</thead>
 	);
 }
 
@@ -151,41 +117,28 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	const { numSelected, onCancelSelectedOpenOrdersClick, onCancelAllOpenOrdersClick } = props;
 
 	return (
-		<Toolbar
-			sx={{
-				pl: { sm: 2 },
-				pr: { xs: 1, sm: 1 },
-				...(numSelected > 0 && {
-					bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-				}),
-			}}
-		>
+		<div className="flex items-center justify-between p-4 bg-gray-900">
 			{numSelected > 0 ? (
-				<Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
-					{numSelected} selected
-				</Typography>
+				<span className="text-white">{numSelected} selected</span>
 			) : (
-				<Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-					Orders
-				</Typography>
+				<h2 className="text-xl font-bold text-white">Orders</h2>
 			)}
 			{numSelected > 0 ? (
-				<Tooltip title="Cancel selected open orders">
-					<Chip
-						icon={<DeleteIcon />}
-						label="Cancel selected"
-						onClick={onCancelSelectedOpenOrdersClick}
-						variant="outlined"
-					/>
-				</Tooltip>
+				<button
+					className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+					onClick={onCancelSelectedOpenOrdersClick}
+				>
+					Cancel selected
+				</button>
 			) : (
-				<Tooltip title="Cancel all open orders">
-					<IconButton onClick={onCancelAllOpenOrdersClick}>
-						Cancel All Orders <DeleteIcon />
-					</IconButton>
-				</Tooltip>
+				<button
+					className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+					onClick={onCancelAllOpenOrdersClick}
+				>
+					Cancel All Orders
+				</button>
 			)}
-		</Toolbar>
+		</div>
 	);
 }
 
@@ -272,87 +225,108 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 	};
 
 	return (
-		<Box sx={{ width: '100%' }}>
-			<Paper sx={{ width: '100%', mb: 2 }}>
-				<EnhancedTableToolbar
-					numSelected={selected.length}
-					onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick}
-					onCancelAllOpenOrdersClick={handleCancelAllOpenOrdersClick}
-				/>
-				<TableContainer>
-					<Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
-						<EnhancedTableHead
-							numSelected={selected.length}
-							order={order}
-							orderBy={orderBy}
-							onSelectAllClick={handleSelectAllClick}
-							onRequestSort={handleRequestSort}
-							rowCount={rows.length}
-						/>
-						<TableBody>
-							{visibleRows.map((row, index) => {
-								const isItemSelected = isSelected(row.id);
-								const labelId = `enhanced-table-checkbox-${index}`;
+		<div className="h-screen w-full p-4 bg-gray-900 text-white">
+			<EnhancedTableToolbar
+				numSelected={selected.length}
+				onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick}
+				onCancelAllOpenOrdersClick={handleCancelAllOpenOrdersClick}
+			/>
+			<div className="overflow-auto">
+				<table className="min-w-full divide-y divide-gray-700">
+					<EnhancedTableHead
+						numSelected={selected.length}
+						order={order}
+						orderBy={orderBy}
+						onSelectAllClick={handleSelectAllClick}
+						onRequestSort={handleRequestSort}
+						rowCount={rows.length}
+					/>
+					<tbody className="bg-gray-800 divide-y divide-gray-700">
+					{visibleRows.map((row, index) => {
+						const isItemSelected = isSelected(row.id);
+						const labelId = `enhanced-table-checkbox-${index}`;
 
-								return (
-									<TableRow
-										hover
-										onClick={(event) => handleClick(event, row.id)}
-										role="checkbox"
-										aria-checked={isItemSelected}
-										tabIndex={-1}
-										key={row.id}
-										selected={isItemSelected}
-										sx={{ cursor: 'pointer' }}
+						return (
+							<tr
+								key={row.id}
+								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''} ${dense ? 'py-2' : 'py-4'}`}
+								onClick={(event) => handleClick(event, row.id)}
+							>
+								<td className="p-4">
+									<input
+										type="checkbox"
+										className="form-checkbox text-orange-500"
+										checked={isItemSelected}
+										onChange={(event) => event.stopPropagation()}
+										aria-labelledby={labelId}
+									/>
+								</td>
+								<td className="px-6 py-4 text-center">{row.id}</td>
+								<td className="px-6 py-4 text-center">{row.market}</td>
+								<td className="px-6 py-4 text-center">{row.status}</td>
+								<td className="px-6 py-4 text-center">{row.side}</td>
+								<td className="px-6 py-4 text-right">{row.amount}</td>
+								<td className="px-6 py-4 text-right">{row.price}</td>
+								<td className="px-6 py-4 text-center">{row.datetime}</td>
+								<td className="px-6 py-4 text-center">
+									<button
+										className="px-2 py-1 text-orange-500 border border-orange-500 rounded-md hover:bg-orange-500 hover:text-white"
+										onClick={handleCancelOpenOrderClick(row.id)}
 									>
-										<TableCell padding="checkbox">
-											<Checkbox
-												color="primary"
-												checked={isItemSelected}
-												inputProps={{ 'aria-labelledby': labelId }}
-											/>
-										</TableCell>
-										<TableCell align="left" component="th" id={labelId} scope="row" padding="none">
-											{row.id}
-										</TableCell>
-										<TableCell align="left">{row.market}</TableCell>
-										<TableCell align="left">{row.status}</TableCell>
-										<TableCell align="left">{row.side}</TableCell>
-										<TableCell align="right">{row.amount}</TableCell>
-										<TableCell align="right">{row.price}</TableCell>
-										<TableCell align="center">{row.datetime}</TableCell>
-										<TableCell align="center">
-											<Tooltip title="Cancel this open order">
-												<Chip
-													label="Cancel order"
-													onClick={handleCancelOpenOrderClick(row.id)}
-													deleteIcon={<DeleteIcon />}
-													variant="outlined"
-												/>
-											</Tooltip>
-										</TableCell>
-									</TableRow>
-								);
-							})}
-							{emptyRows > 0 && (
-								<TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-									<TableCell colSpan={9} />
-								</TableRow>
-							)}
-						</TableBody>
-					</Table>
-				</TableContainer>
-				<TablePagination
-					rowsPerPageOptions={[5, 10, 25]}
-					component="div"
-					count={rows.length}
-					rowsPerPage={rowsPerPage}
-					page={page}
-					onPageChange={handleChangePage}
-					onRowsPerPageChange={handleChangeRowsPerPage}
-				/>
-			</Paper>
-			<FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label="Dense padding" />
-		</Box>
+										Cancel order
+									</button>
+								</td>
+							</tr>
+						);
+					})}
+					{emptyRows > 0 && (
+						<tr style={{ height: (dense ? 33 : 53) * emptyRows }}>
+							<td colSpan={9} />
+						</tr>
+					)}
+					</tbody>
+				</table>
+			</div>
+			<div className="flex justify-between p-4">
+				<div>
+					<label className="inline-flex items-center">
+						<input
+							type="checkbox"
+							className="form-checkbox"
+							checked={dense}
+							onChange={handleChangeDense}
+						/>
+						<span className="ml-2">Dense padding</span>
+					</label>
+				</div>
+				<div>
+					<select
+						className="form-select bg-gray-800 text-white border-gray-700"
+						value={rowsPerPage}
+						onChange={handleChangeRowsPerPage}
+					>
+						<option value={5}>5</option>
+						<option value={10}>10</option>
+						<option value={25}>25</option>
+					</select>
+				</div>
+				<div>
+					<button
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						onClick={() => handleChangePage(null, page - 1)}
+						disabled={page === 0}
+					>
+						Previous
+					</button>
+					<button
+						className="px-4 py-2 ml-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						onClick={() => handleChangePage(null, page + 1)}
+						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
+					>
+						Next
+					</button>
+				</div>
+			</div>
+		</div>
 	);
 }
