@@ -34,44 +34,40 @@ const NormalizedRoute: React.FC<{ element: React.ReactNode }> = ({ element }) =>
 	return <>{element}</>;
 };
 
-class RouterStructure extends React.Component<RouterProps> {
-	render() {
-		const { isSignedIn } = this.props;
+const RouterStructure = ({ isSignedIn }: RouterProps) => {
+	return (
+		<BrowserRouter>
+			<Routes>
+				{/*
+					Public
+				*/}
+				<Route path="/signIn" element={<SignIn />} />
 
-		return (
-			<BrowserRouter>
-				<Routes>
-					{/*
-						Public
-					*/}
-					<Route path="/signIn" element={<SignIn />} />
+				{/*
+					User
+				*/}
+				<Route path="/" element={<Navigate to="/markets" />} />
+				<Route path="/home" element={<Navigate to="/" />} />
+				<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
+				<Route path="/markets" element={<NormalizedRoute element={isSignedIn ? <Markets /> : <Navigate to="/signIn" />} />} />
+				<Route path="/market" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} />
+				<Route path="/market/:marketId" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} />
 
-					{/*
-						User
-					*/}
-					<Route path="/" element={<Navigate to="/orders" />} />
-					<Route path="/home" element={<Navigate to="/" />} />
-					<Route path="/orders" element={<NormalizedRoute element={isSignedIn ? <Orders /> : <Navigate to="/signIn" />} />} />
-					<Route path="/markets" element={<NormalizedRoute element={<Markets />} />} />
-					<Route path="/market" element={<NormalizedRoute element={<Market />} />} />
-					{/* <Route path="/market" element={<NormalizedRoute element={isSignedIn ? <Market /> : <Navigate to="/signIn" />} />} /> */}
+				{/*
+					Development
+				*/}
+				<Route path="/development" element={<NormalizedRoute element={isSignedIn ? <Development /> : <Navigate to="/signIn" />} />} />
 
-					{/*
-						Development
-					*/}
-					<Route path="/development" element={<NormalizedRoute element={isSignedIn ? <Development /> : <Navigate to="/signIn" />} />} />
-
-					{/*
-						Redirect unknown routes
-					*/}
-					<Route
-						path="*"
-						element={<NormalizedRoute element={isSignedIn ? <Navigate to="/" /> : <Navigate to="/signIn" />} />}
-					/>
-				</Routes>
-			</BrowserRouter>
-		);
-	}
+				{/*
+					Redirect unknown routes
+				*/}
+				<Route
+					path="*"
+					element={<NormalizedRoute element={isSignedIn ? <Navigate to="/" /> : <Navigate to="/signIn" />} />}
+				/>
+			</Routes>
+		</BrowserRouter>
+	);
 }
 
 export const Router = connect(mapStateToProps)(RouterStructure);

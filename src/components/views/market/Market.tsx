@@ -1,11 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import './Market.css'
+import './Market.css';
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -17,10 +18,17 @@ interface MarketProps {
 	market: any;
 }
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const MarketStructure = ({ market }: MarketProps) => {
-	const marketId = 'BTC/USDT';
 	const [ loading, setLoading ] = useState(true);
 	const [ error, setError ] = useState(null as any);
+
+	const { marketId: pathMarketId } = useParams();
+	const [searchParams] = useSearchParams();
+	const queryMarketId = searchParams.get('marketId');
+
+	const marketId = pathMarketId || queryMarketId;
 
 	const container = useRef(null);
 
@@ -58,7 +66,7 @@ const MarketStructure = ({ market }: MarketProps) => {
 				script.innerHTML = `
 					{
 						"autosize": true,
-						"symbol": "BINANCE:BTCUSDT",
+						"symbol": "${marketId}",
 						"timezone": "Etc/UTC",
 						"theme": "dark",
 						"style": "9",
@@ -109,7 +117,7 @@ const MarketStructure = ({ market }: MarketProps) => {
 					}
 				};
 
-				intervalId = executeAndSetInterval(targetFunction, 5000);
+				intervalId = executeAndSetInterval(targetFunction, 60*1000);
 			} catch (error: any) {
 				setError(error);
 			} finally {
@@ -123,20 +131,9 @@ const MarketStructure = ({ market }: MarketProps) => {
 		hasInitialized = true;
 	}, []);
 
-	// if (loading) {
-	// 	return <div>Loading...</div>;
-	// }
-	//
-	// if (error) {
-	// 	return <div>Error: {error.message}</div>;
-	// }
-
 	return (
 		<div
-			style={{
-				height: "100vh",
-				width: "100vw"
-			}}
+			className={"h-screen w-full"}
 		>
 			<div
 				className="tradingview-widget-container"
@@ -146,6 +143,7 @@ const MarketStructure = ({ market }: MarketProps) => {
 					width: "100%"
 				}}
 			>
+				{loading ? <div>Loading...</div> : error ? <div>Error: {error.message}</div> : <></>}
 			</div>
 		</div>
 	);
