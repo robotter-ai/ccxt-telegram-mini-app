@@ -119,8 +119,8 @@ export default function MarketsTable({ rows }: Props) {
 		setOrderBy(property);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-		navigate(`/market/BINANCE:ETHUSDT`);
+	const handleClick = (event: React.MouseEvent<unknown>, symbol: number) => {
+		navigate(`/market?marketId=${symbol}`);
 	};
 
 	const handleChangePage = (event: unknown, newPage: number) => {
@@ -158,7 +158,7 @@ export default function MarketsTable({ rows }: Props) {
 						<tr
 							key={`${row.symbol}-${row.base}-${row.quote}`}
 							className="hover:bg-gray-700 cursor-pointer"
-							onClick={(event) => handleClick(event, row.id)}
+							onClick={(event) => handleClick(event, row.symbol)}
 						>
 							<td className="px-6 py-4 text-center">{row.symbol}</td>
 							<td className="px-6 py-4 text-center">{row.base}</td>
