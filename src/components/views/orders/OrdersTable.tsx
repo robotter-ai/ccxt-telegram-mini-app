@@ -96,7 +96,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 			{headCells.map((headCell) => (
 				<th
 					key={headCell.id}
-					className="px-6 py-3 text-xs font-medium text-white tracking-wider text-center"
+					className="px-2 md:px-6 py-3 text-xs font-medium text-white tracking-wider text-center"
 					onClick={createSortHandler(headCell.id)}
 				>
 					{headCell.label}
@@ -117,7 +117,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	const { numSelected, onCancelSelectedOpenOrdersClick, onCancelAllOpenOrdersClick } = props;
 
 	return (
-		<div className="flex items-center justify-between p-4 bg-gray-900">
+		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
 			{numSelected > 0 ? (
 				<span className="text-white">{numSelected} selected</span>
 			) : (
@@ -125,14 +125,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 			)}
 			{numSelected > 0 ? (
 				<button
-					className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+					className="mt-2 md:mt-0 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
 					onClick={onCancelSelectedOpenOrdersClick}
 				>
 					Cancel selected
 				</button>
 			) : (
 				<button
-					className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+					className="mt-2 md:mt-0 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
 					onClick={onCancelAllOpenOrdersClick}
 				>
 					Cancel All Orders
@@ -225,13 +225,13 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 	};
 
 	return (
-		<div className="h-screen w-full p-4 bg-gray-900 text-white">
+		<div className="h-full w-full p-4 bg-gray-900 text-white">
 			<EnhancedTableToolbar
 				numSelected={selected.length}
 				onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick}
 				onCancelAllOpenOrdersClick={handleCancelAllOpenOrdersClick}
 			/>
-			<div className="overflow-auto">
+			<div className="overflow-x-auto max-h-[60vh]">
 				<table className="min-w-full divide-y divide-gray-700">
 					<EnhancedTableHead
 						numSelected={selected.length}
@@ -249,7 +249,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						return (
 							<tr
 								key={row.id}
-								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''} ${dense ? 'py-2' : 'py-4'}`}
+								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''} ${dense ? 'text-sm' : 'text-base'}`}
 								onClick={(event) => handleClick(event, row.id)}
 							>
 								<td className="p-4">
@@ -261,14 +261,14 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 										aria-labelledby={labelId}
 									/>
 								</td>
-								<td className="px-6 py-4 text-center">{row.id}</td>
-								<td className="px-6 py-4 text-center">{row.market}</td>
-								<td className="px-6 py-4 text-center">{row.status}</td>
-								<td className="px-6 py-4 text-center">{row.side}</td>
-								<td className="px-6 py-4 text-right">{row.amount}</td>
-								<td className="px-6 py-4 text-right">{row.price}</td>
-								<td className="px-6 py-4 text-center">{row.datetime}</td>
-								<td className="px-6 py-4 text-center">
+								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.id}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.market}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.status}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.side}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.amount}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.price}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.datetime}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-center">
 									<button
 										className="px-2 py-1 text-orange-500 border border-orange-500 rounded-md hover:bg-orange-500 hover:text-white"
 										onClick={handleCancelOpenOrderClick(row.id)}
@@ -287,8 +287,8 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 					</tbody>
 				</table>
 			</div>
-			<div className="flex justify-between p-4">
-				<div>
+			<div className="flex flex-col md:flex-row justify-between p-4">
+				<div className="mb-4 md:mb-0">
 					<label className="inline-flex items-center">
 						<input
 							type="checkbox"
@@ -299,7 +299,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						<span className="ml-2">Dense padding</span>
 					</label>
 				</div>
-				<div>
+				<div className="mb-4 md:mb-0">
 					<select
 						className="form-select bg-gray-800 text-white border-gray-700"
 						value={rowsPerPage}
@@ -310,7 +310,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						<option value={25}>25</option>
 					</select>
 				</div>
-				<div>
+				<div className="flex justify-between space-x-2">
 					<button
 						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page - 1)}
@@ -319,7 +319,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 ml-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
 					>

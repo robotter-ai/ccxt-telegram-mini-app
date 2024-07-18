@@ -80,7 +80,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 			{headCells.map((headCell) => (
 				<th
 					key={headCell.id}
-					className="px-6 py-3 text-xs font-medium text-white tracking-wider text-center cursor-pointer"
+					className="px-2 md:px-6 py-3 text-xs font-medium text-white tracking-wider text-center cursor-pointer"
 					onClick={createSortHandler(headCell.id)}
 				>
 					{headCell.label}
@@ -95,7 +95,7 @@ interface EnhancedTableToolbarProps {}
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	return (
-		<div className="flex items-center justify-between p-4 bg-gray-900">
+		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
 			<h2 className="text-xl font-bold text-white">Markets</h2>
 		</div>
 	);
@@ -144,9 +144,9 @@ export default function MarketsTable({ rows }: Props) {
 	);
 
 	return (
-		<div className="h-screen w-full p-4 bg-gray-900 text-white">
+		<div className="h-full min-h-screen w-full p-4 bg-gray-900 text-white">
 			<EnhancedTableToolbar />
-			<div className="overflow-auto max-h-[70vh]">
+			<div className="overflow-x-auto max-h-[60vh]">
 				<table className={`min-w-full divide-y divide-gray-700 ${dense ? 'text-sm' : 'text-base'}`}>
 					<EnhancedTableHead
 						order={order}
@@ -160,11 +160,11 @@ export default function MarketsTable({ rows }: Props) {
 							className="hover:bg-gray-700 cursor-pointer"
 							onClick={(event) => handleClick(event, row.symbol)}
 						>
-							<td className="px-6 py-4 text-center">{row.symbol}</td>
-							<td className="px-6 py-4 text-center">{row.base}</td>
-							<td className="px-6 py-4 text-center">{row.quote}</td>
-							<td className="px-6 py-4 text-center">{row.active ? 'Yes' : 'No'}</td>
-							<td className="px-6 py-4 text-right">{row.precision}</td>
+							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.symbol}</td>
+							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.base}</td>
+							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.quote}</td>
+							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.active ? 'Yes' : 'No'}</td>
+							<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.precision}</td>
 						</tr>
 					))}
 					{emptyRows > 0 && (
@@ -175,8 +175,8 @@ export default function MarketsTable({ rows }: Props) {
 					</tbody>
 				</table>
 			</div>
-			<div className="flex justify-between p-4">
-				<div>
+			<div className="flex flex-col md:flex-row justify-between p-4">
+				<div className="mb-4 md:mb-0">
 					<label className="inline-flex items-center">
 						<input
 							type="checkbox"
@@ -187,7 +187,7 @@ export default function MarketsTable({ rows }: Props) {
 						<span className="ml-2">Dense padding</span>
 					</label>
 				</div>
-				<div>
+				<div className="mb-4 md:mb-0">
 					<select
 						className="form-select bg-gray-800 text-white border-gray-700"
 						value={rowsPerPage}
@@ -198,7 +198,7 @@ export default function MarketsTable({ rows }: Props) {
 						<option value={25}>25</option>
 					</select>
 				</div>
-				<div>
+				<div className="flex justify-between space-x-2">
 					<button
 						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page - 1)}
@@ -207,7 +207,7 @@ export default function MarketsTable({ rows }: Props) {
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 ml-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
 					>
