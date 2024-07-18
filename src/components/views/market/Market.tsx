@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { CandlestickData, createChart, UTCTimestamp, WhitespaceData } from 'lightweight-charts';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
@@ -15,7 +16,7 @@ const mapStateToProps = (state: any, props: any) => ({
 })
 
 interface MarketProps {
-	market: any;
+	market: any
 }
 
 // @ts-ignore
@@ -30,14 +31,42 @@ const MarketStructure = ({ market }: MarketProps) => {
 
 	const marketId = pathMarketId || queryMarketId;
 
-	const container = useRef(null);
-
 	const handleUnAuthorized = useHandleUnauthorized();
+
+	const chartReference = useRef<any>(null);
 
 	let hasInitialized = false;
 
+	const transformRawCandles = (candles: any[]): (CandlestickData | WhitespaceData)[] => {
+		return candles.map((candle: any) => ({
+			time: candle[0] / 1000 as UTCTimestamp,
+			open: candle[1],
+			high: candle[2],
+			low: candle[3],
+			close: candle[4],
+			volume: candle[5],
+		})) as (CandlestickData | WhitespaceData)[];
+	}
+
 	useEffect(() => {
 		if (hasInitialized) return;
+
+		const handleResize = () => {
+			if (chartReference.current) {
+				chart.applyOptions({ width: chartReference.current.clientWidth });
+			}
+		};
+		const chart = createChart(chartReference.current, {
+			layout: {
+				background: { color: "#222" },
+				textColor: "#C3BCDB",
+			},
+			grid: {
+				vertLines: { color: "#444" },
+				horzLines: { color: "#444" },
+			},
+			autoSize: true,
+		});
 
 		const fetchData = async () => {
 			try {
@@ -46,7 +75,8 @@ const MarketStructure = ({ market }: MarketProps) => {
 					'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					'method': 'fetch_ohlcv',
 					'parameters': {
-						symbol: marketId
+						symbol: marketId,
+						timeframe: '1s'
 					}
 				}, handleUnAuthorized);
 
@@ -57,31 +87,33 @@ const MarketStructure = ({ market }: MarketProps) => {
 
 				const payload = response.data.result;
 
-				dispatch('api.updateMarketCandles', payload);
+				let candles = transformRawCandles(payload);
 
-				const script = document.createElement("script");
-				script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-				script.type = "text/javascript";
-				script.async = true;
-				script.innerHTML = `
-					{
-						"autosize": true,
-						"symbol": "${marketId}",
-						"timezone": "Etc/UTC",
-						"theme": "dark",
-						"style": "9",
-						"locale": "en",
-						"withdateranges": true,
-						"range": "1D",
-						"hide_side_toolbar": false,
-						"allow_symbol_change": false,
-						"calendar": false,
-						"support_host": "https://www.tradingview.com"
-					}
-				`;
+				candles = candles.slice(0, 25);
 
-				// @ts-ignore
-				container.current.appendChild(script);
+				console.log("candles", candles);
+
+				dispatch('api.updateMarketCandles', candles);
+
+				window.addEventListener('resize', handleResize);
+				const series = chart.addCandlestickSeries({
+					upColor: '#26a69a',
+					downColor: '#ef5350',
+					borderVisible: false,
+					wickUpColor: '#26a69a',
+					wickDownColor: '#ef5350',
+				});
+				series.setData(candles);
+				// series.priceScale().applyOptions({
+				// 	autoScale: false, // disables auto scaling based on visible content
+				// 	scaleMargins: {
+				// 		top: 0.1,
+				// 		bottom: 0.2,
+				// 	},
+				// });
+				chart.timeScale().fitContent();
+				chart.timeScale().scrollToRealTime();
+				window.removeEventListener('resize', handleResize);
 
 				let intervalId: any;
 
@@ -92,7 +124,8 @@ const MarketStructure = ({ market }: MarketProps) => {
 							'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 							'method': 'fetch_ohlcv',
 							'parameters': {
-								symbol: marketId
+								symbol: marketId,
+								limit: 1
 							}
 						}, handleUnAuthorized);
 
@@ -103,7 +136,11 @@ const MarketStructure = ({ market }: MarketProps) => {
 
 						const payload = response.data.result;
 
-						dispatch('api.updateMarketCandles', payload);
+						const candles = transformRawCandles(payload);
+
+						dispatch('api.updateMarketCandles', candles);
+
+						series.update(candles[0]);
 					} catch (exception) {
 						if (axios.isAxiosError(exception)) {
 							if (exception?.response?.status == 401) {
@@ -117,7 +154,7 @@ const MarketStructure = ({ market }: MarketProps) => {
 					}
 				};
 
-				intervalId = executeAndSetInterval(targetFunction, 60*1000);
+				intervalId = executeAndSetInterval(targetFunction, 1000);
 			} catch (error: any) {
 				setError(error);
 			} finally {
@@ -136,14 +173,11 @@ const MarketStructure = ({ market }: MarketProps) => {
 			className={"h-screen w-full"}
 		>
 			<div
-				className="tradingview-widget-container"
-				ref={container}
-				style={{
-					height: "100%",
-					width: "100%"
-				}}
+				id="tradingview-widget-container"
+				className="tradingview-widget-container h-full w-full"
 			>
 				{loading ? <div>Loading...</div> : error ? <div>Error: {error.message}</div> : <></>}
+				<div className="h-full w-full" ref={chartReference}></div>
 			</div>
 		</div>
 	);

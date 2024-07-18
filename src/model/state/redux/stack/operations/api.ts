@@ -136,7 +136,7 @@ pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
 	if (payload) {
 		nextState = nextState.setIn(
 			'api.market.candles',
-			[...nextState.getIn('api.market.candles'), payload]
+			[...nextState.getIn('api.market.candles'), ...payload].slice(0, 25)
 		);
 	}
 
