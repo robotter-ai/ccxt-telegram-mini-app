@@ -91,12 +91,24 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 	);
 }
 
-interface EnhancedTableToolbarProps {}
+interface EnhancedTableToolbarProps {
+	searchQuery: string;
+	onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
+	const { searchQuery, onSearchChange } = props;
+
 	return (
 		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
 			<h2 className="text-xl font-bold text-white">Markets</h2>
+			<input
+				type="text"
+				value={searchQuery}
+				onChange={onSearchChange}
+				placeholder="Search markets..."
+				className="mt-2 md:mt-0 p-2 rounded-md bg-gray-800 text-white border border-gray-700"
+			/>
 		</div>
 	);
 }
@@ -111,6 +123,7 @@ export default function MarketsTable({ rows }: Props) {
 	const [page, setPage] = React.useState(0);
 	const [dense, setDense] = React.useState(false);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [searchQuery, setSearchQuery] = React.useState('');
 	const navigate = useNavigate();
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
@@ -119,8 +132,8 @@ export default function MarketsTable({ rows }: Props) {
 		setOrderBy(property);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, symbol: number) => {
-		navigate(`/market?marketId=${symbol}`);
+	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+		navigate(`/market/BINANCE:ETHUSDT`);
 	};
 
 	const handleChangePage = (event: unknown, newPage: number) => {
@@ -136,16 +149,26 @@ export default function MarketsTable({ rows }: Props) {
 		setDense(event.target.checked);
 	};
 
-	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchQuery(event.target.value);
+	};
+
+	const filteredRows = rows.filter((row) =>
+		row.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+		row.base.toLowerCase().includes(searchQuery.toLowerCase()) ||
+		row.quote.toLowerCase().includes(searchQuery.toLowerCase())
+	);
+
+	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
 
 	const visibleRows = React.useMemo(
-		() => stableSort(rows, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-		[order, orderBy, page, rowsPerPage, rows]
+		() => stableSort(filteredRows, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+		[order, orderBy, page, rowsPerPage, filteredRows]
 	);
 
 	return (
 		<div className="h-full min-h-screen w-full p-4 bg-gray-900 text-white">
-			<EnhancedTableToolbar />
+			<EnhancedTableToolbar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
 			<div className="overflow-x-auto max-h-[60vh]">
 				<table className={`min-w-full divide-y divide-gray-700 ${dense ? 'text-sm' : 'text-base'}`}>
 					<EnhancedTableHead
@@ -158,7 +181,7 @@ export default function MarketsTable({ rows }: Props) {
 						<tr
 							key={`${row.symbol}-${row.base}-${row.quote}`}
 							className="hover:bg-gray-700 cursor-pointer"
-							onClick={(event) => handleClick(event, row.symbol)}
+							onClick={(event) => handleClick(event, row.id)}
 						>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.symbol}</td>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.base}</td>
@@ -209,7 +232,7 @@ export default function MarketsTable({ rows }: Props) {
 					<button
 						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
-						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
+						disabled={page >= Math.ceil(filteredRows.length / rowsPerPage) - 1}
 					>
 						Next
 					</button>

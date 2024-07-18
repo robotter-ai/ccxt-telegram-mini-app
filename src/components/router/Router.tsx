@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Navigate, useLocation, BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Orders } from 'components/views/orders/Orders.tsx';
-import { Development } from 'components/views/development/Development';
-import { SignIn } from 'components/views/sign_in/SignIn';
-import { Markets } from 'components/views/markets/Markets.tsx';
-import { Market } from 'components/views/market/Market.tsx';
+import {Orders} from 'components/views/orders/Orders';
+import {Development} from 'components/views/development/Development';
+import {SignIn} from 'components/views/sign_in/SignIn';
+import {Markets} from 'components/views/markets/Markets';
+import {Market} from 'components/views/market/Market';
+import MainLayout from "components/views/main/MainLayout.tsx";
 
 const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
@@ -35,39 +36,24 @@ const NormalizedRouteStructure: React.FC<{ element: React.ReactNode, checkAuthen
 	return <>{element}</>;
 };
 
-const NormalizedRoute = connect(mapStateToProps)(NormalizedRouteStructure)
+const NormalizedRoute = connect(mapStateToProps)(NormalizedRouteStructure);
 
 const RouterStructure = () => {
 	return (
 		<BrowserRouter>
 			<Routes>
-				{/*
-					Public
-				*/}
 				<Route path="/signIn" element={<SignIn />} />
 
-				{/*
-					User
-				*/}
-				<Route path="/" element={<Navigate to="/markets" />} />
-				<Route path="/home" element={<Navigate to="/" />} />
-				<Route path="/orders" element={<NormalizedRoute element={<Orders />} checkAuthentication />} />
-				<Route path="/markets" element={<NormalizedRoute element={<Markets />} checkAuthentication />} />
-				<Route path="/market" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
-				<Route path="/market/:marketId" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
-
-				{/*
-					Development
-				*/}
-				<Route path="/development" element={<NormalizedRoute element={<Development />} checkAuthentication />} />
-
-				{/*
-					Redirect unknown routes
-				*/}
-				<Route
-					path="*"
-					element={<NormalizedRoute element={<Navigate to="/" />} checkAuthentication />}
-				/>
+				<Route path="/" element={<MainLayout />}>
+					<Route path="/" element={<Navigate to="/markets" />} />
+					<Route path="/home" element={<Navigate to="/" />} />
+					<Route path="/orders" element={<NormalizedRoute element={<Orders />} checkAuthentication />} />
+					<Route path="/markets" element={<NormalizedRoute element={<Markets />} checkAuthentication />} />
+					<Route path="/market" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
+					<Route path="/market/:marketId" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
+					<Route path="/development" element={<NormalizedRoute element={<Development />} checkAuthentication />} />
+					<Route path="*" element={<Navigate to="/" />} />
+				</Route>
 			</Routes>
 		</BrowserRouter>
 	);
