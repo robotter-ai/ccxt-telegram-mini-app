@@ -8,6 +8,8 @@ import { apiPostRun } from 'model/service/api';
 import MarketsTable from 'components/views/markets/MarketsTable'; // Adjust the import path as needed
 import './Markets.css';
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: any, props: any) => ({
 	markets: state.api.markets,
 });
