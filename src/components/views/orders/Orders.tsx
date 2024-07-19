@@ -3,6 +3,7 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import OrdersTable from 'components/views/orders/OrdersTable';
+import Spinner from 'components/views/spinner/Spinner';
 import { toast } from 'react-toastify';
 
 export const Orders = () => {
@@ -84,11 +85,7 @@ export const Orders = () => {
 		}
 	};
 
-	let hasInitialized = false;
-
 	useEffect(() => {
-		if (hasInitialized) return;
-
 		const fetchData = async () => {
 			try {
 				const response = await apiPostRun(
@@ -132,12 +129,10 @@ export const Orders = () => {
 		};
 
 		fetchData();
-
-		hasInitialized = true;
-	}, []);
+	}, [dispatch, handleUnAuthorized, canceledOrders]);
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return <Spinner />;
 	}
 
 	if (error) {

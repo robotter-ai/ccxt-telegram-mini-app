@@ -153,10 +153,12 @@ export default function MarketsTable({ rows }: Props) {
 		setSearchQuery(event.target.value);
 	};
 
+	const normalizeString = (str: string) => str.replace(/\//g, '').toLowerCase();
+
 	const filteredRows = rows.filter((row) =>
-		row.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-		row.base.toLowerCase().includes(searchQuery.toLowerCase()) ||
-		row.quote.toLowerCase().includes(searchQuery.toLowerCase())
+		normalizeString(row.symbol).includes(normalizeString(searchQuery)) ||
+		normalizeString(row.base).includes(normalizeString(searchQuery)) ||
+		normalizeString(row.quote).includes(normalizeString(searchQuery))
 	);
 
 	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;

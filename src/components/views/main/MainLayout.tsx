@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Menu } from '@mui/icons-material';
 import { IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material';
+import logo from 'src/assets/images/logo/exchange.png';
+import Spinner from 'components/views/spinner/Spinner.tsx';
 
 const MainLayout = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
@@ -23,8 +25,6 @@ const MainLayout = () => {
 			case '/market':
 			case '/market/:marketId':
 				return 'Market';
-			case '/development':
-				return 'Development';
 			case '/signIn':
 				return 'Sign In';
 			default:
@@ -35,33 +35,35 @@ const MainLayout = () => {
 	return (
 		<div className="min-h-screen bg-gray-900 text-white">
 			<div className="flex items-center justify-between p-4 bg-gray-800">
-				<IconButton onClick={toggleDrawer(true)}>
-					<Menu className="text-white" />
+				<div className="flex items-center">
+					<img src={logo} alt="Logo" className="h-8 w-8 mr-2" />
+				</div>
+				<h1 className="text-xl font-bold flex-grow text-center">{getTitle()}</h1>
+				<IconButton onClick={toggleDrawer(true)} className="text-white">
+					<Menu />
 				</IconButton>
-				<h1 className="text-xl font-bold">{getTitle()}</h1>
 			</div>
 			<Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
 				<div
-					className="w-64"
+					className="w-64 bg-gray-900 text-white h-full"
 					role="presentation"
 					onClick={toggleDrawer(false)}
 					onKeyDown={toggleDrawer(false)}
 				>
 					<List>
-						<ListItem button component={Link} to="/orders">
+						<ListItem button component={Link} to="/orders" className="hover:bg-gray-700">
 							<ListItemText primary="Orders" />
 						</ListItem>
-						<ListItem button component={Link} to="/markets">
+						<ListItem button component={Link} to="/markets" className="hover:bg-gray-700">
 							<ListItemText primary="Markets" />
-						</ListItem>
-						<ListItem button component={Link} to="/development">
-							<ListItemText primary="Development" />
 						</ListItem>
 					</List>
 				</div>
 			</Drawer>
 			<main className="p-4">
-				<Outlet />
+				<Suspense fallback={<Spinner />}>
+					<Outlet />
+				</Suspense>
 			</main>
 		</div>
 	);

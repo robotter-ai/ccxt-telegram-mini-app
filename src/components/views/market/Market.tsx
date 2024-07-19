@@ -7,6 +7,7 @@ import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
+import Spinner from 'components/views/spinner/Spinner';
 import './Market.css';
 
 // @ts-ignore
@@ -22,8 +23,8 @@ interface MarketProps {
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const MarketStructure = ({ market }: MarketProps) => {
-	const [ loading, setLoading ] = useState(true);
-	const [ error, setError ] = useState(null as any);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null as any);
 
 	const { marketId: pathMarketId } = useParams();
 	const [searchParams] = useSearchParams();
@@ -34,8 +35,6 @@ const MarketStructure = ({ market }: MarketProps) => {
 	const handleUnAuthorized = useHandleUnauthorized();
 
 	const chartReference = useRef<any>(null);
-
-	let hasInitialized = false;
 
 	const transformRawCandles = (candles: any[]): (CandlestickData | WhitespaceData)[] => {
 		return candles.map((candle: any) => ({
@@ -49,8 +48,6 @@ const MarketStructure = ({ market }: MarketProps) => {
 	}
 
 	useEffect(() => {
-		if (hasInitialized) return;
-
 		const handleResize = () => {
 			if (chartReference.current) {
 				chart.applyOptions({ width: chartReference.current.clientWidth });
@@ -81,7 +78,6 @@ const MarketStructure = ({ market }: MarketProps) => {
 				}, handleUnAuthorized);
 
 				if (!(response.status === 200)) {
-					// noinspection ExceptionCaughtLocallyJS
 					throw new Error('Network response was not OK');
 				}
 
@@ -90,8 +86,6 @@ const MarketStructure = ({ market }: MarketProps) => {
 				let candles = transformRawCandles(payload);
 
 				candles = candles.slice(0, 25);
-
-				console.log("candles", candles);
 
 				dispatch('api.updateMarketCandles', candles);
 
@@ -104,16 +98,8 @@ const MarketStructure = ({ market }: MarketProps) => {
 					wickDownColor: '#ef5350',
 				});
 				series.setData(candles);
-				// series.priceScale().applyOptions({
-				// 	autoScale: false, // disables auto scaling based on visible content
-				// 	scaleMargins: {
-				// 		top: 0.1,
-				// 		bottom: 0.2,
-				// 	},
-				// });
 				chart.timeScale().fitContent();
 				chart.timeScale().scrollToRealTime();
-				window.removeEventListener('resize', handleResize);
 
 				let intervalId: any;
 
@@ -130,7 +116,6 @@ const MarketStructure = ({ market }: MarketProps) => {
 						}, handleUnAuthorized);
 
 						if (!(response.status === 200)) {
-							// noinspection ExceptionCaughtLocallyJS
 							throw new Error('Network response was not OK');
 						}
 
@@ -145,7 +130,6 @@ const MarketStructure = ({ market }: MarketProps) => {
 						if (axios.isAxiosError(exception)) {
 							if (exception?.response?.status == 401) {
 								clearInterval(intervalId);
-
 								return;
 							}
 						}
@@ -162,21 +146,17 @@ const MarketStructure = ({ market }: MarketProps) => {
 			}
 		};
 
-		// noinspection JSIgnoredPromiseFromCall
 		fetchData();
 
-		hasInitialized = true;
-	}, []);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	}, [marketId, handleUnAuthorized]);
 
 	return (
-		<div
-			className={"h-screen w-full"}
-		>
-			<div
-				id="tradingview-widget-container"
-				className="tradingview-widget-container h-full w-full"
-			>
-				{loading ? <div>Loading...</div> : error ? <div>Error: {error.message}</div> : <></>}
+		<div className={"h-screen w-full"}>
+			<div id="tradingview-widget-container" className="tradingview-widget-container h-full w-full">
+				{loading ? <Spinner /> : error ? <div>Error: {error.message}</div> : <></>}
 				<div className="h-full w-full" ref={chartReference}></div>
 			</div>
 		</div>
@@ -184,4 +164,4 @@ const MarketStructure = ({ market }: MarketProps) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Market = connect(mapStateToProps)(memo(MarketStructure))
+export const Market = connect(mapStateToProps)(memo(MarketStructure));

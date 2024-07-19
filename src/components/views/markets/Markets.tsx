@@ -6,6 +6,7 @@ import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
 import MarketsTable from 'components/views/markets/MarketsTable'; // Adjust the import path as needed
+import Spinner from 'components/views/spinner/Spinner'; // Ensure the path is correct
 import './Markets.css';
 
 // @ts-ignore
@@ -79,10 +80,10 @@ const MarketsStructure = ({ markets }: MarketsStructureProps) => {
 		};
 
 		fetchData();
-	}, []);
+	}, [handleUnAuthorized]);
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return <Spinner />;
 	}
 
 	if (error) {

@@ -1,4 +1,3 @@
-// @ts-ignore
 import { useEffect, useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -26,6 +25,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import logo from 'src/assets/images/logo/exchange.png';
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -37,17 +37,9 @@ const SignInSchema = Yup.object().shape({
 	apiKey: Yup.string()
 		.required('API Key is required')
 		.matches(/^[a-zA-Z0-9-_]+$/, 'Invalid API Key'),
-		// .matches(
-		// 	/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,
-		// 	'Invalid API Key format'
-		// ),
 	apiSecret: Yup.string()
 		.required('API Secret is required')
 		.matches(/^[a-zA-Z0-9-_]+$/, 'Invalid API Secret'),
-		// .matches(
-		// 	/^[a-f0-9]{64}$/,
-		// 	'Invalid API Secret format'
-		// ),
 	subAccountId: Yup.number()
 		.required('Sub Account ID is required')
 		.integer('Sub Account ID must be an integer')
@@ -62,7 +54,7 @@ const theme = createTheme({
 	palette: {
 		mode: 'dark',
 		primary: {
-			main: '#90caf9',
+			main: '#FFA500',
 		},
 		background: {
 			default: '#121212',
@@ -105,8 +97,6 @@ const SignInStructure = ({ isSignedIn }: SignInProps) => {
 
 			const telegramUser = Telegram.WebApp.initDataUnsafe.user;
 
-			console.log('telegramUser', telegramUser);
-
 			if (telegramUser) {
 				setTelegramUser(telegramUser);
 			}
@@ -135,7 +125,6 @@ const SignInStructure = ({ isSignedIn }: SignInProps) => {
 			);
 
 			if (!(response.status === 200)) {
-				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Network response was not OK');
 			}
 
@@ -170,132 +159,144 @@ const SignInStructure = ({ isSignedIn }: SignInProps) => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<Container component="main" maxWidth="xs">
-				<Paper elevation={6} sx={{ padding: 2, marginTop: 8 }}>
-					<Box
-						sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-						}}
-					>
-						<Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-							<LockOutlinedIcon />
-						</Avatar>
-						<Typography component="h1" variant="h5">
-							Sign In
-						</Typography>
-						{loading && <CircularProgress sx={{ mt: 2 }} />}
-						{error && <Typography color="error">{error.message}</Typography>}
-						<Formik
-							initialValues={{
-								apiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
-								apiSecret: `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
-								subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`
-							}}
-							validationSchema={SignInSchema}
-							onSubmit={async (values, { setSubmitting }) => {
-								await signIn(values.apiKey, values.apiSecret, Number(values.subAccountId));
-								setSubmitting(false);
+			<Box
+				sx={{
+					minHeight: '100vh',
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					alignItems: 'center',
+					bgcolor: 'background.default',
+				}}
+			>
+				<Container component="main" maxWidth="xs">
+					<Paper elevation={6} sx={{ padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+						<img src={logo} alt="Logo" style={{ height: '100px', marginBottom: '20px' }} />
+						<Box
+							sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
 							}}
 						>
-							{({ isSubmitting }) => (
-								<Form>
-									<Field
-										name="apiKey"
-										as={TextField}
-										variant="outlined"
-										margin="normal"
-										fullWidth
-										label="API Key"
-										autoComplete="apiKey"
-										type={showApiKey ? 'text' : 'password'}
-										autoFocus
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														aria-label="toggle API key visibility"
-														onClick={() => handleClickShowPassword(setShowApiKey)}
-														edge="end"
-													>
-														{showApiKey ? <VisibilityOff /> : <Visibility />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-										helperText={<ErrorMessage name="apiKey" />}
-									/>
-									<Field
-										name="apiSecret"
-										as={TextField}
-										variant="outlined"
-										margin="normal"
-										fullWidth
-										label="API Secret"
-										type={showApiSecret ? 'text' : 'password'}
-										autoComplete="apiSecret"
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														aria-label="toggle API secret visibility"
-														onClick={() => handleClickShowPassword(setShowApiSecret)}
-														edge="end"
-													>
-														{showApiSecret ? <VisibilityOff /> : <Visibility />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-										helperText={<ErrorMessage name="apiSecret" />}
-									/>
-									<Field
-										name="subAccountId"
-										as={TextField}
-										variant="outlined"
-										margin="normal"
-										fullWidth
-										label="Sub Account ID"
-										type={showSubAccountId ? 'text' : 'password'}
-										autoComplete="subAccountId"
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton
-														aria-label="toggle sub account ID visibility"
-														onClick={() => handleClickShowPassword(setShowSubAccountId)}
-														edge="end"
-													>
-														{showSubAccountId ? <VisibilityOff /> : <Visibility />}
-													</IconButton>
-												</InputAdornment>
-											),
-										}}
-										helperText={<ErrorMessage name="subAccountId" />}
-									/>
-									<Button
-										type="submit"
-										fullWidth
-										variant="contained"
-										color="primary"
-										disabled={isSubmitting}
-										sx={{ mt: 3, mb: 2 }}
-									>
-										Submit
-									</Button>
-								</Form>
-							)}
-						</Formik>
-					</Box>
-				</Paper>
-				<Snackbar
-					open={openSnackbar}
-					autoHideDuration={6000}
-					onClose={handleCloseSnackbar}
-					message={error ? error.message : 'An error occurred'}
-				/>
-			</Container>
+							<Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+								<LockOutlinedIcon />
+							</Avatar>
+							<Typography component="h1" variant="h5">
+								Sign In
+							</Typography>
+							{loading && <CircularProgress sx={{ mt: 2 }} />}
+							{error && <Typography color="error">{error.message}</Typography>}
+							<Formik
+								initialValues={{
+									apiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
+									apiSecret: `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
+									subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`
+								}}
+								validationSchema={SignInSchema}
+								onSubmit={async (values, { setSubmitting }) => {
+									await signIn(values.apiKey, values.apiSecret, Number(values.subAccountId));
+									setSubmitting(false);
+								}}
+							>
+								{({ isSubmitting }) => (
+									<Form>
+										<Field
+											name="apiKey"
+											as={TextField}
+											variant="outlined"
+											margin="normal"
+											fullWidth
+											label="API Key"
+											autoComplete="apiKey"
+											type={showApiKey ? 'text' : 'password'}
+											autoFocus
+											InputProps={{
+												endAdornment: (
+													<InputAdornment position="end">
+														<IconButton
+															aria-label="toggle API key visibility"
+															onClick={() => handleClickShowPassword(setShowApiKey)}
+															edge="end"
+														>
+															{showApiKey ? <VisibilityOff /> : <Visibility />}
+														</IconButton>
+													</InputAdornment>
+												),
+											}}
+											helperText={<ErrorMessage name="apiKey" />}
+										/>
+										<Field
+											name="apiSecret"
+											as={TextField}
+											variant="outlined"
+											margin="normal"
+											fullWidth
+											label="API Secret"
+											type={showApiSecret ? 'text' : 'password'}
+											autoComplete="apiSecret"
+											InputProps={{
+												endAdornment: (
+													<InputAdornment position="end">
+														<IconButton
+															aria-label="toggle API secret visibility"
+															onClick={() => handleClickShowPassword(setShowApiSecret)}
+															edge="end"
+														>
+															{showApiSecret ? <VisibilityOff /> : <Visibility />}
+														</IconButton>
+													</InputAdornment>
+												),
+											}}
+											helperText={<ErrorMessage name="apiSecret" />}
+										/>
+										<Field
+											name="subAccountId"
+											as={TextField}
+											variant="outlined"
+											margin="normal"
+											fullWidth
+											label="Sub Account ID"
+											type={showSubAccountId ? 'text' : 'password'}
+											autoComplete="subAccountId"
+											InputProps={{
+												endAdornment: (
+													<InputAdornment position="end">
+														<IconButton
+															aria-label="toggle sub account ID visibility"
+															onClick={() => handleClickShowPassword(setShowSubAccountId)}
+															edge="end"
+														>
+															{showSubAccountId ? <VisibilityOff /> : <Visibility />}
+														</IconButton>
+													</InputAdornment>
+												),
+											}}
+											helperText={<ErrorMessage name="subAccountId" />}
+										/>
+										<Button
+											type="submit"
+											fullWidth
+											variant="contained"
+											color="primary"
+											disabled={isSubmitting}
+											sx={{ mt: 3, mb: 2 }}
+										>
+											Submit
+										</Button>
+									</Form>
+								)}
+							</Formik>
+						</Box>
+					</Paper>
+					<Snackbar
+						open={openSnackbar}
+						autoHideDuration={6000}
+						onClose={handleCloseSnackbar}
+						message={error ? error.message : 'An error occurred'}
+					/>
+				</Container>
+			</Box>
 		</ThemeProvider>
 	);
 };

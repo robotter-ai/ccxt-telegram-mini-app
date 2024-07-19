@@ -6,20 +6,18 @@ import {Development} from 'components/views/development/Development';
 import {SignIn} from 'components/views/sign_in/SignIn';
 import {Markets} from 'components/views/markets/Markets';
 import {Market} from 'components/views/market/Market';
-import MainLayout from "components/views/main/MainLayout.tsx";
+import MainLayout from 'components/views/main/MainLayout';
 
 const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
 });
 
-// Function to normalize route to camelCase
 const normalizeRoute = (route: string) => {
 	return route
 		.toLowerCase()
 		.replace(/[-_](.)/g, (_, char) => char.toUpperCase());
 };
 
-// Custom component to handle normalized routes
 const NormalizedRouteStructure: React.FC<{ element: React.ReactNode, checkAuthentication?: boolean, isSignedIn: boolean }> = ({ element, checkAuthentication = false, isSignedIn = false }) => {
 	const location = useLocation();
 	const normalizedPath = normalizeRoute(location.pathname);
@@ -43,7 +41,6 @@ const RouterStructure = () => {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/signIn" element={<SignIn />} />
-
 				<Route path="/" element={<MainLayout />}>
 					<Route path="/" element={<Navigate to="/markets" />} />
 					<Route path="/home" element={<Navigate to="/" />} />
