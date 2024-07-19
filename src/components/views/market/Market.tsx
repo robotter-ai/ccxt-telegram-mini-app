@@ -38,12 +38,12 @@ const MarketStructure = ({ market }: MarketProps) => {
 
 	const transformRawCandles = (candles: any[]): (CandlestickData | WhitespaceData)[] => {
 		return candles.map((candle: any) => ({
-			time: candle[0] / 1000 as UTCTimestamp,
-			open: candle[1],
-			high: candle[2],
-			low: candle[3],
-			close: candle[4],
-			volume: candle[5],
+			time: Number(candle[0]) / 1000 as UTCTimestamp,
+			open: Number(candle[1]),
+			high: Number(candle[2]),
+			low: Number(candle[3]),
+			close: Number(candle[4]),
+			volume: Number(candle[5]),
 		})) as (CandlestickData | WhitespaceData)[];
 	}
 
