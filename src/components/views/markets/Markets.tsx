@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
@@ -19,82 +19,104 @@ interface MarketsStructureProps {
 	markets: any;
 }
 
-const MarketsStructure = ({ markets }: MarketsStructureProps) => {
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null as any);
+interface MarketsStructureState {
+	loading: boolean;
+	error: any;
+}
 
-	const handleUnAuthorized = useHandleUnauthorized();
+class MarketsStructure extends Component<MarketsStructureProps, MarketsStructureState> {
+	handleUnAuthorized: any;
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				let intervalId: any;
+	intervalId: any;
 
-				const targetFunction = async () => {
-					try {
-						const response = await apiPostRun(
-							{
-								exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-								environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-								method: 'fetch_markets',
-								parameters: {},
-							},
-							handleUnAuthorized
-						);
-
-						if (!(response.status === 200)) {
-							throw new Error('Network response was not OK');
-						}
-
-						const payload = response.data.result;
-
-						const formattedMarkets = payload.map((market: any) => ({
-							id: market.id,
-							symbol: market.symbol,
-							base: market.base,
-							quote: market.quote,
-							active: market.active,
-							precision: market.precision.amount,
-						}));
-
-						dispatch('api.updateMarkets', formattedMarkets);
-					} catch (exception) {
-						if (axios.isAxiosError(exception)) {
-							if (exception?.response?.status === 401) {
-								clearInterval(intervalId);
-								return;
-							}
-						}
-
-						console.error(exception);
-					}
-				};
-
-				intervalId = executeAndSetInterval(targetFunction, 30000);
-				targetFunction();
-			} catch (error: any) {
-				setError(error);
-			} finally {
-				setLoading(false);
-			}
+	constructor(props: MarketsStructureProps) {
+		super(props);
+		this.state = {
+			loading: true,
+			error: null,
 		};
-
-		fetchData();
-	}, [handleUnAuthorized]);
-
-	if (loading) {
-		return <Spinner />;
+		this.handleUnAuthorized = useHandleUnauthorized();
 	}
 
-	if (error) {
-		return <div>Error: {error.message}</div>;
+	async fetchData() {
+		try {
+			const targetFunction = async () => {
+				try {
+					const response = await apiPostRun(
+						{
+							exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+							environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+							method: 'fetch_markets',
+							parameters: {},
+						},
+						this.handleUnAuthorized
+					);
+
+					if (!(response.status === 200)) {
+						throw new Error('Network response was not OK');
+					}
+
+					const payload = response.data.result;
+
+					const formattedMarkets = payload.map((market: any) => ({
+						id: market.id,
+						symbol: market.symbol,
+						base: market.base,
+						quote: market.quote,
+						active: market.active,
+						precision: market.precision.amount,
+					}));
+
+					dispatch('api.updateMarkets', formattedMarkets);
+				} catch (exception) {
+					if (axios.isAxiosError(exception)) {
+						if (exception?.response?.status === 401) {
+							clearInterval(intervalId);
+							return;
+						}
+					}
+
+					console.error(exception);
+				}
+			};
+
+			this.intervalId = executeAndSetInterval(targetFunction, 30000);
+			targetFunction();
+		} catch (error: any) {
+			this.setState({ error });
+		} finally {
+			this.setState({ loading: false });
+		}
 	}
 
-	return (
-		<div>
-			<MarketsTable rows={markets} />
-		</div>
-	);
-};
+	componentDidMount() {
+		console.log("componentDidMount");
+		this.fetchData();
+	}
+
+	componentWillUnmount() {
+		console.log("componentWillUnmount");
+		clearInterval(this.intervalId);
+	}
+
+	render() {
+		const { loading, error } = this.state;
+		const { markets } = this.props;
+
+		if (loading) {
+			return <Spinner />;
+		}
+
+		if (error) {
+			return <div>Error: {error.message}</div>;
+		}
+
+		return (
+			<div>
+				<MarketsTable rows={markets} />
+			</div>
+		);
+	}
+}
 
 export const Markets = connect(mapStateToProps)(MarketsStructure);
