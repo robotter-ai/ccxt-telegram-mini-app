@@ -15,18 +15,18 @@ const frontendPort: number = env['FRONTEND_PORT'] ? Number(env['FRONTEND_PORT'])
 const frontendPrefix = ''
 const frontendBaseUrlSuffix = `${frontendHost}:${frontendPort}${frontendPrefix}`
 
-const apiRestProtocol: string = env['CLIENT_PROTOCOL'] || 'https'
-const apiWebSocketProtocol: string = env['CLIENT_WEBSOCKET_PROTOCOL'] || 'wss';
-const apiHost: string = env['CLIENT_HOST'] || 'localhost'
-const apiPort: number = env['CLIENT_PORT'] ? Number(env['CLIENT_PORT']) : 10001
-const apiPrefix: string = env['CLIENT_PREFIX'] || ''
+const apiRestProtocol: string = env['API_PROTOCOL'] || 'https'
+const apiWebSocketProtocol: string = env['API_WEBSOCKET_PROTOCOL'] || 'wss';
+const apiHost: string = env['API_HOST'] || 'localhost'
+const apiPort: number = env['API_PORT'] ? Number(env['API_PORT']) : 10001
+const apiPrefix: string = env['API_PREFIX'] || ''
 const apiBaseUrlSuffix = `${apiHost}:${apiPort}${apiPrefix}`
 
 env['VITE_FRONTEND_WEBSOCKET_PROTOCOL'] = frontendWebSocketProtocol
 env['VITE_FRONTEND_BASE_URL_SUFFIX'] = frontendBaseUrlSuffix
 
-// const clientCertificatePath: string = env['CLIENT_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'client_cert.pem')
-// const clientKeyPath: string = env['CLIENT_KEY_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'client_key.pem')
+// const clientCertificatePath: string = env['API_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'client_cert.pem')
+// const clientKeyPath: string = env['API_KEY_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'client_key.pem')
 // const certificationAuthorityCertificatePath: string = env['CERTIFICATION_AUTHORITY_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'ca_cert.pem')
 //
 // const clientCert = fs.readFileSync(clientCertificatePath)
