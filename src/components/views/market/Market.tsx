@@ -37,6 +37,8 @@ const MarketStructure = ({ market }: MarketProps) => {
 	const chartReference = useRef<any>(null);
 
 	const transformRawCandles = (candles: any[]): (CandlestickData | WhitespaceData)[] => {
+		if (!(candles && Array.isArray(candles) && candles.length > 0)) return [];
+
 		return candles.map((candle: any) => ({
 			time: Number(candle[0]) / 1000 as UTCTimestamp,
 			open: Number(candle[1]),
