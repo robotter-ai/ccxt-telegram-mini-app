@@ -9,8 +9,31 @@ export const executeAndSetInterval = (targetFunction: any, interval: number) => 
 	return setInterval(targetFunction, interval);
 };
 
+// noinspection JSUnusedLocalSymbols
 const recurrentFunctions = {
-	'1s': (handleUnAuthorized?: () => void) => {
+	// // @ts-ignore
+	// '1s': (handleUnAuthorized?: () => void) => {
+	// 	// eslint-disable-next-line prefer-const
+	// 	let intervalId: any;
+	//
+	// 	const targetFunction = async () => {
+	// 		try {
+	// 		} catch (exception) {
+	// 			if (axios.isAxiosError(exception)) {
+	// 				if (exception?.response?.status == 401) {
+	// 					clearInterval(intervalId);
+	//
+	// 					return;
+	// 				}
+	// 			}
+	//
+	// 			console.error(exception);
+	// 		}
+	// 	};
+	//
+	// 	intervalId = executeAndSetInterval(targetFunction, 1000);
+	// },
+	'1m': (handleUnAuthorized?: () => void) => {
 		// eslint-disable-next-line prefer-const
 		let intervalId: any;
 
@@ -34,7 +57,7 @@ const recurrentFunctions = {
 			}
 		};
 
-		intervalId = executeAndSetInterval(targetFunction, 1000);
+		intervalId = executeAndSetInterval(targetFunction, 60*1000);
 	},
 	'10min': (handleUnAuthorized?: () => void) => {
 		// eslint-disable-next-line prefer-const
@@ -61,7 +84,51 @@ const recurrentFunctions = {
 		};
 
 		intervalId = setInterval(targetFunction, 10 * 60 * 1000);
-	}
+	},
+	// // @ts-ignore
+	// '1h': (handleUnAuthorized?: () => void) => {
+	// 	// eslint-disable-next-line prefer-const
+	// 	let intervalId: any;
+	//
+	// 	const targetFunction = async () => {
+	// 		try {
+	// 		} catch (exception) {
+	// 			if (axios.isAxiosError(exception)) {
+	// 				if (exception?.response?.status == 401) {
+	// 					clearInterval(intervalId);
+	//
+	// 					return;
+	// 				}
+	// 			}
+	//
+	// 			console.error(exception);
+	// 		}
+	// 	};
+	//
+	// 	intervalId = executeAndSetInterval(targetFunction, 60*60*1000);
+	// },
+	// // @ts-ignore
+	// '1d': (handleUnAuthorized?: () => void) => {
+	// 	// eslint-disable-next-line prefer-const
+	// 	let intervalId: any;
+	//
+	// 	const targetFunction = async () => {
+	// 		try {
+	// 		} catch (exception) {
+	// 			if (axios.isAxiosError(exception)) {
+	// 				if (exception?.response?.status == 401) {
+	// 					clearInterval(intervalId);
+	//
+	// 					return;
+	// 				}
+	// 			}
+	//
+	// 			console.error(exception);
+	// 		}
+	// 	};
+	//
+	// 	intervalId = executeAndSetInterval(targetFunction, 24*60*60*1000);
+	// },
 };
 
 // noinspection JSUnusedGlobalSymbols
