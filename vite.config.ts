@@ -8,22 +8,22 @@ import dynamicImport from 'vite-plugin-dynamic-import'
 import { env } from 'process'
 // import * as os from 'os'
 
-const frontendRestProtocol: string = env['FUN_FRONTEND_PROTOCOL'] || 'http'
-const frontendWebSocketProtocol: string = env['FUN_FRONTEND_WEBSOCKET_PROTOCOL'] || 'ws';
-const frontendHost: string = env['FUN_FRONTEND_HOST'] || 'localhost'
-const frontendPort: number = env['FUN_FRONTEND_PORT'] ? Number(env['FUN_FRONTEND_PORT']) : 30000
+const frontendRestProtocol: string = env['FRONTEND_PROTOCOL'] || 'https'
+const frontendWebSocketProtocol: string = env['FRONTEND_WEBSOCKET_PROTOCOL'] || 'wss';
+const frontendHost: string = env['FRONTEND_HOST'] || 'localhost'
+const frontendPort: number = env['FRONTEND_PORT'] ? Number(env['FRONTEND_PORT']) : 10000
 const frontendPrefix = ''
 const frontendBaseUrlSuffix = `${frontendHost}:${frontendPort}${frontendPrefix}`
 
-const apiRestProtocol: string = env['FUN_CLIENT_PROTOCOL'] || 'http'
-const apiWebSocketProtocol: string = env['FUN_CLIENT_WEBSOCKET_PROTOCOL'] || 'ws';
-const apiHost: string = env['FUN_CLIENT_HOST'] || 'localhost'
-const apiPort: number = env['FUN_CLIENT_PORT'] ? Number(env['FUN_CLIENT_PORT']) : 30001
-const apiPrefix: string = env['FUN_CLIENT_PREFIX'] || ''
+const apiRestProtocol: string = env['CLIENT_PROTOCOL'] || 'https'
+const apiWebSocketProtocol: string = env['CLIENT_WEBSOCKET_PROTOCOL'] || 'wss';
+const apiHost: string = env['CLIENT_HOST'] || 'localhost'
+const apiPort: number = env['CLIENT_PORT'] ? Number(env['CLIENT_PORT']) : 10001
+const apiPrefix: string = env['CLIENT_PREFIX'] || ''
 const apiBaseUrlSuffix = `${apiHost}:${apiPort}${apiPrefix}`
 
-env['VITE_FUN_FRONTEND_WEBSOCKET_PROTOCOL'] = frontendWebSocketProtocol
-env['VITE_FUN_FRONTEND_BASE_URL_SUFFIX'] = frontendBaseUrlSuffix
+env['VITE_FRONTEND_WEBSOCKET_PROTOCOL'] = frontendWebSocketProtocol
+env['VITE_FRONTEND_BASE_URL_SUFFIX'] = frontendBaseUrlSuffix
 
 // const clientCertificatePath: string = env['CLIENT_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'client_cert.pem')
 // const clientKeyPath: string = env['CLIENT_KEY_CERTIFICATE_PATH'] || path.join(os.homedir(), 'shared', 'common', 'certificates', 'client_key.pem')
