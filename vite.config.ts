@@ -8,6 +8,8 @@ import dynamicImport from 'vite-plugin-dynamic-import'
 import { env } from 'process'
 // import * as os from 'os'
 
+// noinspection JSUnusedLocalSymbols
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const frontendRestProtocol: string = env['FRONTEND_PROTOCOL'] || 'https'
 const frontendWebSocketProtocol: string = env['FRONTEND_WEBSOCKET_PROTOCOL'] || 'wss';
 const frontendHost: string = env['FRONTEND_HOST'] || 'localhost'
@@ -33,6 +35,7 @@ env['VITE_FRONTEND_BASE_URL_SUFFIX'] = frontendBaseUrlSuffix
 // const clientKey = fs.readFileSync(clientKeyPath)
 // const certificationAuthorityCertificate = fs.readFileSync(certificationAuthorityCertificatePath)
 
+// @ts-ignore
 export default defineConfig({
 	server: {
 		port: frontendPort,
@@ -75,6 +78,7 @@ export default defineConfig({
 	},
 	plugins: [
 		react({
+			// @ts-ignore
 			babel: {
 				plugins: ['babel-plugin-macros']
 			}
