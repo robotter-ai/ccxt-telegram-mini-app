@@ -10,6 +10,10 @@ import Spinner from 'components/views/spinner/Spinner';
 import './Development.css';
 import { toast } from 'react-toastify';
 
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 interface DevelopmentProps extends BaseProps {
 	stateValue: any,
 	propsValue: any,
@@ -116,6 +120,8 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 				}
 			}
 
+			await sleep(2000);
+
 			if (response.status !== 200) {
 				// noinspection ExceptionCaughtLocallyJS
 				throw new Error(`An error has occurred while performing this operation: ${response.text}`);
@@ -174,6 +180,8 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 					// noinspection ExceptionCaughtLocallyJS
 					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
 				}
+
+				await sleep(2000);
 
 				const payload = response.data.result;
 
