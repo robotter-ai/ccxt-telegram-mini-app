@@ -48,7 +48,7 @@ const RouterStructure = () => {
 					<Route path="/markets" element={<NormalizedRoute element={<Markets />} checkAuthentication />} />
 					<Route path="/market" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
 					<Route path="/market/:marketId" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
-					<Route path="/development" element={<NormalizedRoute element={<Development />} checkAuthentication />} />
+					<Route path="/development" element={<NormalizedRoute element={<Development />} />} />
 					<Route path="*" element={<Navigate to="/" />} />
 				</Route>
 			</Routes>
