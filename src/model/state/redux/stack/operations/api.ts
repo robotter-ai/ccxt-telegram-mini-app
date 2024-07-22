@@ -149,3 +149,19 @@ pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
 
 	return nextState;
 });
+
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+pushStack('api.updateTemplateData', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.updateTemplateData', nextState);
+
+	return nextState;
+});
