@@ -25,22 +25,22 @@ export class Base<BaseProps = any, BaseState = any, BaseSnapshot = any> extends 
 	// 	this.state = {
 	// 	} as BaseState;
 	// }
-	//
+
 	// /**
 	//  * @deprecated Use the constructor instead.
 	//  */
-	componentWillMount() {
-		console.log('componentWillMount', arguments);
-	}
+	// componentWillMount() {
+	// 	console.log('componentWillMount', arguments);
+	// }
 
 	componentDidMount() {
 		console.log('componentDidMount', arguments);
 	}
 
-	// @ts-ignore
-	componentWillReceiveProps(nextProps: Readonly<BaseProps>, nextContext: any) {
-		console.log('componentWillReceiveProps', arguments);
-	}
+	// // @ts-ignore
+	// componentWillReceiveProps(nextProps: Readonly<BaseProps>, nextContext: any) {
+	// 	console.log('componentWillReceiveProps', arguments);
+	// }
 
 	// @ts-ignore
 	shouldComponentUpdate(nextProps: Readonly<BaseProps>, nextState: Readonly<BaseState>, nextContext: any): boolean {
@@ -49,10 +49,10 @@ export class Base<BaseProps = any, BaseState = any, BaseSnapshot = any> extends 
 		return true;
 	}
 
-	// @ts-ignore
-	componentWillUpdate(nextProps: Readonly<BaseProps>, nextState: Readonly<BaseState>, nextContext: any) {
-		console.log('componentWillUpdate', arguments);
-	}
+	// // @ts-ignore
+	// componentWillUpdate(nextProps: Readonly<BaseProps>, nextState: Readonly<BaseState>, nextContext: any) {
+	// 	console.log('componentWillUpdate', arguments);
+	// }
 
 	// @ts-ignore
 	componentDidUpdate(prevProps: Readonly<BaseProps>, prevState: Readonly<BaseState>, snapshot?: BaseSnapshot) {
