@@ -1,101 +1,204 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment */
-// noinspection JSUnusedLocalSymbols
-
-import { useEffect, useState } from 'react';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
-import { apiPostAuthSignIn, apiPostRun } from 'model/service/api';
-import { dispatch } from 'model/state/redux/store';
+import { connect } from 'react-redux';
 import axios from 'axios';
+// import PropTypes from 'prop-types';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
+// import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { dispatch } from 'model/state/redux/store';
+import { executeAndSetInterval } from 'model/service/recurrent';
+// import { apiPostRun } from 'model/service/api';
+import Spinner from 'components/views/spinner/Spinner';
+import './Development.css';
+import { toast } from 'react-toastify';
 
-import { connect } from 'react-redux'
+interface DevelopmentProps extends BaseProps {
+	stateValue: any,
+	propsValue: any,
+	fetchedData: any,
+}
+
+interface DevelopmentState extends BaseState {
+	isLoading: boolean,
+	error?: string,
+}
 
 // @ts-ignore
-const mapStateToProps = (state: any, props: any) => ({
-	data: state.api.orders.open,
+// noinspection JSUnusedLocalSymbols
+interface DevelopmentSnapshot extends BaseSnapshot {
+}
+
+const mapStateToProps = (state: DevelopmentState | any, props: DevelopmentProps | any) => ({
+	stateValue: state.api.data,
+	propsValue: props.value,
 })
 
-const DevelopmentStructure = (state: any) => {
-	const [ loading, setLoading ] = useState(true);
-	const [ error, setError ] = useState(null as any);
+// @ts-ignore
+class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapshot> extends Base {
 
-	const handleUnAuthorized = useHandleUnauthorized();
+	// static contextTypes = {
+	// 	handleUnAuthorized: PropTypes.func,
+	// };
 
-	useEffect(() => {
-		// @ts-ignore
-		const fetchData = async () => {
+	static defaultProps: Partial<BaseProps> = {
+	};
+
+	recurrentIntervalId?: number;
+
+	recurrentDelay?: number;
+
+	constructor(props: BaseProps) {
+		super(props);
+
+		this.state = {
+			isLoading: true,
+			error: null,
+		};
+
+		// // @ts-ignore
+		// this.context.handleUnAuthorized = useHandleUnauthorized();
+
+		this.recurrentIntervalId = undefined;
+		this.recurrentDelay = 5 * 1000;
+	}
+
+	async componentDidMount() {
+		console.log('componentDidMount', arguments);
+
+		await this.initialize();
+		await this.doRecurrently();
+	}
+
+	async componentWillUnmount() {
+		console.log('componentWillUnmount', arguments);
+
+		if (this.recurrentIntervalId) {
+			clearInterval(this.recurrentIntervalId);
+		}
+	}
+
+	render() {
+		console.log('render', arguments);
+
+		const { isLoading, error } = this.state;
+		const { fetchedData } = this.props;
+
+		return (
+			<div>
+				{isLoading ? <Spinner /> : null}
+				{error ? <div>Error: {error.message}</div> : null}
+				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
+			</div>
+		);
+	}
+
+	async initialize() {
+		try {
+			// const response = await apiPostRun(
+			// 	{
+			// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			// 		method: '<apiFunction>',
+			// 		parameters: {
+			// 			param1: '<param1Value>',
+			// 			param2: '<param2Value>',
+			// 		},
+			// 	},
+			// 	// @ts-ignore
+			// 	this.context.handleUnAuthorized
+			// );
+
+			const response = {
+				status: 200,
+				text: null,
+				data: {
+					result: {
+						a: 'b'
+					}
+				}
+			}
+
+			if (response.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
+				throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+			}
+
+			const payload = response.data.result;
+
+			dispatch('api.updateTemplateData', payload);
+		} catch (exception) {
+			console.error(exception);
+
+			if (axios.isAxiosError(exception)) {
+				if (exception?.response?.status === 401) {
+					clearInterval(this.recurrentIntervalId);
+
+					// TODO check if the hook is navigating to the signIn page!!!
+					return;
+				}
+			}
+
+			this.setState({ error: exception });
+			toast.error(exception as string);
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	}
+
+	async doRecurrently() {
+		const recurrentFunction = async () => {
 			try {
-				await apiPostAuthSignIn({
-					'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-					'exchangeEnvironment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					'exchangeApiKey': `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
-					'exchangeApiSecret': `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
-					'exchangeOptions': {
-						'subAccountId': `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`,
-					}
-				});
+				// const response = await apiPostRun(
+				// 	{
+				// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				// 		method: '<apiFunction>',
+				// 		parameters: {
+				// 			param1: '<param1Value>',
+				// 			param2: '<param2Value>',
+				// 		},
+				// 	},
+				// 	// @ts-ignore
+				// 	this.context.handleUnAuthorized
+				// );
 
-				const { configure, executeAndSetInterval } = await import('model/service/recurrent');
-				configure(handleUnAuthorized);
-
-				let intervalId: any;
-
-				const targetFunction = async () => {
-					try {
-						const response = await apiPostRun({
-							'exchangeId': `${import.meta.env.VITE_EXCHANGE_ID}`,
-							'environment': `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-							'method': 'fetch_open_orders',
-							'parameters': {
-								'symbol': 'BTC/USDT'
-							}
-						}, handleUnAuthorized);
-
-						if (!(response.status === 200)) {
-							// noinspection ExceptionCaughtLocallyJS
-							throw new Error('Network response was not OK');
+				const response = {
+					status: 200,
+					text: null,
+					data: {
+						result: {
+							a: 'b'
 						}
-
-						const payload = response.data;
-
-						dispatch('api.updateOpenOrders', payload);
-					} catch (exception) {
-						if (axios.isAxiosError(exception)) {
-							if (exception?.response?.status == 401) {
-								clearInterval(intervalId);
-
-								return;
-							}
-						}
-
-						console.error(exception);
 					}
-				};
+				}
 
-				intervalId = executeAndSetInterval(targetFunction, 5000);
-			} catch (error: any) {
-				setError(error);
-			} finally {
-				setLoading(false);
+				if (response.status !== 200) {
+					// noinspection ExceptionCaughtLocallyJS
+					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+				}
+
+				const payload = response.data.result;
+
+				dispatch('api.updateTemplateData', payload);
+			} catch (exception) {
+				console.error(exception);
+
+				if (axios.isAxiosError(exception)) {
+					if (exception?.response?.status === 401) {
+						clearInterval(this.recurrentIntervalId);
+
+						// TODO check if the hook is navigating to the signIn page!!!
+						return;
+					}
+				}
+
+				this.setState({ error: exception });
+				toast.error(exception as string);
 			}
 		};
 
-		fetchData();
-	}, []);
-
-	if (loading) {
-		return <div>Loading...</div>;
+		// @ts-ignore
+		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
 	}
+}
 
-	if (error) {
-		return <div>Error: {error.message}</div>;
-	}
-
-	return (
-		<div>
-			<h1>Data from API</h1>
-			<pre>{JSON.stringify(state.data, null, 2)}</pre>
-		</div>
-	);
-};
-
+// noinspection JSUnusedGlobalSymbols
 export const Development = connect(mapStateToProps)(DevelopmentStructure)

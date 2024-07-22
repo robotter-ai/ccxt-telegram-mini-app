@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
@@ -34,9 +34,9 @@ const mapStateToProps = (state: TemplateState | any, props: TemplateProps | any)
 // @ts-ignore
 class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends Base {
 
-	static contextTypes = {
-		handleUnAuthorized: PropTypes.func,
-	};
+	// static contextTypes = {
+	// 	handleUnAuthorized: PropTypes.func,
+	// };
 
 	static defaultProps: Partial<BaseProps> = {
 	};
