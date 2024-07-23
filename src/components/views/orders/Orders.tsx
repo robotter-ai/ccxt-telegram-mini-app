@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ export const Orders = () => {
 	const [error, setError] = useState(null as any);
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	let canceledOrders = new Set();
+	const canceledOrdersRef = useRef(new Set());
 
 	const cancelOpenOrder = async (orderId: any) => {
 		if (!orderId) return;
@@ -26,7 +26,7 @@ export const Orders = () => {
 					method: 'cancel_order',
 					parameters: {
 						id: orderId,
-						symbol: 'BTC/USDT',
+						symbol: 'tSOLtUSDC',
 					},
 				},
 				handleUnAuthorized
@@ -36,7 +36,7 @@ export const Orders = () => {
 				throw new Error('Network response was not OK');
 			}
 
-			canceledOrders.add(orderId);
+			canceledOrdersRef.current.add(orderId);
 
 			dispatch({ type: 'api.updateOpenOrders', payload: openOrders.filter((order: any) => order.id !== orderId) });
 
@@ -64,7 +64,7 @@ export const Orders = () => {
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'cancel_all_orders',
 					parameters: {
-						symbol: 'BTC/USDT',
+						symbol: 'tSOLtUSDC',
 					},
 				},
 				handleUnAuthorized
@@ -74,7 +74,7 @@ export const Orders = () => {
 				throw new Error('Network response was not OK');
 			}
 
-			openOrders.forEach((order: any) => canceledOrders.add(order.id));
+			openOrders.forEach((order: any) => canceledOrdersRef.current.add(order.id));
 
 			dispatch({ type: 'api.updateOpenOrders', payload: [] });
 
@@ -94,7 +94,7 @@ export const Orders = () => {
 						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 						method: 'fetch_open_orders',
 						parameters: {
-							symbol: 'BTC/USDT',
+							symbol: 'tSOLtUSDC',
 						},
 					},
 					handleUnAuthorized
@@ -106,8 +106,12 @@ export const Orders = () => {
 
 				const payload = response.data;
 
+				if (!Array.isArray(payload.result)) {
+					throw new Error('Unexpected API response format');
+				}
+
 				const output = payload.result
-					.filter((order: any) => !canceledOrders.has(order.id))
+					.filter((order: any) => !canceledOrdersRef.current.has(order.id))
 					.map((order: any) => ({
 						checkbox: false,
 						id: order.id,
@@ -129,7 +133,10 @@ export const Orders = () => {
 		};
 
 		fetchData();
-	}, [dispatch, handleUnAuthorized, canceledOrders]);
+		const intervalId = setInterval(fetchData, 30000);
+
+		return () => clearInterval(intervalId);
+	}, [dispatch, handleUnAuthorized]);
 
 	if (loading) {
 		return <Spinner />;

@@ -16,7 +16,6 @@ import {
 	Box,
 	CssBaseline,
 	Paper,
-	Avatar,
 	IconButton,
 	InputAdornment,
 	Snackbar,
@@ -179,12 +178,22 @@ const SignInStructure = ({ isSignedIn }: SignInProps) => {
 								alignItems: 'center',
 							}}
 						>
-							<Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-								<LockOutlinedIcon />
-							</Avatar>
-							<Typography component="h1" variant="h5">
-								Sign In
-							</Typography>
+							<Box
+								sx={{
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									bgcolor: 'primary.main',
+									width: 'fit-content',
+									height: 'fit-content',
+									padding: 1,
+								}}
+							>
+								<LockOutlinedIcon sx={{ mr: 1, color: 'black' }} />
+								<Typography component="h1" variant="h5" sx={{ color: 'black' }}>
+									Sign In
+								</Typography>
+							</Box>
 							{loading && <CircularProgress sx={{ mt: 2 }} />}
 							{error && <Typography color="error">{error.message}</Typography>}
 							<Formik

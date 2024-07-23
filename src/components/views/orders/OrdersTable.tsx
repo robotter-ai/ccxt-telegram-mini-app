@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Select from 'react-select';
 
 interface Data {
 	checkbox: boolean;
@@ -43,7 +44,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 		if (order !== 0) {
 			return order;
 		}
-		return (a[1] - b[1]);
+		return a[1] - b[1];
 	});
 	return stabilizedThis.map((el) => el[0]);
 }
@@ -121,7 +122,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 			{numSelected > 0 ? (
 				<span className="text-white">{numSelected} selected</span>
 			) : (
-				<h2 className="text-xl font-bold text-white">Orders</h2>
+				<h2 className="text-xl font-bold text-white"></h2>
 			)}
 			{numSelected > 0 ? (
 				<button
@@ -154,8 +155,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
 	const [selected, setSelected] = React.useState<readonly string[] | number[]>([]);
 	const [page, setPage] = React.useState(0);
-	const [dense, setDense] = React.useState(false);
-	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -192,13 +192,9 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 		setPage(newPage);
 	};
 
-	const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setRowsPerPage(parseInt(event.target.value, 10));
+	const handleRowsPerPageChange = (selectedOption: any) => {
+		setRowsPerPage(selectedOption.value);
 		setPage(0);
-	};
-
-	const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setDense(event.target.checked);
 	};
 
 	const isSelected = (id: string | number) => selected.indexOf(id) !== -1;
@@ -224,6 +220,16 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 		await cancelAllOpenOrders();
 	};
 
+	const rowsPerPageOptions = [
+		{ value: 5, label: '5' },
+		{ value: 10, label: '10' },
+		{ value: 25, label: '25' },
+		{ value: 50, label: '50' },
+		{ value: 100, label: '100' },
+		{ value: 500, label: '500' },
+		{ value: 1000, label: '1000' },
+	];
+
 	return (
 		<div className="h-full w-full p-4 bg-gray-900 text-white">
 			<EnhancedTableToolbar
@@ -232,7 +238,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 				onCancelAllOpenOrdersClick={handleCancelAllOpenOrdersClick}
 			/>
 			<div className="overflow-x-auto max-h-[60vh]">
-				<table className="min-w-full divide-y divide-gray-700">
+				<table className="min-w-full divide-y divide-gray-700 text-sm">
 					<EnhancedTableHead
 						numSelected={selected.length}
 						order={order}
@@ -249,7 +255,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						return (
 							<tr
 								key={row.id}
-								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''} ${dense ? 'text-sm' : 'text-base'}`}
+								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''}`}
 								onClick={(event) => handleClick(event, row.id)}
 							>
 								<td className="p-4">
@@ -280,7 +286,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						);
 					})}
 					{emptyRows > 0 && (
-						<tr style={{ height: (dense ? 33 : 53) * emptyRows }}>
+						<tr style={{ height: 33 * emptyRows }}>
 							<td colSpan={9} />
 						</tr>
 					)}
@@ -288,27 +294,45 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 				</table>
 			</div>
 			<div className="flex flex-col md:flex-row justify-between p-4">
-				<div className="mb-4 md:mb-0">
-					<label className="inline-flex items-center">
-						<input
-							type="checkbox"
-							className="form-checkbox"
-							checked={dense}
-							onChange={handleChangeDense}
-						/>
-						<span className="ml-2">Dense padding</span>
-					</label>
-				</div>
-				<div className="mb-4 md:mb-0">
-					<select
-						className="form-select bg-gray-800 text-white border-gray-700"
-						value={rowsPerPage}
-						onChange={handleChangeRowsPerPage}
-					>
-						<option value={5}>5</option>
-						<option value={10}>10</option>
-						<option value={25}>25</option>
-					</select>
+				<div className="mb-4 md:mb-0 relative">
+					<Select
+						className="bg-gray-800 text-white border-gray-700"
+						value={rowsPerPageOptions.find(option => option.value === rowsPerPage)}
+						onChange={handleRowsPerPageChange}
+						options={rowsPerPageOptions}
+						styles={{
+							control: (provided) => ({
+								...provided,
+								backgroundColor: '#1F2937',
+								borderColor: '#374151',
+								color: '#FFFFFF',
+								minHeight: '40px',
+								height: '40px',
+								fontSize: '15px',
+							}),
+							singleValue: (provided) => ({
+								...provided,
+								color: '#FFFFFF',
+							}),
+							menu: (provided) => ({
+								...provided,
+								backgroundColor: '#1F2937',
+							}),
+							option: (provided, state) => ({
+								...provided,
+								backgroundColor: state.isSelected ? '#374151' : '#1F2937',
+								color: state.isSelected ? '#fff' : '#d1d5db',
+								'&:hover': {
+									backgroundColor: '#374151',
+								},
+							}),
+							input: (provided) => ({
+								...provided,
+								color: '#FFFFFF',
+							}),
+						}}
+					/>
+					<span className="ml-2">Orders per page</span>
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button

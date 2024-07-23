@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 
 interface Data {
@@ -58,8 +59,6 @@ const headCells: readonly HeadCell[] = [
 	{ id: 'symbol', label: 'Symbol', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'base', label: 'Base Asset', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'quote', label: 'Quote Asset', align: 'center', numeric: false, disablePadding: false },
-	{ id: 'active', label: 'Active', align: 'center', numeric: false, disablePadding: false },
-	{ id: 'precision', label: 'Precision', align: 'center', numeric: true, disablePadding: false },
 ];
 
 interface EnhancedTableProps {
@@ -100,14 +99,13 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	const { searchQuery, onSearchChange } = props;
 
 	return (
-		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
-			<h2 className="text-xl font-bold text-white">Markets</h2>
+		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900 w-full">
 			<input
 				type="text"
 				value={searchQuery}
 				onChange={onSearchChange}
 				placeholder="Search markets..."
-				className="mt-2 md:mt-0 p-2 rounded-md bg-gray-800 text-white border border-gray-700"
+				className="mt-2 md:mt-0 p-2 rounded-md bg-gray-800 text-white border border-gray-700 w-full"
 			/>
 		</div>
 	);
@@ -121,8 +119,7 @@ export default function MarketsTable({ rows }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('symbol');
 	const [page, setPage] = React.useState(0);
-	const [dense, setDense] = React.useState(false);
-	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 	const [searchQuery, setSearchQuery] = React.useState('');
 	const navigate = useNavigate();
 
@@ -140,13 +137,9 @@ export default function MarketsTable({ rows }: Props) {
 		setPage(newPage);
 	};
 
-	const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setRowsPerPage(parseInt(event.target.value, 10));
+	const handleRowsPerPageChange = (selectedOption: any) => {
+		setRowsPerPage(selectedOption.value);
 		setPage(0);
-	};
-
-	const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setDense(event.target.checked);
 	};
 
 	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,11 +161,21 @@ export default function MarketsTable({ rows }: Props) {
 		[order, orderBy, page, rowsPerPage, filteredRows]
 	);
 
+	const rowsPerPageOptions = [
+		{ value: 5, label: '5' },
+		{ value: 10, label: '10' },
+		{ value: 25, label: '25' },
+		{ value: 50, label: '50' },
+		{ value: 100, label: '100' },
+		{ value: 500, label: '500' },
+		{ value: 1000, label: '1000' },
+	];
+
 	return (
 		<div className="h-full min-h-screen w-full p-4 bg-gray-900 text-white">
 			<EnhancedTableToolbar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
 			<div className="overflow-x-auto max-h-[60vh]">
-				<table className={`min-w-full divide-y divide-gray-700 ${dense ? 'text-sm' : 'text-base'}`}>
+				<table className="min-w-full divide-y divide-gray-700 text-sm">
 					<EnhancedTableHead
 						order={order}
 						orderBy={orderBy}
@@ -188,40 +191,56 @@ export default function MarketsTable({ rows }: Props) {
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.symbol}</td>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.base}</td>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.quote}</td>
-							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.active ? 'Yes' : 'No'}</td>
-							<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.precision}</td>
 						</tr>
 					))}
 					{emptyRows > 0 && (
-						<tr style={{ height: (dense ? 33 : 53) * emptyRows }}>
-							<td colSpan={5} />
+						<tr style={{ height: 33 * emptyRows }}>
+							<td colSpan={3} />
 						</tr>
 					)}
 					</tbody>
 				</table>
 			</div>
 			<div className="flex flex-col md:flex-row justify-between p-4">
-				<div className="mb-4 md:mb-0">
-					<label className="inline-flex items-center">
-						<input
-							type="checkbox"
-							className="form-checkbox"
-							checked={dense}
-							onChange={handleChangeDense}
-						/>
-						<span className="ml-2">Dense padding</span>
-					</label>
-				</div>
-				<div className="mb-4 md:mb-0">
-					<select
-						className="form-select bg-gray-800 text-white border-gray-700"
-						value={rowsPerPage}
-						onChange={handleChangeRowsPerPage}
-					>
-						<option value={5}>5</option>
-						<option value={10}>10</option>
-						<option value={25}>25</option>
-					</select>
+				<div className="mb-4 md:mb-0 relative">
+					<Select
+						className="bg-gray-800 text-white border-gray-700"
+						value={rowsPerPageOptions.find(option => option.value === rowsPerPage)}
+						onChange={handleRowsPerPageChange}
+						options={rowsPerPageOptions}
+						styles={{
+							control: (provided) => ({
+								...provided,
+								backgroundColor: '#1F2937',
+								borderColor: '#374151',
+								color: '#FFFFFF',
+								minHeight: '40px',
+								height: '40px',
+								fontSize: '15px',
+							}),
+							singleValue: (provided) => ({
+								...provided,
+								color: '#FFFFFF',
+							}),
+							menu: (provided) => ({
+								...provided,
+								backgroundColor: '#1F2937',
+							}),
+							option: (provided, state) => ({
+								...provided,
+								backgroundColor: state.isSelected ? '#374151' : '#1F2937',
+								color: state.isSelected ? '#fff' : '#d1d5db',
+								'&:hover': {
+									backgroundColor: '#374151',
+								},
+							}),
+							input: (provided) => ({
+								...provided,
+								color: '#FFFFFF',
+							}),
+						}}
+					/>
+					<span className="ml-2">Markets per page</span>
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
