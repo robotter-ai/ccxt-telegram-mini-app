@@ -30,8 +30,11 @@ map.setIn(
 )
 
 map.setIn(
-	'api.market.candles',
-	[]
+	'api.market',
+	{
+		id: null,
+		candles: []
+	}
 )
 
 // @ts-ignore
