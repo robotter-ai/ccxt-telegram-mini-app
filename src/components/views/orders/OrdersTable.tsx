@@ -155,7 +155,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
 	const [selected, setSelected] = React.useState<readonly string[] | number[]>([]);
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(100);
+	const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -336,14 +336,14 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
 					>

@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Menu } from '@mui/icons-material';
 import { IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import logo from 'src/assets/images/logo/exchange.png';
-import Spinner from 'components/views/spinner/Spinner.tsx';
+import Spinner from 'components/views/spinner/Spinner';
 
 const MainLayout = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
@@ -27,6 +27,8 @@ const MainLayout = () => {
 				return 'Market';
 			case '/signIn':
 				return 'Sign In';
+			case '/create-order':
+				return 'Create Order';
 			default:
 				return 'Home';
 		}
@@ -56,6 +58,9 @@ const MainLayout = () => {
 						</ListItem>
 						<ListItem button component={Link} to="/markets" className="hover:bg-gray-700">
 							<ListItemText primary="Markets" />
+						</ListItem>
+						<ListItem button component={Link} to="/create-order" className="hover:bg-gray-700">
+							<ListItemText primary="Create Order" />
 						</ListItem>
 					</List>
 				</div>

@@ -119,7 +119,7 @@ export default function MarketsTable({ rows }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('symbol');
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(100);
+	const [rowsPerPage, setRowsPerPage] = React.useState(1000);
 	const [searchQuery, setSearchQuery] = React.useState('');
 	const navigate = useNavigate();
 
@@ -144,6 +144,7 @@ export default function MarketsTable({ rows }: Props) {
 
 	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchQuery(event.target.value);
+		setPage(0);
 	};
 
 	const normalizeString = (str: string) => str.replace(/\//g, '').toLowerCase();
@@ -244,14 +245,14 @@ export default function MarketsTable({ rows }: Props) {
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(filteredRows.length / rowsPerPage) - 1}
 					>

@@ -178,22 +178,6 @@ const SignInStructure = ({ isSignedIn }: SignInProps) => {
 								alignItems: 'center',
 							}}
 						>
-							<Box
-								sx={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									bgcolor: 'primary.main',
-									width: 'fit-content',
-									height: 'fit-content',
-									padding: 1,
-								}}
-							>
-								<LockOutlinedIcon sx={{ mr: 1, color: 'black' }} />
-								<Typography component="h1" variant="h5" sx={{ color: 'black' }}>
-									Sign In
-								</Typography>
-							</Box>
 							{loading && <CircularProgress sx={{ mt: 2 }} />}
 							{error && <Typography color="error">{error.message}</Typography>}
 							<Formik
@@ -289,9 +273,10 @@ const SignInStructure = ({ isSignedIn }: SignInProps) => {
 											variant="contained"
 											color="primary"
 											disabled={isSubmitting}
-											sx={{ mt: 3, mb: 2 }}
+											sx={{ mt: 3, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
 										>
-											Submit
+											<LockOutlinedIcon sx={{ mr: 1 }} />
+											Sign In
 										</Button>
 									</Form>
 								)}
