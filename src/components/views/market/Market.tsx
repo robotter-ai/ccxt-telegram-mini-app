@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
-// import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 // import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
@@ -10,7 +10,7 @@ import './Market.css';
 import { toast } from 'react-toastify';
 import { CandlestickData, createChart, LineData, UTCTimestamp, WhitespaceData } from 'lightweight-charts';
 import { createRef } from 'react';
-// import * as queryString from 'querystring';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 
 interface MarketProps extends BaseProps {
 	market: any,
@@ -44,6 +44,8 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 	chart?: any;
 
+	chartSeries?: any;
+
 	private chartReference = createRef<HTMLDivElement>();
 
 	constructor(props: BaseProps) {
@@ -54,14 +56,14 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			error: null,
 		};
 
-		// const { marketId: pathMarketId } = this.props.match.params;
-		// const queryParams = queryString.parse(this.props.location.search);
-		// const queryMarketId = queryParams.marketId;
-		//
-		// this.props.market.id = pathMarketId || queryMarketId;
+		const { marketId: pathMarketId } = this.props.params;
+		const queryParams = this.props.queryParams;
+		const queryMarketId = queryParams.get('marketId');
+
+		this.props.market.id = pathMarketId || queryMarketId;
 
 		this.recurrentIntervalId = undefined;
-		this.recurrentDelay = 5 * 60 * 1000;
+		this.recurrentDelay = 5 * 1000;
 	}
 
 	async componentDidMount() {
@@ -86,7 +88,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 		return (
 			<div
-				className={'h-screen w-full'}
+				className={'h-full w-full'}
 			>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error.message}</div> : null}
@@ -95,7 +97,8 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 					className="chart-container h-full w-full"
 				>
 					<div
-						className="h-full w-full"
+						id="chart"
+						className="h-lvh w-full"
 						ref={this.chartReference}
 					></div>
 				</div>
@@ -105,8 +108,6 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 	async initialize() {
 		try {
-			this.props.market.id = 'tSOL/tUSDC';
-
 			if (!this.chartReference) {
 				// noinspection ExceptionCaughtLocallyJS
 				throw Error('The chart reference has not been found.');
@@ -139,7 +140,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 					}
 				},
 				// @ts-ignore
-				this.context.handleUnAuthorized
+				this.props.handleUnAuthorized
 			);
 
 			if (response.status !== 200) {
@@ -155,19 +156,19 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			console.log('lines', lines);
 
 			window.addEventListener('resize', this.handleChartResize);
-			const series = this.chart.addLineSeries({
+			this.chartSeries = this.chart.addLineSeries({
 				color: '#2962FF',
 			});
-			series.setData(lines);
-			// series.priceScale().applyOptions({
-			// 	autoScale: false, // disables auto scaling based on visible content
-			// 	scaleMargins: {
-			// 		top: 0.1,
-			// 		bottom: 0.2,
-			// 	},
-			// });
-			// this.chart.timeScale().fitContent();
-			// this.chart.timeScale().scrollToRealTime();
+			this.chartSeries.setData(lines);
+			this.chartSeries.priceScale().applyOptions({
+				autoScale: true,
+				scaleMargins: {
+					top: 0.1,
+					bottom: 0.2,
+				},
+			});
+			this.chart.timeScale().fitContent();
+			this.chart.timeScale().scrollToRealTime();
 			window.removeEventListener('resize', this.handleChartResize);
 		} catch (exception) {
 			console.error(exception);
@@ -198,11 +199,12 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 						method: 'fetch_ohlcv',
 						parameters: {
 							symbol: this.props.market.id,
-							limit: 1
+							timeframe: '1s',
+							limit: 1,
 						}
 					},
 					// @ts-ignore
-					this.context.handleUnAuthorized
+					this.props.handleUnAuthorized
 				);
 
 				if (response.status !== 200) {
@@ -214,8 +216,11 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 				// dispatch('api.updateMarketLines', payload);
 
-				let lines = this.transformCandlesInLines(payload);
-				console.log('lines', lines);
+				const line = this.transformCandlesInLines(payload)[0];
+
+				console.log('line', line);
+
+				this.chartSeries.update(line);
 			} catch (exception) {
 				console.error(exception);
 
@@ -265,5 +270,15 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 	};
 }
 
+const MarketWrapper = (props: any) => {
+	const handleUnAuthorized = useHandleUnauthorized();
+	const location = useLocation();
+	const queryParams = new URLSearchParams(location.search)
+	const params = useParams();
+	const [searchParams] = useSearchParams();
+
+	return <MarketStructure {...props} queryParams={queryParams} params={params} searchParams={searchParams} handleUnAuthorized={handleUnAuthorized}/>;
+};
+
 // noinspection JSUnusedGlobalSymbols
-export const Market = connect(mapStateToProps)(MarketStructure)
+export const Market = connect(mapStateToProps)(MarketWrapper)
