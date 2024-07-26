@@ -244,7 +244,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 				// dispatch('api.updateMarketLines', payload);
 
 				const line = {
-					time: payload.timestamp,
+					time: payload.timestamp / 1000,
 					value: payload.close
 				};
 				// const lines = this.transformCandlesInLines(payload);
