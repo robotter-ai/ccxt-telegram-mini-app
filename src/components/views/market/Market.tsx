@@ -163,7 +163,6 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			this.chartSeries = this.chart.addLineSeries({
 				color: '#2962FF',
 			});
-			// this.chartSeries.setData(lines);
 			this.chartSeries.priceScale().applyOptions({
 				autoScale: true,
 				scaleMargins: {
@@ -171,6 +170,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 					bottom: 0.2,
 				},
 			});
+			// this.chartSeries.setData(lines);
 
 			// let candles = this.transformCandlesInCandlesticks(payload);
 			// console.log('candles', candles);
@@ -182,7 +182,6 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			// 	wickDownColor: '#f44336',
 			// 	wickUpColor: '#4caf50',
 			// });
-			// this.chartSeries.setData(candles);
 			// this.chartSeries.priceScale().applyOptions({
 			// 	autoScale: true,
 			// 	scaleMargins: {
@@ -190,6 +189,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			// 		bottom: 0.2,
 			// 	},
 			// });
+			// // this.chartSeries.setData(candles);
 
 			this.chart.timeScale().fitContent();
 			this.chart.timeScale().scrollToRealTime();
