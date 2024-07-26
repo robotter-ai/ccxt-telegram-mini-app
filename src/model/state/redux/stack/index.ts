@@ -1,1 +1,1 @@
-await import('model/state/redux/stack/operations/api');
+import 'model/state/redux/stack/operations/api';

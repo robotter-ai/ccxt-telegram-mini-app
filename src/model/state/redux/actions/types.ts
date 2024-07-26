@@ -1,6 +1,6 @@
 import { Map } from 'model/helper/extendable-immutable/map';
 
-const { app } = await import('model/storage/app');
+import { app } from 'model/storage/app';
 
 let actionTypes = app.getIn('redux.actions.types');
 
