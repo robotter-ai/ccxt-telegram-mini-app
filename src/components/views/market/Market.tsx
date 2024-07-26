@@ -63,7 +63,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 		this.props.market.id = pathMarketId || queryMarketId;
 
 		this.recurrentIntervalId = undefined;
-		this.recurrentDelay = 5 * 1000;
+		this.recurrentDelay = 1000;
 	}
 
 	async componentDidMount() {
@@ -125,6 +125,10 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 						vertLines: { color: "#444" },
 						horzLines: { color: "#444" },
 					},
+					timeScale: {
+						timeVisible: true,
+						secondsVisible: true,
+					},
 					autoSize: true,
 				}
 			);
@@ -159,7 +163,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			this.chartSeries = this.chart.addLineSeries({
 				color: '#2962FF',
 			});
-			this.chartSeries.setData(lines);
+			// this.chartSeries.setData(lines);
 			this.chartSeries.priceScale().applyOptions({
 				autoScale: true,
 				scaleMargins: {
@@ -196,12 +200,15 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 					{
 						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'fetch_ohlcv',
+						method: 'fetch_ticker',
 						parameters: {
 							symbol: this.props.market.id,
-							timeframe: '1s',
-							limit: 1,
-						}
+						},
+						// method: 'fetch_ohlcv',
+						// parameters: {
+						// 	symbol: this.props.market.id,
+						// 	timeframe: '1s',
+						// }
 					},
 					// @ts-ignore
 					this.props.handleUnAuthorized
@@ -216,7 +223,12 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 				// dispatch('api.updateMarketLines', payload);
 
-				const line = this.transformCandlesInLines(payload)[0];
+				const line = {
+					time: payload.timestamp / 1000,
+					value: payload.close
+				};
+				// const lines = this.transformCandlesInLines(payload);
+				// const line = lines[lines.length - 1];
 
 				console.log('line', line);
 
@@ -242,10 +254,10 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 	}
 
 	transformCandlesInCandlesticks(candles: any[]): (CandlestickData | WhitespaceData)[] {
-		if (!candles) return [];
+		if (!candles || !Array.isArray(candles)) return [];
 
 		return candles.map((candle: any) => ({
-			time: Number(candle[0]) / 1000 as UTCTimestamp,
+			time: Number(candle[0]) as UTCTimestamp,
 			open: Number(candle[1]),
 			high: Number(candle[2]),
 			low: Number(candle[3]),
@@ -255,10 +267,10 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 	}
 
 	transformCandlesInLines(candles: any[]): LineData[] {
-		if (!candles) return [];
+		if (!candles || !Array.isArray(candles)) return [];
 
 		return candles.map((candle: any) => ({
-			time: Number(candle[0]) / 1000 as UTCTimestamp,
+			time: Number(candle[0]) as UTCTimestamp,
 			value: Number(candle[4]),
 		})) as LineData[];
 	}
