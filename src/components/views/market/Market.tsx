@@ -270,7 +270,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 	};
 }
 
-const MarketWrapper = (props: any) => {
+const MarketBehavior = (props: any) => {
 	const handleUnAuthorized = useHandleUnauthorized();
 	const location = useLocation();
 	const queryParams = new URLSearchParams(location.search)
@@ -281,4 +281,4 @@ const MarketWrapper = (props: any) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Market = connect(mapStateToProps)(MarketWrapper)
+export const Market = connect(mapStateToProps)(MarketBehavior)

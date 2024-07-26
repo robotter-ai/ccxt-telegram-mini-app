@@ -9,6 +9,7 @@ import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';
 import './Template.css';
 import { toast } from 'react-toastify';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 
 interface TemplateProps extends BaseProps {
 	stateValue: any,
@@ -180,5 +181,15 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 	}
 }
 
+const TemplateBehavior = (props: any) => {
+	const handleUnAuthorized = useHandleUnauthorized();
+	const location = useLocation();
+	const queryParams = new URLSearchParams(location.search)
+	const params = useParams();
+	const [searchParams] = useSearchParams();
+
+	return <TemplateStructure {...props} queryParams={queryParams} params={params} searchParams={searchParams} handleUnAuthorized={handleUnAuthorized}/>;
+};
+
 // noinspection JSUnusedGlobalSymbols
-export const Template = connect(mapStateToProps)(TemplateStructure)
+export const Template = connect(mapStateToProps)(TemplateBehavior)
