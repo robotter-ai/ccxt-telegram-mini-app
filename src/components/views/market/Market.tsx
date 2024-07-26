@@ -156,10 +156,10 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 			// dispatch('api.updateMarketCandles', payload);
 
+			window.addEventListener('resize', this.handleChartResize);
+
 			let lines = this.transformCandlesInLines(payload);
 			console.log('lines', lines);
-
-			window.addEventListener('resize', this.handleChartResize);
 			this.chartSeries = this.chart.addLineSeries({
 				color: '#2962FF',
 			});
@@ -171,6 +171,26 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 					bottom: 0.2,
 				},
 			});
+
+			// let candles = this.transformCandlesInCandlesticks(payload);
+			// console.log('candles', candles);
+			// this.chartSeries = this.chart.addCandlestickSeries({
+			// 	upColor: '#4caf50',
+			// 	downColor: '#f44336',
+			// 	borderDownColor: '#f44336',
+			// 	borderUpColor: '#4caf50',
+			// 	wickDownColor: '#f44336',
+			// 	wickUpColor: '#4caf50',
+			// });
+			// this.chartSeries.setData(candles);
+			// this.chartSeries.priceScale().applyOptions({
+			// 	autoScale: true,
+			// 	scaleMargins: {
+			// 		top: 0.1,
+			// 		bottom: 0.2,
+			// 	},
+			// });
+
 			this.chart.timeScale().fitContent();
 			this.chart.timeScale().scrollToRealTime();
 			window.removeEventListener('resize', this.handleChartResize);
@@ -224,15 +244,26 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 				// dispatch('api.updateMarketLines', payload);
 
 				const line = {
-					time: payload.timestamp / 1000,
+					time: payload.timestamp,
 					value: payload.close
 				};
 				// const lines = this.transformCandlesInLines(payload);
 				// const line = lines[lines.length - 1];
-
 				console.log('line', line);
-
 				this.chartSeries.update(line);
+
+				// const candle = {
+				// 	time: payload.timestamp as UTCTimestamp,
+				// 	open: payload.open,
+				// 	high: payload.high,
+				// 	low: payload.low,
+				// 	close: payload.close,
+				// 	volume: payload.volume || 0,
+				// }
+				// // const candles = this.transformCandlesInCandlesticks(payload);
+				// // const candles = candles[candles.length - 1];
+				// console.log('candle', candle);
+				// this.chartSeries.update(candle);
 			} catch (exception) {
 				console.error(exception);
 
