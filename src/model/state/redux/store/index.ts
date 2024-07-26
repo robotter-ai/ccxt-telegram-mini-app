@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const { app } = await import('model/storage/app');
+import { app } from 'model/storage/app';
+import { storeFactory } from 'model/state/redux/store/store.factory';
+import { initialState } from 'model/state/redux/store/initial_state';
+import { subscribers } from 'model/state/redux/store/subscribers';
 
 if (app.getIn('redux.store') == null) {
-	const { storeFactory } = await import('model/state/redux/store/store.factory');
-	const { initialState } = await import('model/state/redux/store/initial_state');
-	const { subscribers } = await import('model/state/redux/store/subscribers');
-
 	const store = storeFactory(initialState);
 
 	for (const value of Object.values(subscribers)) {
