@@ -55,7 +55,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 		};
 
 		// @ts-ignore
-		this.context.handleUnAuthorized = useHandleUnauthorized();
+		this.context.handleUnAuthorized = this.props.handleUnAuthorized;
 
 		this.recurrentIntervalId = undefined;
 		this.recurrentDelay = 5 * 1000;
@@ -114,7 +114,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 
 			const payload = response.data.result;
 
-			dispatch('api.updateData', payload);
+			dispatch('api.updateTemplateData', payload);
 		} catch (exception) {
 			console.error(exception);
 
@@ -158,7 +158,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 
 				const payload = response.data.result;
 
-				dispatch('api.updateData', payload);
+				dispatch('api.updateTemplateData', payload);
 			} catch (exception) {
 				console.error(exception);
 
