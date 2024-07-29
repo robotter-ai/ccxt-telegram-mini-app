@@ -9,9 +9,14 @@ import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';
 import './Template.css';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 interface TemplateProps extends BaseProps {
+	queryParams: any;
+	params: any;
+	searchParams: any;
+	navigate: any;
+	handleUnAuthorized: any;
 	stateValue: any,
 	propsValue: any,
 	fetchedData: any,
@@ -85,7 +90,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 		return (
 			<div>
 				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error.message}</div> : null}
+				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
 			</div>
 		);
@@ -182,13 +187,23 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 }
 
 const TemplateBehavior = (props: any) => {
-	const handleUnAuthorized = useHandleUnauthorized();
 	const location = useLocation();
-	const queryParams = new URLSearchParams(location.search)
+	const navigate = useNavigate();
 	const params = useParams();
+	const queryParams = new URLSearchParams(location.search)
 	const [searchParams] = useSearchParams();
+	const handleUnAuthorized = useHandleUnauthorized();
 
-	return <TemplateStructure {...props} queryParams={queryParams} params={params} searchParams={searchParams} handleUnAuthorized={handleUnAuthorized}/>;
+	return <
+		TemplateStructure
+		{...props}
+		location={location}
+		navigate={navigate}
+		params={params}
+		queryParams={queryParams}
+		searchParams={searchParams}
+		handleUnAuthorized={handleUnAuthorized}
+	/>;
 };
 
 // noinspection JSUnusedGlobalSymbols
