@@ -5,6 +5,11 @@ import { Status } from 'model/enum/status.ts';
 const map = new Map();
 
 map.setIn(
+	'telegram.user',
+	null
+);
+
+map.setIn(
 	'api.isSignedIn',
 	false
 );

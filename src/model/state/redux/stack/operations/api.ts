@@ -3,6 +3,48 @@ import { Map } from 'model/helper/extendable-immutable/map';
 
 const { pushStack } = await import('model/state/redux/stack/methods');
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+pushStack('telegram.updateTelegramUser', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'telegram.user',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('telegram.updateTelegramUser', nextState.telegram.user);
+
+	return nextState;
+});
+
+pushStack('api.updateIsSignedIn', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.isSignedIn',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.updateIsSignedIn', nextState.api.token);
+
+	return nextState;
+});
+
 pushStack('api.updateToken', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
 

@@ -100,6 +100,16 @@ export const apiPostAuthRefresh = async (data?: any, handleUnAuthorized?: () => 
 	}, handleUnAuthorized);
 };
 
+// noinspection JSUnusedGlobalSymbols
+export const apiPostAuthIsSignedIn = async (data: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'POST',
+		url: '/auth/isSignedIn',
+		data: data,
+	}, handleUnAuthorized);
+};
+
+
 export const apiGetServiceStatus = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'GET',
