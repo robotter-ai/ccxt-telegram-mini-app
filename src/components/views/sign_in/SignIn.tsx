@@ -78,6 +78,7 @@ interface SignInState extends BaseState {
 	showSubAccountId?: boolean;
 	openSnackbar?: boolean;
 	telegramUser?: any;
+	queryRedirect?: string;
 }
 
 interface SignInSnapshot extends BaseSnapshot {}
@@ -103,6 +104,7 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 			showSubAccountId: false,
 			openSnackbar: false,
 			telegramUser: undefined,
+			queryRedirect: this.props.searchParams.get('redirect') || '/',
 		};
 
 		this.recurrentIntervalId = undefined;
@@ -264,33 +266,36 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 
 				let telegramUser = Telegram.WebApp.initDataUnsafe.user;
 
-				if (telegramUser) {
-					this.setState({ telegramUser });
-					dispatch('telegram.updateTelegramUser', telegramUser);
-
-					const response = await apiPostAuthIsSignedIn(
-						{
-							exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-							exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-							userTelegramId: `${sanitizeInput(this.state.telegramUser.id)}`,
-						},
-						this.props.handleUnAuthorized
-					);
-
-					const payload = response.data.result;
-
-					if (response.status !== 200) {
-						dispatch('api.updateIsSignedIn', false);
-					} else {
-						dispatch('api.updateIsSignedIn', payload);
-					}
-				} else {
+				if (!telegramUser) {
 					telegramUser = {
 						id: import.meta.env.VITE_TELEGRAM_USER_ID,
 					} as any;
+				}
 
-					this.setState({ telegramUser });
-					dispatch('telegram.updateTelegramUser', telegramUser);
+				this.setState({ telegramUser });
+				dispatch('telegram.updateTelegramUser', telegramUser);
+
+				const response = await apiPostAuthIsSignedIn(
+					{
+						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+						exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+						// @ts-ignore
+						userTelegramId: `${sanitizeInput(telegramUser.id)}`,
+					},
+					this.props.handleUnAuthorized
+				);
+
+				const payload = response.data.result;
+
+				if (response.status === 200 && payload === true) {
+					dispatch('api.updateIsSignedIn', payload);
+
+					await this.loadMarkets();
+					await this.loadCurrencies();
+
+					this.props.navigate(this.state.queryRedirect);
+				} else {
+					dispatch('api.updateIsSignedIn', false);
 				}
 			}
 		} catch (exception: any) {
@@ -391,12 +396,72 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 			const { configure } = await import('model/service/recurrent');
 			configure(this.props.handleUnAuthorized);
 
-			const queryRedirect = this.props.searchParams.get('redirect');
-			if (queryRedirect) {
-				this.props.navigate(queryRedirect);
-			} else {
-				this.props.navigate('/');
+			await this.loadMarkets();
+			await this.loadCurrencies();
+
+			this.props.navigate(this.state.queryRedirect);
+		} catch (exception: any) {
+			console.error(exception);
+			this.setState({ error: exception.message, openSnackbar: true });
+			toast.error(exception.message);
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	};
+
+	loadMarkets = async () => {
+		this.setState({ isLoading: true, error: undefined });
+
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_markets',
+				},
+				// @ts-ignore
+				this.context.handleUnAuthorized
+			);
+
+			if (!(response.status === 200)) {
+				// noinspection ExceptionCaughtLocallyJS
+				throw new Error('Network response was not OK');
 			}
+
+			const payload = response.data.result;
+
+			dispatch('api.updateMarkets', payload);
+		} catch (exception: any) {
+			console.error(exception);
+			this.setState({ error: exception.message, openSnackbar: true });
+			toast.error(exception.message);
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	};
+
+	loadCurrencies = async () => {
+		this.setState({ isLoading: true, error: undefined });
+
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_currencies',
+				},
+				// @ts-ignore
+				this.context.handleUnAuthorized
+			);
+
+			if (!(response.status === 200)) {
+				// noinspection ExceptionCaughtLocallyJS
+				throw new Error('Network response was not OK');
+			}
+
+			const payload = response.data.result;
+
+			dispatch('api.updateCurrencies', payload);
 		} catch (exception: any) {
 			console.error(exception);
 			this.setState({ error: exception.message, openSnackbar: true });

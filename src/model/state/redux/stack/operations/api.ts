@@ -130,27 +130,6 @@ pushStack('api.signOut', (currentState: any, payload: any) => {
 });
 
 // noinspection JSUnusedLocalSymbols
-pushStack('api.updateOpenOrders', (currentState: any, payload: any) => {
-	let nextState = new Map(currentState);
-
-	if (payload) {
-		nextState = nextState.setIn(
-			'api.orders.open',
-			payload
-		);
-	}
-
-	// @ts-ignore
-	nextState = nextState.toJS();
-
-	// noinspection TypeScriptUnresolvedReference
-	// @ts-ignore
-	console.log('api.updateOpenOrders', nextState.api.orders.open);
-
-	return nextState;
-});
-
-// noinspection JSUnusedLocalSymbols
 pushStack('api.updateMarkets', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
 
@@ -167,6 +146,48 @@ pushStack('api.updateMarkets', (currentState: any, payload: any) => {
 	// noinspection TypeScriptUnresolvedReference
 	// @ts-ignore
 	console.log('api.updateMarkets', nextState.api.markets);
+
+	return nextState;
+});
+
+// noinspection JSUnusedLocalSymbols
+pushStack('api.updateCurrencies', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.currencies',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.updateCurrencies', nextState.api.currencies);
+
+	return nextState;
+});
+
+// noinspection JSUnusedLocalSymbols
+pushStack('api.updateOpenOrders', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.orders.open',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.updateOpenOrders', nextState.api.orders.open);
 
 	return nextState;
 });

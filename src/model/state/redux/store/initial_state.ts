@@ -25,14 +25,19 @@ map.setIn(
 );
 
 map.setIn(
-	'api.orders.open',
-	[]
-)
-
-map.setIn(
 	'api.markets',
 	[]
-)
+);
+
+map.setIn(
+	'api.currencies',
+	{}
+);
+
+map.setIn(
+	'api.orders.open',
+	[]
+);
 
 map.setIn(
 	'api.market',
@@ -40,7 +45,7 @@ map.setIn(
 		id: null,
 		candles: []
 	}
-)
+);
 
 // @ts-ignore
 const initialState = map.toJS();
