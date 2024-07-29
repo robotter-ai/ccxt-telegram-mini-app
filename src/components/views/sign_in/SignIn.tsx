@@ -290,8 +290,8 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 				if (response.status === 200 && payload === true) {
 					dispatch('api.updateIsSignedIn', payload);
 
-					await this.loadMarkets();
 					await this.loadCurrencies();
+					await this.loadMarkets();
 
 					this.props.navigate(this.state.queryRedirect);
 				} else {
@@ -396,8 +396,8 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 			const { configure } = await import('model/service/recurrent');
 			configure(this.props.handleUnAuthorized);
 
-			await this.loadMarkets();
 			await this.loadCurrencies();
+			await this.loadMarkets();
 
 			this.props.navigate(this.state.queryRedirect);
 		} catch (exception: any) {
