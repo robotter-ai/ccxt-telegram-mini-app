@@ -115,7 +115,7 @@ export default function MarketsTable({ rows }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('symbol');
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 	const [filterText, setFilterText] = React.useState('');
 	const navigate = useNavigate();
 
