@@ -1,21 +1,116 @@
-import { useEffect, useState, useRef } from 'react';
+import React from 'react'
+import { connect } from 'react-redux';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import { useDispatch, useSelector } from 'react-redux';
-import OrdersTable from 'components/views/orders/OrdersTable';
 import Spinner from 'components/views/spinner/Spinner';
+import './Orders.css';
 import { toast } from 'react-toastify';
+import OrdersTable from 'components/views/orders/OrdersTable';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-export const Orders = () => {
-	const openOrders = useSelector((state: any) => state.api.orders.open);
-	const dispatch = useDispatch();
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null as any);
-	const handleUnAuthorized = useHandleUnauthorized();
+interface OrdersProps extends BaseProps {
+	openOrders: any;
+	dispatch: any;
+	queryParams: any;
+	params: any;
+	searchParams: any;
+	navigate: any;
+	handleUnAuthorized: any;
+}
 
-	const canceledOrdersRef = useRef(new Set());
+interface OrdersState extends BaseState {
+	isLoading: boolean;
+	error?: string;
+}
 
-	const cancelOpenOrder = async (orderId: any) => {
+interface OrdersSnapshot extends BaseSnapshot {}
+
+const mapStateToProps = (state: any, props: any) => ({
+	openOrders: state.api.orders.open,
+});
+
+class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
+	static defaultProps: Partial<BaseProps> = {};
+
+	recurrentIntervalId?: number;
+	recurrentDelay: number = 30000;
+	canceledOrdersRef: Set<string>;
+
+	constructor(props: OrdersProps) {
+		super(props);
+
+		this.state = {
+			isLoading: true,
+			error: null,
+		};
+
+		this.canceledOrdersRef = new Set();
+	}
+
+	async componentDidMount() {
+		console.log('componentDidMount', arguments);
+		await this.fetchData();
+		this.recurrentIntervalId = executeAndSetInterval(this.fetchData.bind(this), this.recurrentDelay);
+	}
+
+	async componentWillUnmount() {
+		console.log('componentWillUnmount', arguments);
+		if (this.recurrentIntervalId) {
+			clearInterval(this.recurrentIntervalId);
+		}
+	}
+
+	async fetchData() {
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_open_orders',
+					parameters: {
+						symbol: 'tSOLtUSDC',
+					},
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				throw new Error('Network response was not OK');
+			}
+
+			const payload = response.data;
+
+			if (!Array.isArray(payload.result)) {
+				throw new Error('Unexpected API response format');
+			}
+
+			const output = payload.result
+				.filter((order: any) => !this.canceledOrdersRef.has(order.id))
+				.map((order: any) => ({
+					checkbox: false,
+					id: order.id,
+					market: order.symbol,
+					status: order.status,
+					side: order.side,
+					amount: order.amount,
+					price: order.price,
+					datetime: new Date(order.timestamp).toLocaleString(),
+					actions: null,
+				}));
+
+			this.props.dispatch({ type: 'api.updateOpenOrders', payload: output });
+		} catch (exception) {
+			console.error(exception);
+			this.setState({ error: exception });
+			toast.error(exception as string);
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	}
+
+	async cancelOpenOrder(orderId: string) {
 		if (!orderId) return;
 
 		try {
@@ -29,34 +124,34 @@ export const Orders = () => {
 						symbol: 'tSOLtUSDC',
 					},
 				},
-				handleUnAuthorized
+				this.props.handleUnAuthorized
 			);
 
 			if (response.status !== 200) {
 				throw new Error('Network response was not OK');
 			}
 
-			canceledOrdersRef.current.add(orderId);
+			this.canceledOrdersRef.add(orderId);
 
-			dispatch({ type: 'api.updateOpenOrders', payload: openOrders.filter((order: any) => order.id !== orderId) });
+			this.props.dispatch({ type: 'api.updateOpenOrders', payload: this.props.openOrders.filter((order: any) => order.id !== orderId) });
 
 			toast.success(`Order ${orderId} canceled successfully!`);
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
 			toast.error(`Failed to cancel order ${orderId}.`);
 		}
-	};
+	}
 
-	const cancelOpenOrders = async (orderIds: any[]) => {
+	async cancelOpenOrders(orderIds: string[]) {
 		if (!orderIds || !(orderIds.length > 0)) return;
 
-		const promises = orderIds.map(async (orderId: any) => await cancelOpenOrder(orderId));
+		const promises = orderIds.map(async (orderId: string) => await this.cancelOpenOrder(orderId));
 		await Promise.all(promises);
 
 		toast.success('Selected orders canceled successfully!');
-	};
+	}
 
-	const cancelAllOpenOrders = async () => {
+	async cancelAllOpenOrders() {
 		try {
 			const response = await apiPostRun(
 				{
@@ -67,93 +162,63 @@ export const Orders = () => {
 						symbol: 'tSOLtUSDC',
 					},
 				},
-				handleUnAuthorized
+				this.props.handleUnAuthorized
 			);
 
 			if (response.status !== 200) {
 				throw new Error('Network response was not OK');
 			}
 
-			openOrders.forEach((order: any) => canceledOrdersRef.current.add(order.id));
+			this.props.openOrders.forEach((order: any) => this.canceledOrdersRef.add(order.id));
 
-			dispatch({ type: 'api.updateOpenOrders', payload: [] });
+			this.props.dispatch({ type: 'api.updateOpenOrders', payload: [] });
 
 			toast.success('All orders canceled successfully!');
 		} catch (error) {
 			console.error('Failed to cancel all orders:', error);
 			toast.error('Failed to cancel all orders.');
 		}
-	};
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'fetch_open_orders',
-						parameters: {
-							symbol: 'tSOLtUSDC',
-						},
-					},
-					handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					throw new Error('Network response was not OK');
-				}
-
-				const payload = response.data;
-
-				if (!Array.isArray(payload.result)) {
-					throw new Error('Unexpected API response format');
-				}
-
-				const output = payload.result
-					.filter((order: any) => !canceledOrdersRef.current.has(order.id))
-					.map((order: any) => ({
-						checkbox: false,
-						id: order.id,
-						market: order.symbol,
-						status: order.status,
-						side: order.side,
-						amount: order.amount,
-						price: order.price,
-						datetime: new Date(order.timestamp).toLocaleString(),
-						actions: null,
-					}));
-
-				dispatch({ type: 'api.updateOpenOrders', payload: output });
-			} catch (error: any) {
-				setError(error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
-		const intervalId = setInterval(fetchData, 30000);
-
-		return () => clearInterval(intervalId);
-	}, [dispatch, handleUnAuthorized]);
-
-	if (loading) {
-		return <Spinner />;
 	}
 
-	if (error) {
-		return <div>Error: {error.message}</div>;
+	render() {
+		console.log('render', arguments);
+
+		const { isLoading, error } = this.state;
+		const { openOrders } = this.props;
+
+		return (
+			<div>
+				{isLoading ? <Spinner /> : null}
+				{error ? <div>Error: {error.message}</div> : null}
+				<OrdersTable
+					rows={openOrders}
+					cancelOpenOrder={this.cancelOpenOrder.bind(this)}
+					cancelOpenOrders={this.cancelOpenOrders.bind(this)}
+					cancelAllOpenOrders={this.cancelAllOpenOrders.bind(this)}
+				/>
+			</div>
+		);
 	}
+}
+
+const OrdersBehavior = (props: any) => {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const params = useParams();
+	const queryParams = new URLSearchParams(location.search);
+	const [searchParams] = useSearchParams();
+	const handleUnAuthorized = useHandleUnauthorized();
 
 	return (
-		<div>
-			<OrdersTable
-				rows={openOrders}
-				cancelOpenOrder={cancelOpenOrder}
-				cancelOpenOrders={cancelOpenOrders}
-				cancelAllOpenOrders={cancelAllOpenOrders}
-			/>
-		</div>
+		<OrdersStructure
+			{...props}
+			queryParams={queryParams}
+			params={params}
+			searchParams={searchParams}
+			navigate={navigate}
+			handleUnAuthorized={handleUnAuthorized}
+		/>
 	);
 };
+
+export const Orders = connect(mapStateToProps)(OrdersBehavior);

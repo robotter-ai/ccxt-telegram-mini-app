@@ -1,14 +1,12 @@
 import * as React from 'react';
-import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 
 interface Data {
 	id: number;
 	symbol: string;
 	base: string;
 	quote: string;
-	active: boolean;
-	precision: number;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -25,10 +23,10 @@ type Order = 'asc' | 'desc';
 
 function getComparator<Key extends keyof any>(
 	order: Order,
-	orderBy: Key,
+	orderBy: Key
 ): (
 	a: { [key in Key]: number | string },
-	b: { [key in Key]: number | string },
+	b: { [key in Key]: number | string }
 ) => number {
 	return order === 'desc'
 		? (a, b) => descendingComparator(a, b, orderBy)
@@ -91,21 +89,19 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 interface EnhancedTableToolbarProps {
-	searchQuery: string;
-	onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	filterText: string;
+	onFilterTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-	const { searchQuery, onSearchChange } = props;
-
 	return (
-		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900 w-full">
+		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
 			<input
 				type="text"
-				value={searchQuery}
-				onChange={onSearchChange}
-				placeholder="Search markets..."
-				className="mt-2 md:mt-0 p-2 rounded-md bg-gray-800 text-white border border-gray-700 w-full"
+				placeholder="Filter markets"
+				value={props.filterText}
+				onChange={props.onFilterTextChange}
+				className="mt-2 md:mt-0 p-2 rounded bg-gray-800 text-white border border-gray-700 w-full md:w-auto"
 			/>
 		</div>
 	);
@@ -119,8 +115,8 @@ export default function MarketsTable({ rows }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('symbol');
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(1000);
-	const [searchQuery, setSearchQuery] = React.useState('');
+	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [filterText, setFilterText] = React.useState('');
 	const navigate = useNavigate();
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
@@ -129,30 +125,26 @@ export default function MarketsTable({ rows }: Props) {
 		setOrderBy(property);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, symbol: string) => {
-		navigate(`/market?marketId=${symbol}`);
+	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+		navigate(`/market/BINANCE:ETHUSDT`);
 	};
 
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
 	};
 
-	const handleRowsPerPageChange = (selectedOption: any) => {
-		setRowsPerPage(selectedOption.value);
+	const handleChangeRowsPerPage = (option: { value: number; label: string }) => {
+		setRowsPerPage(option.value);
 		setPage(0);
 	};
 
-	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSearchQuery(event.target.value);
+	const handleFilterTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setFilterText(event.target.value);
 		setPage(0);
 	};
 
-	const normalizeString = (str: string) => str.replace(/\//g, '').toLowerCase();
-
-	const filteredRows = rows.filter((row) =>
-		normalizeString(row.symbol).includes(normalizeString(searchQuery)) ||
-		normalizeString(row.base).includes(normalizeString(searchQuery)) ||
-		normalizeString(row.quote).includes(normalizeString(searchQuery))
+	const filteredRows = rows.filter(row =>
+		row.symbol.toLowerCase().includes(filterText.toLowerCase())
 	);
 
 	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
@@ -168,15 +160,14 @@ export default function MarketsTable({ rows }: Props) {
 		{ value: 25, label: '25' },
 		{ value: 50, label: '50' },
 		{ value: 100, label: '100' },
-		{ value: 500, label: '500' },
 		{ value: 1000, label: '1000' },
 	];
 
 	return (
 		<div className="h-full min-h-screen w-full p-4 bg-gray-900 text-white">
-			<EnhancedTableToolbar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+			<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
 			<div className="overflow-x-auto max-h-[60vh]">
-				<table className="min-w-full divide-y divide-gray-700 text-sm">
+				<table className={`min-w-full divide-y divide-gray-700 text-sm`}>
 					<EnhancedTableHead
 						order={order}
 						orderBy={orderBy}
@@ -187,7 +178,7 @@ export default function MarketsTable({ rows }: Props) {
 						<tr
 							key={`${row.symbol}-${row.base}-${row.quote}`}
 							className="hover:bg-gray-700 cursor-pointer"
-							onClick={(event) => handleClick(event, row.symbol)}
+							onClick={(event) => handleClick(event, row.id)}
 						>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.symbol}</td>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.base}</td>
@@ -203,21 +194,21 @@ export default function MarketsTable({ rows }: Props) {
 				</table>
 			</div>
 			<div className="flex flex-col md:flex-row justify-between p-4">
-				<div className="mb-4 md:mb-0 relative">
+				<div className="mb-4 md:mb-0 w-28">
 					<Select
-						className="bg-gray-800 text-white border-gray-700"
 						value={rowsPerPageOptions.find(option => option.value === rowsPerPage)}
-						onChange={handleRowsPerPageChange}
+						onChange={handleChangeRowsPerPage}
 						options={rowsPerPageOptions}
+						className="bg-gray-800 text-white"
 						styles={{
 							control: (provided) => ({
 								...provided,
 								backgroundColor: '#1F2937',
 								borderColor: '#374151',
 								color: '#FFFFFF',
-								minHeight: '40px',
-								height: '40px',
-								fontSize: '15px',
+								minHeight: '35px',
+								height: '35px',
+								fontSize: '14px',
 							}),
 							singleValue: (provided) => ({
 								...provided,
@@ -241,18 +232,17 @@ export default function MarketsTable({ rows }: Props) {
 							}),
 						}}
 					/>
-					<span className="ml-2">Markets per page</span>
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
-						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(filteredRows.length / rowsPerPage) - 1}
 					>

@@ -1,114 +1,117 @@
-import { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
-import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import MarketsTable from 'components/views/markets/MarketsTable'; // Adjust the import path as needed
-import Spinner from 'components/views/spinner/Spinner'; // Ensure the path is correct
+import Spinner from 'components/views/spinner/Spinner';
+import MarketsTable from 'components/views/markets/MarketsTable';
+import { toast } from 'react-toastify';
 import './Markets.css';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
+interface MarketsProps extends BaseProps {
+	markets: any;
+	dispatch: any;
+	queryParams: any;
+	params: any;
+	searchParams: any;
+	navigate: any;
+	handleUnAuthorized: any;
+}
+
+interface MarketsState extends BaseState {
+	isLoading: boolean;
+	error?: string;
+}
+
+interface MarketsSnapshot extends BaseSnapshot {}
+
 const mapStateToProps = (state: any, props: any) => ({
 	markets: state.api.markets,
 });
 
-interface MarketsStructureProps {
-	markets: any;
-}
+class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot> {
+	static defaultProps: Partial<BaseProps> = {};
 
-interface MarketsStructureState {
-	loading: boolean;
-	error: any;
-}
+	recurrentIntervalId?: number;
+	recurrentDelay: number = 30000;
 
-class MarketsStructure extends Component<MarketsStructureProps, MarketsStructureState> {
-	handleUnAuthorized: any;
-
-	intervalId: any;
-
-	constructor(props: MarketsStructureProps) {
+	constructor(props: MarketsProps) {
 		super(props);
+
 		this.state = {
-			loading: true,
+			isLoading: true,
 			error: null,
 		};
-		this.handleUnAuthorized = useHandleUnauthorized();
+	}
+
+	async componentDidMount() {
+		console.log('componentDidMount', arguments);
+		await this.fetchData();
+		this.recurrentIntervalId = executeAndSetInterval(this.fetchData.bind(this), this.recurrentDelay);
+	}
+
+	async componentWillUnmount() {
+		console.log('componentWillUnmount', arguments);
+		if (this.recurrentIntervalId) {
+			clearInterval(this.recurrentIntervalId);
+		}
 	}
 
 	async fetchData() {
 		try {
-			const targetFunction = async () => {
-				try {
-					const response = await apiPostRun(
-						{
-							exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-							environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-							method: 'fetch_markets',
-							parameters: {},
-						},
-						this.handleUnAuthorized
-					);
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_markets',
+					parameters: {},
+				},
+				this.props.handleUnAuthorized
+			);
 
-					if (!(response.status === 200)) {
-						throw new Error('Network response was not OK');
-					}
+			if (response.status !== 200) {
+				throw new Error('Network response was not OK');
+			}
 
-					const payload = response.data.result;
+			const payload = response.data.result;
 
-					const formattedMarkets = payload.map((market: any) => ({
-						id: market.id,
-						symbol: market.symbol,
-						base: market.base,
-						quote: market.quote,
-						active: market.active,
-						precision: market.precision.amount,
-					}));
+			const formattedMarkets = payload.map((market: any) => ({
+				id: market.id,
+				symbol: market.symbol,
+				base: market.base,
+				quote: market.quote,
+				active: market.active,
+				precision: market.precision.amount,
+			}));
 
-					dispatch('api.updateMarkets', formattedMarkets);
-				} catch (exception) {
-					if (axios.isAxiosError(exception)) {
-						if (exception?.response?.status === 401) {
-							clearInterval(intervalId);
-							return;
-						}
-					}
-
-					console.error(exception);
-				}
-			};
-
-			this.intervalId = executeAndSetInterval(targetFunction, 30000);
-			targetFunction();
-		} catch (error: any) {
-			this.setState({ error });
+			this.props.dispatch({ type: 'api.updateMarkets', payload: formattedMarkets });
+		} catch (exception) {
+			console.error(exception);
+			this.setState({ error: exception });
+			toast.error(exception as string);
 		} finally {
-			this.setState({ loading: false });
+			this.setState({ isLoading: false });
 		}
 	}
 
-	componentDidMount() {
-		console.log("componentDidMount");
-		this.fetchData();
-	}
-
-	componentWillUnmount() {
-		console.log("componentWillUnmount");
-		clearInterval(this.intervalId);
-	}
-
 	render() {
-		const { loading, error } = this.state;
+		console.log('render', arguments);
+
+		const { isLoading, error } = this.state;
 		const { markets } = this.props;
 
-		if (loading) {
+		if (isLoading) {
 			return <Spinner />;
 		}
 
 		if (error) {
 			return <div>Error: {error.message}</div>;
+		}
+
+		if (!Array.isArray(markets)) {
+			return <div>Error: Invalid data format</div>;
 		}
 
 		return (
@@ -119,4 +122,24 @@ class MarketsStructure extends Component<MarketsStructureProps, MarketsStructure
 	}
 }
 
-export const Markets = connect(mapStateToProps)(MarketsStructure);
+const MarketsBehavior = (props: any) => {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const params = useParams();
+	const queryParams = new URLSearchParams(location.search);
+	const [searchParams] = useSearchParams();
+	const handleUnAuthorized = useHandleUnauthorized();
+
+	return (
+		<MarketsStructure
+			{...props}
+			queryParams={queryParams}
+			params={params}
+			searchParams={searchParams}
+			navigate={navigate}
+			handleUnAuthorized={handleUnAuthorized}
+		/>
+	);
+};
+
+export const Markets = connect(mapStateToProps)(MarketsBehavior);

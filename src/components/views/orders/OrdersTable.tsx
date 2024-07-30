@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Select from 'react-select';
+import { toast } from 'react-toastify';
 
 interface Data {
 	checkbox: boolean;
@@ -27,10 +28,10 @@ type Order = 'asc' | 'desc';
 
 function getComparator<Key extends keyof any>(
 	order: Order,
-	orderBy: Key,
+	orderBy: Key
 ): (
 	a: { [key in Key]: number | string },
-	b: { [key in Key]: number | string },
+	b: { [key in Key]: number | string }
 ) => number {
 	return order === 'desc'
 		? (a, b) => descendingComparator(a, b, orderBy)
@@ -112,10 +113,11 @@ interface EnhancedTableToolbarProps {
 	numSelected: number;
 	onCancelSelectedOpenOrdersClick: () => void;
 	onCancelAllOpenOrdersClick: () => void;
+	disableCancelAllButton: boolean;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-	const { numSelected, onCancelSelectedOpenOrdersClick, onCancelAllOpenOrdersClick } = props;
+	const { numSelected, onCancelSelectedOpenOrdersClick, onCancelAllOpenOrdersClick, disableCancelAllButton } = props;
 
 	return (
 		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
@@ -133,8 +135,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 				</button>
 			) : (
 				<button
-					className="mt-2 md:mt-0 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+					className={`mt-2 md:mt-0 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 ${disableCancelAllButton ? 'opacity-50 cursor-not-allowed' : ''}`}
 					onClick={onCancelAllOpenOrdersClick}
+					disabled={disableCancelAllButton}
 				>
 					Cancel All Orders
 				</button>
@@ -155,7 +158,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
 	const [selected, setSelected] = React.useState<readonly string[] | number[]>([]);
 	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(10);
+	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -192,8 +195,8 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 		setPage(newPage);
 	};
 
-	const handleRowsPerPageChange = (selectedOption: any) => {
-		setRowsPerPage(selectedOption.value);
+	const handleChangeRowsPerPage = (option: { value: number; label: string }) => {
+		setRowsPerPage(option.value);
 		setPage(0);
 	};
 
@@ -217,6 +220,10 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 	};
 
 	const handleCancelAllOpenOrdersClick = async () => {
+		if (rows.length === 0) {
+			toast.error("You have no active orders");
+			return;
+		}
 		await cancelAllOpenOrders();
 	};
 
@@ -226,7 +233,6 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 		{ value: 25, label: '25' },
 		{ value: 50, label: '50' },
 		{ value: 100, label: '100' },
-		{ value: 500, label: '500' },
 		{ value: 1000, label: '1000' },
 	];
 
@@ -236,9 +242,10 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 				numSelected={selected.length}
 				onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick}
 				onCancelAllOpenOrdersClick={handleCancelAllOpenOrdersClick}
+				disableCancelAllButton={rows.length === 0}
 			/>
 			<div className="overflow-x-auto max-h-[60vh]">
-				<table className="min-w-full divide-y divide-gray-700 text-sm">
+				<table className="min-w-full divide-y divide-gray-700">
 					<EnhancedTableHead
 						numSelected={selected.length}
 						order={order}
@@ -286,7 +293,7 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 						);
 					})}
 					{emptyRows > 0 && (
-						<tr style={{ height: 33 * emptyRows }}>
+						<tr style={{ height: 53 * emptyRows }}>
 							<td colSpan={9} />
 						</tr>
 					)}
@@ -294,21 +301,21 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 				</table>
 			</div>
 			<div className="flex flex-col md:flex-row justify-between p-4">
-				<div className="mb-4 md:mb-0 relative">
+				<div className="mb-4 md:mb-0 w-28">
 					<Select
-						className="bg-gray-800 text-white border-gray-700"
 						value={rowsPerPageOptions.find(option => option.value === rowsPerPage)}
-						onChange={handleRowsPerPageChange}
+						onChange={(option) => handleChangeRowsPerPage(option as { value: number; label: string })}
 						options={rowsPerPageOptions}
+						className="bg-gray-800 text-white"
 						styles={{
 							control: (provided) => ({
 								...provided,
 								backgroundColor: '#1F2937',
 								borderColor: '#374151',
 								color: '#FFFFFF',
-								minHeight: '40px',
-								height: '40px',
-								fontSize: '15px',
+								minHeight: '35px',
+								height: '35px',
+								fontSize: '14px',
 							}),
 							singleValue: (provided) => ({
 								...provided,
@@ -332,18 +339,17 @@ export default function OrdersTable({ rows, cancelOpenOrder, cancelOpenOrders, c
 							}),
 						}}
 					/>
-					<span className="ml-2">Orders per page</span>
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
-						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 w-24 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
 					>

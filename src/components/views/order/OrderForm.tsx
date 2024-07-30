@@ -51,10 +51,16 @@ const OrderForm = () => {
 		};
 
 		fetchMarkets();
-	}, [handleUnauthorized, toast]);
+	}, [handleUnauthorized]);
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
+
+		const selectedMarket = markets.find((m) => m.value === market);
+		if (!selectedMarket) {
+			toast.error('Selected market is not valid.');
+			return;
+		}
 
 		try {
 			const response = await apiPostRun(
@@ -81,7 +87,7 @@ const OrderForm = () => {
 
 			dispatch({ type: 'api.addOrder', payload: payload.result });
 
-			toast.success(`Order created successfully!`);
+			toast.success('Order created successfully!');
 		} catch (error) {
 			console.error('Failed to create order:', error);
 			toast.error('Failed to create order.');
@@ -100,16 +106,18 @@ const OrderForm = () => {
 
 	return (
 		<div className="h-full w-full p-4 bg-gray-900 text-white">
-			<h2 className="text-2xl font-bold mb-4">Create Order</h2>
 			<form onSubmit={handleSubmit} className="space-y-4">
 				<div>
-					<label htmlFor="market" className="block text-sm font-medium text-gray-300">Market</label>
+					<label htmlFor="market" className="block text-sm font-medium text-gray-300">
+						Market
+					</label>
 					<Select
 						id="market"
-						value={markets.find(option => option.value === market)}
+						value={markets.find((option) => option.value === market)}
 						onChange={(option) => setMarket(option?.value || '')}
 						options={markets}
 						className="mt-1"
+						placeholder="Select a market"
 						styles={{
 							control: (provided) => ({
 								...provided,
@@ -144,10 +152,12 @@ const OrderForm = () => {
 					/>
 				</div>
 				<div>
-					<label htmlFor="orderType" className="block text-sm font-medium text-gray-300">Order Type</label>
+					<label htmlFor="orderType" className="block text-sm font-medium text-gray-300">
+						Order Type
+					</label>
 					<Select
 						id="orderType"
-						value={orderTypeOptions.find(option => option.value === orderType)}
+						value={orderTypeOptions.find((option) => option.value === orderType)}
 						onChange={(option) => setOrderType(option?.value || 'limit')}
 						options={orderTypeOptions}
 						className="mt-1"
@@ -185,10 +195,12 @@ const OrderForm = () => {
 					/>
 				</div>
 				<div>
-					<label htmlFor="side" className="block text-sm font-medium text-gray-300">Side</label>
+					<label htmlFor="side" className="block text-sm font-medium text-gray-300">
+						Side
+					</label>
 					<Select
 						id="side"
-						value={sideOptions.find(option => option.value === side)}
+						value={sideOptions.find((option) => option.value === side)}
 						onChange={(option) => setSide(option?.value || 'buy')}
 						options={sideOptions}
 						className="mt-1"
@@ -226,7 +238,9 @@ const OrderForm = () => {
 					/>
 				</div>
 				<div>
-					<label htmlFor="amount" className="block text-sm font-medium text-gray-300">Amount</label>
+					<label htmlFor="amount" className="block text-sm font-medium text-gray-300">
+						Amount
+					</label>
 					<input
 						id="amount"
 						type="number"
@@ -238,7 +252,9 @@ const OrderForm = () => {
 					/>
 				</div>
 				<div>
-					<label htmlFor="price" className="block text-sm font-medium text-gray-300">Price</label>
+					<label htmlFor="price" className="block text-sm font-medium text-gray-300">
+						Price
+					</label>
 					<input
 						id="price"
 						type="number"
