@@ -27,7 +27,7 @@ const MainLayout = () => {
 				return 'Market';
 			case '/signIn':
 				return 'Sign In';
-			case '/create-order':
+			case '/createOrder':
 				return 'Create Order';
 			default:
 				return 'Home';
@@ -59,7 +59,7 @@ const MainLayout = () => {
 						<ListItem button component={Link} to="/markets" className="hover:bg-gray-700">
 							<ListItemText primary="Markets" />
 						</ListItem>
-						<ListItem button component={Link} to="/create-order" className="hover:bg-gray-700">
+						<ListItem button component={Link} to="/createOrder" className="hover:bg-gray-700">
 							<ListItemText primary="Create Order" />
 						</ListItem>
 					</List>
