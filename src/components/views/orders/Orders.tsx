@@ -70,6 +70,7 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'fetch_open_orders',
 					parameters: {
+						symbol: 'tSOLtUSDC',
 					},
 				},
 				this.props.handleUnAuthorized
