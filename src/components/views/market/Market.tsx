@@ -170,7 +170,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 					bottom: 0.2,
 				},
 			});
-			// this.chartSeries.setData(lines);
+			this.chartSeries.setData(lines);
 
 			// let candles = this.transformCandlesInCandlesticks(payload);
 			// console.log('candles', candles);
@@ -189,7 +189,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 			// 		bottom: 0.2,
 			// 	},
 			// });
-			// // this.chartSeries.setData(candles);
+			// this.chartSeries.setData(candles);
 
 			this.chart.timeScale().fitContent();
 			this.chart.timeScale().scrollToRealTime();
