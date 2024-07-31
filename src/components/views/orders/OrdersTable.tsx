@@ -6,7 +6,6 @@ interface Data {
 	checkbox: boolean;
 	id: number;
 	market: string;
-	// status: string;
 	side: string;
 	amount: number;
 	price: number;
@@ -61,7 +60,6 @@ interface HeadCell {
 const headCells: readonly HeadCell[] = [
 	{ id: 'id', label: 'ID', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'market', label: 'Market', align: 'center', numeric: false, disablePadding: false },
-	// { id: 'status', label: 'Status', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'side', label: 'Side', align: 'center', numeric: false, disablePadding: false },
 	{ id: 'amount', label: 'Amount', align: 'center', numeric: true, disablePadding: false },
 	{ id: 'price', label: 'Price', align: 'center', numeric: true, disablePadding: false },
@@ -150,11 +148,11 @@ interface Props {
 }
 
 export default function OrdersTable({
-	rows,
-	cancelOpenOrder,
-	cancelOpenOrders,
-	cancelAllOpenOrders
-}: Props) {
+																			rows,
+																			cancelOpenOrder,
+																			cancelOpenOrders,
+																			cancelAllOpenOrders
+																		}: Props) {
 	const [ order, setOrder ] = React.useState<Order>('asc');
 	const [ orderBy, setOrderBy ] = React.useState<keyof Data>('market');
 	const [ selected, setSelected ] = React.useState<readonly string[] | number[]>([]);
@@ -212,12 +210,18 @@ export default function OrdersTable({
 
 	const handleCancelOpenOrderClick = (orderId: string | number) => async (event: React.MouseEvent) => {
 		event.stopPropagation();
-		await cancelOpenOrder(orderId);
+		const confirm = window.confirm(`Are you sure you want to cancel order ${orderId}?`);
+		if (confirm) {
+			await cancelOpenOrder(orderId);
+		}
 	};
 
 	const handleCancelSelectedOpenOrdersClick = async () => {
-		await cancelOpenOrders(selected);
-		setSelected([]);
+		const confirm = window.confirm(`Are you sure you want to cancel the selected orders?`);
+		if (confirm) {
+			await cancelOpenOrders(selected);
+			setSelected([]);
+		}
 	};
 
 	const handleCancelAllOpenOrdersClick = async () => {
@@ -225,15 +229,10 @@ export default function OrdersTable({
 			toast.error("You have no active orders");
 			return;
 		}
-		await cancelAllOpenOrders();
-	};
-
-	const formatNumber = (value: string | number) => {
-		return new Intl.NumberFormat('en-US', {
-			style: 'decimal',
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 10
-		}).format(Number(value))
+		const confirm = window.confirm(`Are you sure you want to cancel all open orders?`);
+		if (confirm) {
+			await cancelAllOpenOrders();
+		}
 	};
 
 	const rowsPerPageOptions = [
@@ -285,10 +284,9 @@ export default function OrdersTable({
 								</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.id}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.market}</td>
-								{/* <td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.status}</td> */}
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.side.toString().toUpperCase()}</td>
-								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{formatNumber(row.amount)}</td>
-								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{formatNumber(row.price)}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.amount}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.price}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.datetime}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">
 									<button

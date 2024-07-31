@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import Select from 'react-select';
 import { Formik, Form, Field } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import Spinner from 'components/views/spinner/Spinner'; // Adjust the import path as needed
 
 const OrderForm = () => {
 	const [markets, setMarkets] = useState([]);
@@ -61,11 +62,12 @@ const OrderForm = () => {
 		{ value: 'sell', label: 'Sell' },
 	];
 
-	const handleSubmit = async (values: any) => {
+	const handleSubmit = async (values: any, setSubmitting: any) => {
 		try {
 			const selectedMarket = markets.find((m: any) => m.value === values.market);
 			if (!selectedMarket) {
 				toast.error('Selected market is not valid.');
+				setSubmitting(false);
 				return;
 			}
 
@@ -89,18 +91,19 @@ const OrderForm = () => {
 				throw new Error('Network response was not OK');
 			}
 
-			// const payload = response.data;
+			const payload = response.data;
 
-			// dispatch({ type: 'api.addOrder', payload: payload.result });
+			dispatch({ type: 'api.addOrder', payload: payload.result });
 
 			toast.success('Order created successfully!');
-
 			navigate('/orders');
 		} catch (error) {
 			console.error('Failed to create order:', error);
 			toast.error('Failed to create order.');
+		} finally {
+			setSubmitting(false);
 		}
-	}
+	};
 
 	return (
 		<div className="h-full w-full p-4 bg-gray-900 text-white">
@@ -112,57 +115,10 @@ const OrderForm = () => {
 					amount: '',
 					price: '',
 				}}
-				onSubmit={async (values, { setSubmitting }) => {
-					const selectedMarket = markets.find((m) => m.value === values.market);
-					if (!selectedMarket) {
-						toast.error('Selected market is not valid.');
-						setSubmitting(false);
-						return;
-					}
-
-					try {
-						const response = await apiPostRun(
-							{
-								exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-								environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-								method: 'create_order',
-								parameters: {
-									symbol: values.market,
-									type: values.orderType,
-									side: values.side,
-									amount: parseFloat(values.amount),
-									price: parseFloat(values.price),
-								},
-							},
-							handleUnauthorized
-						);
-
-						if (response.status !== 200) {
-							throw new Error('Network response was not OK');
-						}
-
-						const payload = response.data;
-
-						dispatch({ type: 'api.addOrder', payload: payload.result });
-
-						toast.success('Order created successfully!');
-					} catch (error) {
-						console.error('Failed to create order:', error);
-						toast.error('Failed to create order.');
-					} finally {
-						setSubmitting(false);
-					}
-				}}
+				onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting)}
 			>
 				{({ isSubmitting, setFieldValue, values }) => (
-					<Form
-						className="space-y-4"
-						onSubmit={async (e) => {
-							e.preventDefault();
-							e.stopPropagation();
-							await handleSubmit(values);
-						}}
-					>
+					<Form className="space-y-4">
 						<div>
 							<label htmlFor="market" className="block text-sm font-medium text-gray-300">
 								Market
@@ -326,9 +282,10 @@ const OrderForm = () => {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 w-full"
+								className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 w-full flex items-center justify-center"
+								style={{ minHeight: '40px', height: '40px' }}
 							>
-								Create Order
+								{isSubmitting ? <Spinner /> : 'Create Order'}
 							</button>
 						</div>
 					</Form>
