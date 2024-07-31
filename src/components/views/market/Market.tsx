@@ -91,7 +91,7 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 				className={'h-full w-full'}
 			>
 				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error.message}</div> : null}
+				{error ? <div>Error: {error}</div> : null}
 				<div
 					id="chart-container"
 					className="chart-container h-full w-full"
@@ -206,8 +206,10 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 				}
 			}
 
-			this.setState({ error: exception });
-			toast.error(exception as string);
+			const message = 'An error has occurred while performing this operation'
+
+			this.setState({ error: message });
+			toast.error(message);
 		} finally {
 			this.setState({ isLoading: false });
 		}
@@ -269,14 +271,16 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
-						clearInterval(this.recurrentIntervalId);
-
 						return;
 					}
 				}
 
-				this.setState({ error: exception });
-				toast.error(exception as string);
+				const message = 'An error has occurred while performing this operation'
+
+				this.setState({ error: message });
+				toast.error(message);
+
+				clearInterval(this.recurrentIntervalId);
 			}
 		};
 

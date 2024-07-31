@@ -125,15 +125,15 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 
 			if (axios.isAxiosError(exception)) {
 				if (exception?.response?.status === 401) {
-					clearInterval(this.recurrentIntervalId);
-
 					// TODO check if the hook is navigating to the signIn page!!!
 					return;
 				}
 			}
 
-			this.setState({ error: exception });
-			toast.error(exception as string);
+			const message = 'An error has occurred while performing this operation'
+
+			this.setState({ error: message });
+			toast.error(message);
 		} finally {
 			this.setState({ isLoading: false });
 		}
@@ -169,15 +169,17 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
-						clearInterval(this.recurrentIntervalId);
-
 						// TODO check if the hook is navigating to the signIn page!!!
 						return;
 					}
 				}
 
-				this.setState({ error: exception });
-				toast.error(exception as string);
+				const message = 'An error has occurred while performing this operation'
+
+				this.setState({ error: message });
+				toast.error(message);
+
+				clearInterval(this.recurrentIntervalId);
 			}
 		};
 
