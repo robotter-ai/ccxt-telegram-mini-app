@@ -228,6 +228,14 @@ export default function OrdersTable({
 		await cancelAllOpenOrders();
 	};
 
+	const formatNumber = (value: number) => {
+		return new Intl.NumberFormat('en-US', {
+			style: 'decimal',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(Number(value))
+	};
+
 	const rowsPerPageOptions = [
 		{ value: 5, label: '5' },
 		{ value: 10, label: '10' },
@@ -279,8 +287,8 @@ export default function OrdersTable({
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.market}</td>
 								{/* <td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.status}</td> */}
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.side.toString().toUpperCase()}</td>
-								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.amount}</td>
-								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.price}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{formatNumber(row.amount)}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{formatNumber(row.price)}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.datetime}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">
 									<button
