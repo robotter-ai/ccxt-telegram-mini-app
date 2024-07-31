@@ -126,7 +126,7 @@ export default function MarketsTable({ rows }: Props) {
 	};
 
 	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-		navigate(`/market/BINANCE:ETHUSDT`);
+		navigate(`/market?marketId=${id}`);
 	};
 
 	const handleChangePage = (event: unknown, newPage: number) => {
