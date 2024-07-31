@@ -157,10 +157,14 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 	async cancelOpenOrders(orderIds: string[]) {
 		if (!orderIds || !(orderIds.length > 0)) return;
 
-		const promises = orderIds.map(async (orderId: string) => await this.cancelOpenOrder(orderId));
-		await Promise.all(promises);
+		try {
+			const promises = orderIds.map(async (orderId: string) => await this.cancelOpenOrder(orderId));
+			await Promise.all(promises);
 
-		toast.success('Selected orders canceled successfully!');
+			// toast.success('Selected orders canceled successfully!');
+		} catch (exception) {
+			// toast.error('An error has occurred while trying to cancel the selected orders.');
+		}
 	}
 
 	async cancelAllOpenOrders() {
