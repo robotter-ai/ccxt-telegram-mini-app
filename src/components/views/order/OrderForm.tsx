@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
-import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
-import { Formik, Form, Field } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import Spinner from 'components/views/spinner/Spinner'; // Adjust the import path as needed
+import Spinner from 'components/views/spinner/Spinner';
 
 const OrderForm = () => {
-	const [markets, setMarkets] = useState([]);
-	const dispatch = useDispatch();
+	const [markets, setMarkets] = useState([] as any[]);
 	const handleUnauthorized = useHandleUnauthorized();
 	const navigate = useNavigate();
 
@@ -28,12 +26,14 @@ const OrderForm = () => {
 				);
 
 				if (response.status !== 200) {
+					// noinspection ExceptionCaughtLocallyJS
 					throw new Error('Network response was not OK');
 				}
 
 				const payload = response.data.result;
 
 				if (!Array.isArray(payload)) {
+					// noinspection ExceptionCaughtLocallyJS
 					throw new Error('Unexpected API response format');
 				}
 
@@ -62,12 +62,11 @@ const OrderForm = () => {
 		{ value: 'sell', label: 'Sell' },
 	];
 
-	const handleSubmit = async (values: any, setSubmitting: any) => {
+	const handleSubmit = async (values: any) => {
 		try {
 			const selectedMarket = markets.find((m: any) => m.value === values.market);
 			if (!selectedMarket) {
 				toast.error('Selected market is not valid.');
-				setSubmitting(false);
 				return;
 			}
 
@@ -88,20 +87,20 @@ const OrderForm = () => {
 			);
 
 			if (response.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Network response was not OK');
 			}
 
-			const payload = response.data;
+			// const payload = response.data;
 
-			dispatch({ type: 'api.addOrder', payload: payload.result });
+			// dispatch({ type: 'api.addOrder', payload: payload.result });
 
 			toast.success('Order created successfully!');
+
 			navigate('/orders');
 		} catch (error) {
 			console.error('Failed to create order:', error);
 			toast.error('Failed to create order.');
-		} finally {
-			setSubmitting(false);
 		}
 	};
 
@@ -115,10 +114,17 @@ const OrderForm = () => {
 					amount: '',
 					price: '',
 				}}
-				onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting)}
+				onSubmit={(values) => handleSubmit(values)}
 			>
 				{({ isSubmitting, setFieldValue, values }) => (
-					<Form className="space-y-4">
+					<Form
+						className="space-y-4"
+						onSubmit={async (e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							await handleSubmit(values);
+						}}
+					>
 						<div>
 							<label htmlFor="market" className="block text-sm font-medium text-gray-300">
 								Market
