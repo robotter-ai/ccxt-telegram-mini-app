@@ -2,19 +2,21 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 // import PropTypes from 'prop-types';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
-// import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
-// import { apiPostRun } from 'model/service/api';
+import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';
 import './Development.css';
 import { toast } from 'react-toastify';
-
-function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 interface DevelopmentProps extends BaseProps {
+	queryParams: any;
+	params: any;
+	searchParams: any;
+	navigate: any;
+	handleUnAuthorized: any;
 	stateValue: any,
 	propsValue: any,
 	fetchedData: any,
@@ -57,8 +59,8 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 			error: null,
 		};
 
-		// // @ts-ignore
-		// this.context.handleUnAuthorized = useHandleUnauthorized();
+		// @ts-ignore
+		this.context.handleUnAuthorized = this.props.handleUnAuthorized;
 
 		this.recurrentIntervalId = undefined;
 		this.recurrentDelay = 5 * 1000;
@@ -88,7 +90,7 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 		return (
 			<div>
 				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error.message}</div> : null}
+				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
 			</div>
 		);
@@ -96,31 +98,19 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 
 	async initialize() {
 		try {
-			// const response = await apiPostRun(
-			// 	{
-			// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-			// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-			// 		method: '<apiFunction>',
-			// 		parameters: {
-			// 			param1: '<param1Value>',
-			// 			param2: '<param2Value>',
-			// 		},
-			// 	},
-			// 	// @ts-ignore
-			// 	this.context.handleUnAuthorized
-			// );
-
-			const response = {
-				status: 200,
-				text: null,
-				data: {
-					result: {
-						a: 'b'
-					}
-				}
-			}
-
-			await sleep(2000);
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: '<apiFunction>',
+					parameters: {
+						param1: '<param1Value>',
+						param2: '<param2Value>',
+					},
+				},
+				// @ts-ignore
+				this.context.handleUnAuthorized
+			);
 
 			if (response.status !== 200) {
 				// noinspection ExceptionCaughtLocallyJS
@@ -129,21 +119,21 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 
 			const payload = response.data.result;
 
-			dispatch('api.updateTemplateData', payload);
+			dispatch('api.updateDevelopmentData', payload);
 		} catch (exception) {
 			console.error(exception);
 
 			if (axios.isAxiosError(exception)) {
 				if (exception?.response?.status === 401) {
-					clearInterval(this.recurrentIntervalId);
-
 					// TODO check if the hook is navigating to the signIn page!!!
 					return;
 				}
 			}
 
-			this.setState({ error: exception });
-			toast.error(exception as string);
+			const message = 'An error has occurred while performing this operation'
+
+			this.setState({ error: message });
+			toast.error(message);
 		} finally {
 			this.setState({ isLoading: false });
 		}
@@ -152,54 +142,44 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				// const response = await apiPostRun(
-				// 	{
-				// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				// 		method: '<apiFunction>',
-				// 		parameters: {
-				// 			param1: '<param1Value>',
-				// 			param2: '<param2Value>',
-				// 		},
-				// 	},
-				// 	// @ts-ignore
-				// 	this.context.handleUnAuthorized
-				// );
-
-				const response = {
-					status: 200,
-					text: null,
-					data: {
-						result: {
-							a: 'b'
-						}
-					}
-				}
+				const response = await apiPostRun(
+					{
+						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+						method: '<apiFunction>',
+						parameters: {
+							param1: '<param1Value>',
+							param2: '<param2Value>',
+						},
+					},
+					// @ts-ignore
+					this.context.handleUnAuthorized
+				);
 
 				if (response.status !== 200) {
 					// noinspection ExceptionCaughtLocallyJS
 					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
 				}
 
-				await sleep(2000);
-
 				const payload = response.data.result;
 
-				dispatch('api.updateTemplateData', payload);
+				dispatch('api.updateDevelopmentData', payload);
 			} catch (exception) {
 				console.error(exception);
 
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
-						clearInterval(this.recurrentIntervalId);
-
 						// TODO check if the hook is navigating to the signIn page!!!
 						return;
 					}
 				}
 
-				this.setState({ error: exception });
-				toast.error(exception as string);
+				const message = 'An error has occurred while performing this operation'
+
+				this.setState({ error: message });
+				toast.error(message);
+
+				clearInterval(this.recurrentIntervalId);
 			}
 		};
 
@@ -208,5 +188,25 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 	}
 }
 
+const DevelopmentBehavior = (props: any) => {
+	const location = useLocation();
+	const navigate = useNavigate();
+	const params = useParams();
+	const queryParams = new URLSearchParams(location.search)
+	const [searchParams] = useSearchParams();
+	const handleUnAuthorized = useHandleUnauthorized();
+
+	return <
+		DevelopmentStructure
+		{...props}
+		location={location}
+		navigate={navigate}
+		params={params}
+		queryParams={queryParams}
+		searchParams={searchParams}
+		handleUnAuthorized={handleUnAuthorized}
+	/>;
+};
+
 // noinspection JSUnusedGlobalSymbols
-export const Development = connect(mapStateToProps)(DevelopmentStructure)
+export const Development = connect(mapStateToProps)(DevelopmentBehavior)
