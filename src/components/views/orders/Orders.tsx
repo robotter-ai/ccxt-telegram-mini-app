@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';

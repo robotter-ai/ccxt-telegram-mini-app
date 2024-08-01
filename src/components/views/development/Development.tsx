@@ -1,35 +1,23 @@
+import './Development.css';
 import { connect } from 'react-redux';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
-// import PropTypes from 'prop-types';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';
-import './Development.css';
-import { toast } from 'react-toastify';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Map } from 'model/helper/extendable-immutable/map';
 
 interface DevelopmentProps extends BaseProps {
-	queryParams: any;
-	params: any;
-	searchParams: any;
-	navigate: any;
-	handleUnAuthorized: any;
 	stateValue: any,
 	propsValue: any,
 	fetchedData: any,
 }
 
 interface DevelopmentState extends BaseState {
-	isLoading: boolean,
-	error?: string,
-}
-
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-interface DevelopmentSnapshot extends BaseSnapshot {
 }
 
 const mapStateToProps = (state: DevelopmentState | any, props: DevelopmentProps | any) => ({
@@ -37,53 +25,34 @@ const mapStateToProps = (state: DevelopmentState | any, props: DevelopmentProps 
 	propsValue: props.value,
 })
 
-// @ts-ignore
-class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapshot> extends Base {
+class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 
-	// static contextTypes = {
-	// 	handleUnAuthorized: PropTypes.func,
-	// };
+	properties: Map = new Map();
 
-	static defaultProps: Partial<BaseProps> = {
-	};
-
-	recurrentIntervalId?: number;
-
-	recurrentDelay?: number;
-
-	constructor(props: BaseProps) {
+	constructor(props: DevelopmentProps) {
 		super(props);
 
 		this.state = {
 			isLoading: true,
-			error: null,
-		};
+			error: undefined,
+		} as Readonly<DevelopmentState>;
 
-		// @ts-ignore
-		this.context.handleUnAuthorized = this.props.handleUnAuthorized;
-
-		this.recurrentIntervalId = undefined;
-		this.recurrentDelay = 5 * 1000;
+		this.properties.setIn('recurrent.5s.intervalId', undefined);
+		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
 	}
 
 	async componentDidMount() {
-		console.log('componentDidMount', arguments);
-
 		await this.initialize();
 		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
-		console.log('componentWillUnmount', arguments);
-
-		if (this.recurrentIntervalId) {
-			clearInterval(this.recurrentIntervalId);
+		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
+			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 		}
 	}
 
 	render() {
-		console.log('render', arguments);
-
 		const { isLoading, error } = this.state;
 		const { fetchedData } = this.props;
 
@@ -108,8 +77,7 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 						param2: '<param2Value>',
 					},
 				},
-				// @ts-ignore
-				this.context.handleUnAuthorized
+				this.props.handleUnAuthorized
 			);
 
 			if (response.status !== 200) {
@@ -153,7 +121,7 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 						},
 					},
 					// @ts-ignore
-					this.context.handleUnAuthorized
+					this.props.handleUnAuthorized
 				);
 
 				if (response.status !== 200) {
@@ -179,12 +147,15 @@ class DevelopmentStructure<DevelopmentProps, DevelopmentState, DevelopmentSnapsh
 				this.setState({ error: message });
 				toast.error(message);
 
-				clearInterval(this.recurrentIntervalId);
+				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 			}
 		};
 
 		// @ts-ignore
-		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
+		this.properties.setIn(
+			'recurrent.5s.intervalId',
+			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+		);
 	}
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { toast } from 'react-toastify';
 import Select from 'react-select';

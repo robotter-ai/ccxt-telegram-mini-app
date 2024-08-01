@@ -119,7 +119,7 @@ pushStack('api.signOut', (currentState: any, payload: any) => {
 	);
 
 	nextState.setIn(
-		'api.signedIn',
+		'api.isSignedIn',
 		false
 	);
 

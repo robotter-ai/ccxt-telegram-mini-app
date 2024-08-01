@@ -22,7 +22,7 @@ export class Map extends MutableMap {
 	 *
 	 * @param key
 	 */
-	getIn(key: any) {
+	getIn<T>(key: any) {
 		if (key == null) {
 			return null;
 		}
@@ -31,7 +31,7 @@ export class Map extends MutableMap {
 			return super.getIn(key);
 		}
 
-		return super.getIn(key.split('.'));
+		return super.getIn(key.split('.')) as T;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';

@@ -5,8 +5,8 @@ import { dispatch } from 'model/state/redux/store';
 export const useHandleUnauthorized = () => {
 	// const navigate = useNavigate();
 
-	return () => {
-		dispatch('api.signOut', undefined);
+	return async () => {
+		dispatch('api.signOut', true);
 		// navigate(Constant.signInPath.value as string);
 	};
 };

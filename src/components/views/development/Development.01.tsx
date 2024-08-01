@@ -2,7 +2,7 @@
 // noinspection JSUnusedLocalSymbols
 
 import { useEffect, useState } from 'react';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostAuthSignIn, apiPostRun } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import axios from 'axios';

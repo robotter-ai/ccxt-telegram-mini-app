@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useHandleUnauthorized } from 'utils/hooks/useHandleUnauthorized';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import OrdersTable from 'components/views/orders/OrdersTable';

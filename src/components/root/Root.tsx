@@ -1,11 +1,12 @@
-// import React from 'react';
-import ReactDOM from 'react-dom/client';
 import './Root.css';
+import 'react-toastify/dist/ReactToastify.css';
 import 'model/initializer';
-import { Router } from 'components/router/Router';
+import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { AppContext } from 'model/contexts/AppContext';
+import { Router } from 'components/router/Router';
+// import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized.ts';
 
 const initialize = async () => {
 	// noinspection UnnecessaryLocalVariableJS
@@ -15,8 +16,10 @@ const initialize = async () => {
 		.render(
 			// <React.StrictMode>
 			<Provider store={reduxStore}>
-				<ToastContainer/>
-				<Router/>
+				<AppContext.Provider value={{}}>
+					<ToastContainer/>
+					<Router/>
+				</AppContext.Provider>
 			</Provider>
 			// </React.StrictMode>
 		);
