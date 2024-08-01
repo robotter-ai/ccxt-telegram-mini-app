@@ -4,6 +4,7 @@ import { Menu } from '@mui/icons-material';
 import { Drawer, IconButton, List, ListItem, ListItemText } from '@mui/material';
 import logo from 'src/assets/images/logo/exchange.png';
 import Spinner from 'components/views/spinner/Spinner';
+import SignOut from 'components/views/sign_out/SignOut';  // Import the SignOut component
 
 const MainLayout = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
@@ -12,9 +13,8 @@ const MainLayout = () => {
 
 	const handleLogoClick = (event: React.MouseEvent) => {
 		event.stopPropagation();
-
 		navigate('/');
-	}
+	};
 
 	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
 		if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
@@ -69,9 +69,7 @@ const MainLayout = () => {
 						<ListItem button component={Link} to="/createOrder" className="hover:bg-gray-700">
 							<ListItemText primary="Create Order" />
 						</ListItem>
-						{/* <ListItem button onClick={handleSignOut} className="hover:bg-gray-700"> */}
-						{/* 	<ListItemText primary="Sign Out" /> */}
-						{/* </ListItem> */}
+						<SignOut />
 					</List>
 				</div>
 			</Drawer>
