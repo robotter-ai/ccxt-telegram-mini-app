@@ -150,38 +150,33 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
 			toast.error(`Failed to cancel order ${order.id}.`);
+			throw error;
 		}
 	}
 
 	async cancelOpenOrders(orders: readonly any[]) {
 		if (!orders || !(orders.length > 0)) return;
 
-		try {
-			const promises = orders.map(async (order: any) => await this.cancelOpenOrder(order));
-			await Promise.all(promises);
+		const errors: any[] = [];
 
-			// toast.success('Selected orders canceled successfully!');
-		} catch (exception) {
-			// toast.error('An error has occurred while trying to cancel the selected orders.');
+		const promises = orders.map(async (order) => {
+			try {
+				await this.cancelOpenOrder(order);
+			} catch (error: any) {
+				errors.push(new Error(`Failed to cancel order ${order.id}.`));
+			}
+		});
+
+		await Promise.all(promises);
+
+		if (errors.length > 0) {
+			throw new Error(errors.map(error => error.message).join('\n'));
 		}
 	}
 
-	async cancelAllOpenOrders() {
+	async cancelAllOpenOrders(orders: readonly any[]) {
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'cancel_all_orders',
-					parameters: {
-					},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				throw new Error('Network response was not OK');
-			}
+			await this.cancelOpenOrders(orders);
 
 			this.props.openOrders.forEach((order: any) => this.canceledOrdersRef.add(order.id));
 
@@ -189,7 +184,7 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 
 			toast.success('All orders canceled successfully!');
 		} catch (error) {
-			console.error('Failed to cancel all orders:', error);
+			console.error(error);
 			toast.error('Failed to cancel all orders.');
 		}
 	}

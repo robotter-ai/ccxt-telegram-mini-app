@@ -144,7 +144,7 @@ interface Props {
 	rows: Data[];
 	cancelOpenOrder: (order: any) => Promise<void>;
 	cancelOpenOrders: (orders: readonly any[]) => Promise<void>;
-	cancelAllOpenOrders: () => Promise<void>;
+	cancelAllOpenOrders: (order: readonly any[]) => Promise<void>;
 }
 
 export default function OrdersTable({
@@ -221,7 +221,6 @@ export default function OrdersTable({
 		const confirm = window.confirm(`Are you sure you want to cancel the selected orders?`);
 		if (confirm) {
 			await cancelOpenOrders(selected);
-			setSelected([]);
 		}
 	};
 
@@ -232,7 +231,7 @@ export default function OrdersTable({
 		}
 		const confirm = window.confirm(`Are you sure you want to cancel all open orders?`);
 		if (confirm) {
-			await cancelAllOpenOrders();
+			await cancelAllOpenOrders(rows);
 		}
 	};
 
