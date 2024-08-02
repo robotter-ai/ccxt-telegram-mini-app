@@ -221,6 +221,7 @@ export default function OrdersTable({
 		const confirm = window.confirm(`Are you sure you want to cancel the selected orders?`);
 		if (confirm) {
 			await cancelOpenOrders(selected);
+			setSelected([]);
 		}
 	};
 
