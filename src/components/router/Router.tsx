@@ -7,7 +7,7 @@ import { SignIn } from 'components/views/sign_in/SignIn';
 import { Markets } from 'components/views/markets/Markets';
 import { Market } from 'components/views/market/Market';
 import MainLayout from 'components/views/main/MainLayout';
-import OrderForm from 'components/views/order/OrderForm';
+import { CreateOrder } from 'components/views/order/CreateOrder.tsx';
 
 const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
@@ -36,7 +36,7 @@ const RouterStructure = () => {
 					<Route path="/market" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
 					<Route path="/market/:marketId" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
 					<Route path="/development" element={<NormalizedRoute element={<Development />} />} />
-					<Route path="/createOrder" element={<NormalizedRoute element={<OrderForm />} checkAuthentication />} />
+					<Route path="/createOrder" element={<NormalizedRoute element={<CreateOrder />} checkAuthentication />} />
 					<Route path="*" element={<Navigate to="/" />} />
 				</Route>
 			</Routes>

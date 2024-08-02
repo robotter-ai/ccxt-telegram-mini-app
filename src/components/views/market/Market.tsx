@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { CandlestickData, createChart, LineData, UTCTimestamp, WhitespaceData } from 'lightweight-charts';
 import { createRef } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { CreateOrder } from 'components/views/order/CreateOrder.tsx';
 
 interface MarketProps extends BaseProps {
 	market: any,
@@ -33,7 +34,7 @@ const mapStateToProps = (state: MarketState | any, props: MarketProps | any) => 
 })
 
 // @ts-ignore
-class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
+class MarketStructure extends Base<MarketProps, MarketState, MarketSnapshot> {
 
 	static defaultProps: Partial<BaseProps> = {
 	};
@@ -48,12 +49,12 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 
 	private chartReference = createRef<HTMLDivElement>();
 
-	constructor(props: BaseProps) {
+	constructor(props: MarketProps) {
 		super(props);
 
 		this.state = {
 			isLoading: true,
-			error: null,
+			error: undefined,
 		};
 
 		const { marketId: pathMarketId } = this.props.params;
@@ -101,6 +102,17 @@ class MarketStructure<MarketProps, MarketState, MarketSnapshot> extends Base {
 						className="h-lvh w-full"
 						ref={this.chartReference}
 					></div>
+				</div>
+				<div
+					className={'h-full w-full'}
+				>
+					<h1 className="text-center text-2xl font-bold pt-10 pb-2">
+						Place an Order
+					</h1>
+					<CreateOrder
+						marketId={this.props.market.id}
+					>
+					</CreateOrder>
 				</div>
 			</div>
 		);

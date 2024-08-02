@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { toast } from 'react-toastify';
@@ -6,51 +6,25 @@ import Select from 'react-select';
 import { Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'components/views/spinner/Spinner';
+import { connect } from 'react-redux';
 
-const OrderForm = () => {
-	const [markets, setMarkets] = useState([] as any[]);
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const mapStateToProps = (state: any, props: any) => ({
+	markets: state.api.markets,
+});
+
+const CreateOrderStructure = ({ markets, marketId }: any) => {
 	const handleUnauthorized = useHandleUnauthorized();
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const fetchMarkets = async () => {
-			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'fetch_markets',
-						parameters: {},
-					},
-					handleUnauthorized
-				);
-
-				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error('Network response was not OK');
-				}
-
-				const payload = response.data.result;
-
-				if (!Array.isArray(payload)) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error('Unexpected API response format');
-				}
-
-				const formattedMarkets = payload.map((market) => ({
-					value: market.symbol,
-					label: `${market.base}/${market.quote}`,
-				}));
-
-				setMarkets(formattedMarkets);
-			} catch (error) {
-				console.error('Failed to fetch markets:', error);
-				toast.error('Failed to fetch markets.');
-			}
-		};
-
-		fetchMarkets();
 	}, [handleUnauthorized]);
+
+	markets = markets.map((market: any) => ({
+		value: market.symbol,
+		label: `${market.base}/${market.quote}`,
+	}));
 
 	const orderTypeOptions = [
 		{ value: 'limit', label: 'Limit' },
@@ -64,7 +38,7 @@ const OrderForm = () => {
 
 	const handleSubmit = async (values: any) => {
 		try {
-			const selectedMarket = markets.find((m: any) => m.value === values.market);
+			const selectedMarket = markets.find((m: any) => m.value ? m.value.toUpperCase() === values.market.toUpperCase() : false);
 			if (!selectedMarket) {
 				toast.error('Selected market is not valid.');
 				return;
@@ -108,13 +82,14 @@ const OrderForm = () => {
 		<div className="h-full w-full p-4 bg-gray-900 text-white">
 			<Formik
 				initialValues={{
-					market: '',
+					market: marketId || '',
 					orderType: 'limit',
 					side: 'buy',
 					amount: '',
 					price: '',
 				}}
 				onSubmit={(values) => handleSubmit(values)}
+				enableReinitialize={true}
 			>
 				{({ isSubmitting, setFieldValue, values }) => (
 					<Form
@@ -125,14 +100,14 @@ const OrderForm = () => {
 							await handleSubmit(values);
 						}}
 					>
-						<div>
+						{!marketId && <div>
 							<label htmlFor="market" className="block text-sm font-medium text-gray-300">
 								Market
 							</label>
 							<Select
 								id="market"
 								name="market"
-								value={markets.find((option) => option.value === values.market)}
+								value={markets.find((option: any) => option.value ? option.value.toUpperCase() === values.market.toUpperCase() : false)}
 								onChange={(option) => setFieldValue('market', option?.value || '')}
 								options={markets}
 								className="mt-1"
@@ -169,7 +144,7 @@ const OrderForm = () => {
 									}),
 								}}
 							/>
-						</div>
+						</div>}
 						<div>
 							<label htmlFor="orderType" className="block text-sm font-medium text-gray-300">
 								Order Type
@@ -301,4 +276,4 @@ const OrderForm = () => {
 	);
 };
 
-export default OrderForm;
+export const CreateOrder = connect(mapStateToProps)(CreateOrderStructure)
