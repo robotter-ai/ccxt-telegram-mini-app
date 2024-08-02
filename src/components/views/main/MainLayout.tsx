@@ -4,7 +4,7 @@ import { Menu } from '@mui/icons-material';
 import { Drawer, IconButton, List, ListItem, ListItemText } from '@mui/material';
 import logo from 'src/assets/images/logo/exchange.png';
 import Spinner from 'components/views/spinner/Spinner';
-import SignOut from 'components/views/sign_out/SignOut';  // Import the SignOut component
+import SignOut from 'components/views/sign_out/SignOut';
 
 const MainLayout = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
@@ -42,7 +42,7 @@ const MainLayout = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-900 text-white">
+		<div className="min-h-screen bg-gray-900 text-white flex flex-col">
 			<div className="flex items-center justify-between p-4 bg-gray-800">
 				<div className="flex items-center" onClick={handleLogoClick}>
 					<img src={logo} alt="Logo" className="h-8 w-8 mr-2" />
@@ -73,11 +73,22 @@ const MainLayout = () => {
 					</List>
 				</div>
 			</Drawer>
-			<main className="p-4">
+			<main className="flex-grow p-4">
 				<Suspense fallback={<Spinner />}>
 					<Outlet />
 				</Suspense>
 			</main>
+			<footer className="bg-gray-800 text-white p-4 flex justify-around">
+				<Link to="/markets" className="hover:text-gray-400">
+					Markets
+				</Link>
+				<Link to="/orders" className="hover:text-gray-400">
+					Orders
+				</Link>
+				<Link to="/createOrder" className="hover:text-gray-400">
+					Create Order
+				</Link>
+			</footer>
 		</div>
 	);
 };

@@ -54,7 +54,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 						type: values.orderType,
 						side: values.side,
 						amount: parseFloat(values.amount),
-						price: parseFloat(values.price),
+						price: values.orderType === 'market' ? null : parseFloat(values.price),
 					},
 				},
 				handleUnauthorized
@@ -256,7 +256,10 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 								type="number"
 								step="0.01"
 								required
-								className="mt-1 p-2 bg-gray-800 text-white rounded-md w-full"
+								disabled={values.orderType === 'market'}
+								className={`mt-1 p-2 rounded-md w-full ${
+									values.orderType === 'market' ? 'bg-gray-600' : 'bg-gray-800 text-white'
+								}`}
 							/>
 						</div>
 						<div>
