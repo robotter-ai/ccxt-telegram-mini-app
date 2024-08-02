@@ -25,33 +25,33 @@ const MainLayout = () => {
 
 	const getTitle = () => {
 		switch (location.pathname) {
-			case '/signIn':
-				return 'Sign In';
-			case '/markets':
-				return 'Markets';
-			case '/market':
-			case '/market/:marketId':
-				return 'Market';
-			case '/orders':
-				return 'Orders';
-			case '/createOrder':
-				return 'Create Order';
-			default:
-				return 'Home';
+		case '/signIn':
+			return 'Sign In';
+		case '/markets':
+			return 'Markets';
+		case '/market':
+		case '/market/:marketId':
+			return 'Market';
+		case '/orders':
+			return 'Orders';
+		case '/createOrder':
+			return 'Create Order';
+		default:
+			return 'Home';
 		}
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-900 text-white flex flex-col">
-			<div className="flex items-center justify-between p-4 bg-gray-800">
+		<div className="flex flex-col min-h-screen bg-gray-900 text-white">
+			<header className="flex items-center justify-between p-4 bg-gray-800" style={{ height: '60px' }}>
 				<div className="flex items-center" onClick={handleLogoClick}>
 					<img src={logo} alt="Logo" className="h-8 w-8 mr-2" />
 				</div>
-				<h1 className="text-xl font-bold flex-grow text-center">{getTitle()}</h1>
+				<h1 className="text-xl font-bold">{getTitle()}</h1>
 				<IconButton onClick={toggleDrawer(true)} className="text-white">
 					<Menu />
 				</IconButton>
-			</div>
+			</header>
 			<Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
 				<div
 					className="w-64 bg-gray-900 text-white h-full"
@@ -73,12 +73,12 @@ const MainLayout = () => {
 					</List>
 				</div>
 			</Drawer>
-			<main className="flex-grow p-4">
+			<main className="flex-grow p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
 				<Suspense fallback={<Spinner />}>
 					<Outlet />
 				</Suspense>
 			</main>
-			<footer className="bg-gray-800 text-white p-4 flex justify-around">
+			<footer className="bg-gray-800 text-white p-4 flex justify-around" style={{ height: '60px' }}>
 				<Link to="/markets" className="hover:text-gray-400">
 					Markets
 				</Link>

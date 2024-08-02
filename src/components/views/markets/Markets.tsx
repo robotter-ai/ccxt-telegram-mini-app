@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { executeAndSetInterval } from 'model/service/recurrent';
@@ -27,6 +26,8 @@ interface MarketsState extends BaseState {
 
 interface MarketsSnapshot extends BaseSnapshot {}
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: any, props: any) => ({
 	markets: state.api.markets,
 });
@@ -34,7 +35,7 @@ const mapStateToProps = (state: any, props: any) => ({
 class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot> {
 	static defaultProps: Partial<BaseProps> = {};
 
-	recurrentIntervalId?: number;
+	recurrentIntervalId?: any;
 	recurrentDelay: number = 30000;
 
 	constructor(props: MarketsProps) {
@@ -42,7 +43,7 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 
 		this.state = {
 			isLoading: true,
-			error: null,
+			error: undefined,
 		};
 	}
 
@@ -72,6 +73,7 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 			);
 
 			if (response.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Network response was not OK');
 			}
 
@@ -87,9 +89,9 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 			}));
 
 			this.props.dispatch({ type: 'api.updateMarkets', payload: formattedMarkets });
-		} catch (exception) {
+		} catch (exception: any) {
 			console.error(exception);
-			this.setState({ error: exception });
+			this.setState({ error: exception.message });
 			toast.error(exception as string);
 		} finally {
 			this.setState({ isLoading: false });
@@ -107,7 +109,7 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 		}
 
 		if (error) {
-			return <div>Error: {error.message}</div>;
+			return <div>Error: {error}</div>;
 		}
 
 		if (!Array.isArray(markets)) {
@@ -115,9 +117,7 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 		}
 
 		return (
-			<div>
-				<MarketsTable rows={markets} />
-			</div>
+			<MarketsTable rows={markets} />
 		);
 	}
 }

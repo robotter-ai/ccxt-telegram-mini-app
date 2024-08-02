@@ -66,7 +66,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-	const { order, orderBy, onRequestSort } = props;
+	const { onRequestSort } = props;
 	const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
@@ -119,16 +119,19 @@ export default function MarketsTable({ rows }: Props) {
 	const [filterText, setFilterText] = React.useState('');
 	const navigate = useNavigate();
 
+	// @ts-ignore
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
 		setOrderBy(property);
 	};
 
+	// @ts-ignore
 	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
 		navigate(`/market?marketId=${id}`);
 	};
 
+	// @ts-ignore
 	const handleChangePage = (event: unknown, newPage: number) => {
 		setPage(newPage);
 	};
@@ -164,7 +167,7 @@ export default function MarketsTable({ rows }: Props) {
 	];
 
 	return (
-		<div className="h-full min-h-screen w-full p-4 bg-gray-900 text-white">
+		<div className="min-h-screen w-full p-4 bg-gray-900 text-white">
 			<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
 			<div className="overflow-x-auto max-h-[60vh]">
 				<table className={`min-w-full divide-y divide-gray-700 text-sm`}>
