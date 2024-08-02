@@ -77,7 +77,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-	const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+	const { onSelectAllClick, numSelected, rowCount, onRequestSort } = props;
 	const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
 		onRequestSort(event, property);
 	};
@@ -142,9 +142,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
 interface Props {
 	rows: Data[];
-	cancelOpenOrder: (orderId: string | number) => void;
-	cancelOpenOrders: (orderIds: (string | number)[]) => void;
-	cancelAllOpenOrders: () => void;
+	cancelOpenOrder: (order: any) => Promise<void>;
+	cancelOpenOrders: (orders: readonly any[]) => Promise<void>;
+	cancelAllOpenOrders: () => Promise<void>;
 }
 
 export default function OrdersTable({
@@ -155,7 +155,7 @@ export default function OrdersTable({
 																		}: Props) {
 	const [ order, setOrder ] = React.useState<Order>('asc');
 	const [ orderBy, setOrderBy ] = React.useState<keyof Data>('market');
-	const [ selected, setSelected ] = React.useState<readonly string[] | number[]>([]);
+	const [ selected, setSelected ] = React.useState<readonly any[]>([]);
 	const [ page, setPage ] = React.useState(0);
 	const [ rowsPerPage, setRowsPerPage ] = React.useState(100);
 
@@ -167,19 +167,20 @@ export default function OrdersTable({
 
 	const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
-			const newSelected = rows.map((n) => n.id);
-			setSelected(newSelected);
+			setSelected(rows);
+
 			return;
 		}
+
 		setSelected([]);
 	};
 
-	const handleClick = (event: React.MouseEvent<unknown>, id: string | number) => {
-		const selectedIndex = selected.indexOf(id);
+	const handleClick = (event: React.MouseEvent<unknown>, order: any) => {
+		const selectedIndex = selected.indexOf(order);
 		let newSelected: readonly (string | number)[] = [];
 
 		if (selectedIndex === -1) {
-			newSelected = newSelected.concat(selected, id);
+			newSelected = newSelected.concat(selected, order);
 		} else if (selectedIndex === 0) {
 			newSelected = newSelected.concat(selected.slice(1));
 		} else if (selectedIndex === selected.length - 1) {
@@ -208,11 +209,11 @@ export default function OrdersTable({
 		[order, orderBy, page, rowsPerPage, rows]
 	);
 
-	const handleCancelOpenOrderClick = (orderId: string | number) => async (event: React.MouseEvent) => {
+	const handleCancelOpenOrderClick = (order: any) => async (event: React.MouseEvent) => {
 		event.stopPropagation();
-		const confirm = window.confirm(`Are you sure you want to cancel order ${orderId}?`);
+		const confirm = window.confirm(`Are you sure you want to cancel order ${order.id}?`);
 		if (confirm) {
-			await cancelOpenOrder(orderId);
+			await cancelOpenOrder(order);
 		}
 	};
 
@@ -264,14 +265,14 @@ export default function OrdersTable({
 					/>
 					<tbody className="bg-gray-800 divide-y divide-gray-700">
 					{visibleRows.map((row, index) => {
-						const isItemSelected = isSelected(row.id);
+						const isItemSelected = isSelected(row);
 						const labelId = `enhanced-table-checkbox-${index}`;
 
 						return (
 							<tr
 								key={row.id}
 								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''}`}
-								onClick={(event) => handleClick(event, row.id)}
+								onClick={(event) => handleClick(event, row)}
 							>
 								<td className="p-4">
 									<input
@@ -291,7 +292,7 @@ export default function OrdersTable({
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">
 									<button
 										className="px-2 py-1 text-orange-500 border border-orange-500 rounded-md hover:bg-orange-500 hover:text-white"
-										onClick={handleCancelOpenOrderClick(row.id)}
+										onClick={handleCancelOpenOrderClick(row)}
 									>
 										Cancel
 									</button>

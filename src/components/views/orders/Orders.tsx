@@ -112,17 +112,17 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 				}));
 
 			this.props.dispatch({ type: 'api.updateOpenOrders', payload: output });
-		} catch (exception) {
+		} catch (exception: any) {
 			console.error(exception);
-			this.setState({ error: exception });
+			this.setState({ error: exception.message });
 			toast.error(exception as string);
 		} finally {
 			this.setState({ isLoading: false });
 		}
 	}
 
-	async cancelOpenOrder(orderId: string) {
-		if (!orderId) return;
+	async cancelOpenOrder(order: any) {
+		if (!order || !order.id) return;
 
 		try {
 			const response = await apiPostRun(
@@ -131,8 +131,8 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'cancel_order',
 					parameters: {
-						id: orderId,
-						symbol: 'tSOLtUSDC',
+						id: order.id,
+						symbol: order.market,
 					},
 				},
 				this.props.handleUnAuthorized
@@ -142,22 +142,22 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 				throw new Error('Network response was not OK');
 			}
 
-			this.canceledOrdersRef.add(orderId);
+			this.canceledOrdersRef.add(order.id);
 
-			this.props.dispatch({ type: 'api.updateOpenOrders', payload: this.props.openOrders.filter((order: any) => order.id !== orderId) });
+			this.props.dispatch({ type: 'api.updateOpenOrders', payload: this.props.openOrders.filter((order: any) => order.id !== order.id) });
 
-			toast.success(`Order ${orderId} canceled successfully!`);
+			toast.success(`Order ${order.id} canceled successfully!`);
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
-			toast.error(`Failed to cancel order ${orderId}.`);
+			toast.error(`Failed to cancel order ${order.id}.`);
 		}
 	}
 
-	async cancelOpenOrders(orderIds: string[]) {
-		if (!orderIds || !(orderIds.length > 0)) return;
+	async cancelOpenOrders(orders: readonly any[]) {
+		if (!orders || !(orders.length > 0)) return;
 
 		try {
-			const promises = orderIds.map(async (orderId: string) => await this.cancelOpenOrder(orderId));
+			const promises = orders.map(async (order: any) => await this.cancelOpenOrder(order));
 			await Promise.all(promises);
 
 			// toast.success('Selected orders canceled successfully!');
@@ -174,7 +174,6 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'cancel_all_orders',
 					parameters: {
-						symbol: 'tSOLtUSDC',
 					},
 				},
 				this.props.handleUnAuthorized
