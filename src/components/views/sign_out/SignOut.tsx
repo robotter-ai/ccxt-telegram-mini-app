@@ -12,7 +12,7 @@ const SignOut = () => {
 			await apiPostAuthSignOut();
 			dispatch('api.signOut', null);
 			toast.success('Signed out successfully!');
-			navigate(Constant.signInPath.value as string);
+			navigate(Constant.homePath.value as string);
 		} catch (exception) {
 			console.error(exception);
 			toast.error('An error occurred during sign out.');
