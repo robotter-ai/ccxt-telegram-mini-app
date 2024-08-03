@@ -20,6 +20,11 @@ map.setIn(
 );
 
 map.setIn(
+	'app.intervalsIds',
+	[]
+);
+
+map.setIn(
 	'api.status',
 	Status.running.id
 );

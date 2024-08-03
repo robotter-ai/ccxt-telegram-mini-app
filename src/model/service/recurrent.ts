@@ -1,12 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-ts-comment,@typescript-eslint/no-unused-vars */
-import { dispatch } from 'model/state/redux/store';
-import { apiGetServiceStatus, apiPostAuthRefresh } from 'model/service/api';
 import axios from 'axios';
+import { dispatch, reduxStore } from 'model/state/redux/store';
+import { apiGetServiceStatus, apiPostAuthRefresh } from 'model/service/api';
+import { Map } from 'model/helper/extendable-immutable/map';
 
 export const executeAndSetInterval = (targetFunction: any, interval: number) => {
 	targetFunction();
 
-	return setInterval(targetFunction, interval);
+	const intervalId = setInterval(targetFunction, interval);
+
+	dispatch('app.updateIntervalsIds', intervalId);
+
+	return intervalId;
+};
+
+export const clearAllIntervals = () => {
+	const intervalIds = new Map(reduxStore.getState()).getIn('app.intervalsIds');
+
+	for(const intervalId of intervalIds) {
+		clearInterval(intervalId)
+	}
+
+	dispatch('app.clearAllIntervalsIds', [])
 };
 
 // noinspection JSUnusedLocalSymbols

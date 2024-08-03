@@ -1,12 +1,12 @@
-// import { useNavigate } from 'react-router-dom';
-// import { Constant } from 'model/enum/constant';
+import { Constant } from 'model/enum/constant';
 import { dispatch } from 'model/state/redux/store';
+import { clearAllIntervals } from 'model/service/recurrent';
 
 export const useHandleUnauthorized = () => {
-	// const navigate = useNavigate();
-
 	return async () => {
+		clearAllIntervals();
 		dispatch('api.signOut', true);
-		// navigate(Constant.signInPath.value as string);
+		if (window.location.pathname !== Constant.signInPath.value)
+			window.location.href = Constant.signInPath.value as string;
 	};
 };

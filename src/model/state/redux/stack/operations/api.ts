@@ -129,6 +129,52 @@ pushStack('api.signOut', (currentState: any, payload: any) => {
 	return nextState;
 });
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+pushStack('app.updateIntervalsIds', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState.setIn(
+			'app.intervalsIds',
+			[...nextState.getIn('app.intervalsIds'), payload]
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('app.intervalsIds', nextState.app.intervalsIds);
+
+	return nextState;
+});
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+pushStack('app.clearAllIntervalsIds', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('app.intervalsIds, before clear', nextState.getIn('app.intervalsIds'));
+
+	nextState.setIn(
+		'app.intervalsIds',
+		[]
+	);
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('app.intervalsIds, after clear', nextState.app.intervalsIds);
+
+	return nextState;
+});
+
 // noinspection JSUnusedLocalSymbols
 pushStack('api.updateMarkets', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
