@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
-import { executeAndSetInterval } from 'model/service/recurrent';
+import { clearAllIntervals, executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun, apiPostAuthSignIn, apiPostAuthIsSignedIn } from 'model/service/api';
 import './SignIn.css';
 import { toast } from 'react-toastify';
@@ -281,8 +281,7 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 						exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 						// @ts-ignore
 						userTelegramId: `${sanitizeInput(telegramUser.id)}`,
-					},
-					this.props.handleUnAuthorized
+					}
 				);
 
 				const payload = response.data.result;
@@ -300,8 +299,8 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 			}
 		} catch (exception: any) {
 			if (axios.isAxiosError(exception)) {
-				if (exception?.response?.status === 401) {
-					clearInterval(this.recurrentIntervalId);
+				if ([401, 417].includes(Number(exception?.response?.status))) {
+					clearAllIntervals();
 					return;
 				}
 			}
