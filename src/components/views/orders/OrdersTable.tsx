@@ -153,11 +153,11 @@ export default function OrdersTable({
 																			cancelOpenOrders,
 																			cancelAllOpenOrders
 																		}: Props) {
-	const [ order, setOrder ] = React.useState<Order>('asc');
-	const [ orderBy, setOrderBy ] = React.useState<keyof Data>('market');
-	const [ selected, setSelected ] = React.useState<readonly any[]>([]);
-	const [ page, setPage ] = React.useState(0);
-	const [ rowsPerPage, setRowsPerPage ] = React.useState(100);
+	const [order, setOrder] = React.useState<Order>('asc');
+	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
+	const [selected, setSelected] = React.useState<readonly any[]>([]);
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(100);
 
 	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -168,16 +168,14 @@ export default function OrdersTable({
 	const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.checked) {
 			setSelected(rows);
-
 			return;
 		}
-
 		setSelected([]);
 	};
 
 	const handleClick = (event: React.MouseEvent<unknown>, order: any) => {
-		const selectedIndex = selected.indexOf(order);
-		let newSelected: readonly (string | number)[] = [];
+		const selectedIndex = selected.findIndex(selectedOrder => selectedOrder.id === order.id);
+		let newSelected: readonly any[] = [];
 
 		if (selectedIndex === -1) {
 			newSelected = newSelected.concat(selected, order);
@@ -200,7 +198,7 @@ export default function OrdersTable({
 		setPage(0);
 	};
 
-	const isSelected = (id: string | number) => selected.indexOf(id) !== -1;
+	const isSelected = (id: number) => selected.some(selectedOrder => selectedOrder.id === id);
 
 	const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -265,7 +263,7 @@ export default function OrdersTable({
 					/>
 					<tbody className="bg-gray-800 divide-y divide-gray-700">
 					{visibleRows.map((row, index) => {
-						const isItemSelected = isSelected(row);
+						const isItemSelected = isSelected(row.id);
 						const labelId = `enhanced-table-checkbox-${index}`;
 
 						return (
@@ -279,7 +277,7 @@ export default function OrdersTable({
 										type="checkbox"
 										className="form-checkbox text-orange-500"
 										checked={isItemSelected}
-										onChange={(event) => event.stopPropagation()}
+										onChange={(event) => handleClick(event, row)}
 										aria-labelledby={labelId}
 									/>
 								</td>

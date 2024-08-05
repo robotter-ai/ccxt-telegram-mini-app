@@ -50,13 +50,11 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 	}
 
 	async componentDidMount() {
-		console.log('componentDidMount', arguments);
 		await this.fetchData();
 		this.recurrentIntervalId = executeAndSetInterval(this.fetchData.bind(this), this.recurrentDelay);
 	}
 
 	async componentWillUnmount() {
-		console.log('componentWillUnmount', arguments);
 		if (this.recurrentIntervalId) {
 			clearInterval(this.recurrentIntervalId);
 		}
@@ -69,8 +67,7 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'fetch_open_orders',
-					parameters: {
-					},
+					parameters: {},
 				},
 				this.props.handleUnAuthorized
 			);
@@ -144,9 +141,9 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 
 			this.canceledOrdersRef.add(order.id);
 
-			this.props.dispatch({ type: 'api.updateOpenOrders', payload: this.props.openOrders.filter((order: any) => order.id !== order.id) });
-
 			toast.success(`Order ${order.id} canceled successfully!`);
+
+			await this.fetchData();
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
 			toast.error(`Failed to cancel order ${order.id}.`);
@@ -190,15 +187,13 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 	}
 
 	render() {
-		console.log('render', arguments);
-
 		const { isLoading, error } = this.state;
 		const { openOrders } = this.props;
 
 		return (
 			<div>
 				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error.message}</div> : null}
+				{error ? <div>Error: {error}</div> : null}
 				<OrdersTable
 					rows={openOrders}
 					cancelOpenOrder={this.cancelOpenOrder.bind(this)}
