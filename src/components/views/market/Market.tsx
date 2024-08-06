@@ -174,6 +174,11 @@ class MarketStructure extends Base<MarketProps, MarketState, MarketSnapshot> {
 			console.log('lines', lines);
 			this.chartSeries = this.chart.addLineSeries({
 				color: '#2962FF',
+				priceFormat: {
+					type: 'price',
+					precision: 10, // Adjust precision here
+					minMove: 0.0000000001, // Adjust min move here
+				},
 			});
 			this.chartSeries.priceScale().applyOptions({
 				autoScale: true,
