@@ -1,4 +1,3 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -27,14 +26,14 @@ interface OrdersState extends BaseState {
 
 interface OrdersSnapshot extends BaseSnapshot {}
 
-const mapStateToProps = (state: any, props: any) => ({
+const mapStateToProps = (state: any) => ({
 	openOrders: state.api.orders.open,
 });
 
 class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 	static defaultProps: Partial<BaseProps> = {};
 
-	recurrentIntervalId?: number;
+	recurrentIntervalId?: number | ReturnType<typeof setInterval>;
 	recurrentDelay: number = 30000;
 	canceledOrdersRef: Set<string>;
 
@@ -43,7 +42,7 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 
 		this.state = {
 			isLoading: true,
-			error: null,
+			error: undefined,
 		};
 
 		this.canceledOrdersRef = new Set();
@@ -56,7 +55,7 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 
 	async componentWillUnmount() {
 		if (this.recurrentIntervalId) {
-			clearInterval(this.recurrentIntervalId);
+			clearInterval(this.recurrentIntervalId as number);
 		}
 	}
 
@@ -112,7 +111,7 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 		} catch (exception: any) {
 			console.error(exception);
 			this.setState({ error: exception.message });
-			toast.error(exception as string);
+			toast.error(exception.message);
 		} finally {
 			this.setState({ isLoading: false });
 		}

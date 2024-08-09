@@ -12,19 +12,20 @@ import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 interface TemplateProps extends BaseProps {
+	value: any;
 	queryParams: any;
 	params: any;
 	searchParams: any;
 	navigate: any;
 	handleUnAuthorized: any;
-	stateValue: any,
-	propsValue: any,
-	fetchedData: any,
+	stateValue: any;
+	propsValue: any;
+	fetchedData: any;
 }
 
 interface TemplateState extends BaseState {
-	isLoading: boolean,
-	error?: string,
+	isLoading: boolean;
+	error?: string;
 }
 
 // @ts-ignore
@@ -32,31 +33,31 @@ interface TemplateState extends BaseState {
 interface TemplateSnapshot extends BaseSnapshot {
 }
 
-const mapStateToProps = (state: TemplateState | any, props: TemplateProps | any) => ({
+const mapStateToProps = (state: any, props: TemplateProps) => ({
 	stateValue: state.api.data,
 	propsValue: props.value,
+	fetchedData: state.api.fetchedData,
 })
 
 // @ts-ignore
-class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends Base {
+class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnapshot> {
 
 	// static contextTypes = {
 	// 	handleUnAuthorized: PropTypes.func,
 	// };
 
-	static defaultProps: Partial<BaseProps> = {
-	};
+	static defaultProps: Partial<BaseProps> = {};
 
 	recurrentIntervalId?: number;
 
 	recurrentDelay?: number;
 
-	constructor(props: BaseProps) {
+	constructor(props: TemplateProps) {
 		super(props);
 
 		this.state = {
 			isLoading: true,
-			error: null,
+			error: undefined,
 		};
 
 		// @ts-ignore
@@ -85,7 +86,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 		console.log('render', arguments);
 
 		const { isLoading, error } = this.state;
-		const { fetchedData } = this.props;
+		const { fetchedData } = this.props;  // Ensure fetchedData is available in props
 
 		return (
 			<div>
@@ -130,7 +131,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 				}
 			}
 
-			const message = 'An error has occurred while performing this operation'
+			const message = 'An error has occurred while performing this operation';
 
 			this.setState({ error: message });
 			toast.error(message);
@@ -174,7 +175,7 @@ class TemplateStructure<TemplateProps, TemplateState, TemplateSnapshot> extends 
 					}
 				}
 
-				const message = 'An error has occurred while performing this operation'
+				const message = 'An error has occurred while performing this operation';
 
 				this.setState({ error: message });
 				toast.error(message);
@@ -192,21 +193,22 @@ const TemplateBehavior = (props: any) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
-	const queryParams = new URLSearchParams(location.search)
+	const queryParams = new URLSearchParams(location.search);
 	const [searchParams] = useSearchParams();
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	return <
-		TemplateStructure
-		{...props}
-		location={location}
-		navigate={navigate}
-		params={params}
-		queryParams={queryParams}
-		searchParams={searchParams}
-		handleUnAuthorized={handleUnAuthorized}
-	/>;
+	return (
+		<TemplateStructure
+			{...props}
+			location={location}
+			navigate={navigate}
+			params={params}
+			queryParams={queryParams}
+			searchParams={searchParams}
+			handleUnAuthorized={handleUnAuthorized}
+		/>
+	);
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Template = connect(mapStateToProps)(TemplateBehavior)
+export const Template = connect(mapStateToProps)(TemplateBehavior);

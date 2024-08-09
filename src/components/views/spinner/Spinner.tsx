@@ -1,13 +1,11 @@
-import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Create a theme with the custom color
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: '#FFA500', // Orange color
+			main: '#FFA500',
 		},
 	},
 });

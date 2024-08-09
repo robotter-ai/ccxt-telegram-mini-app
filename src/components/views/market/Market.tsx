@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { executeAndSetInterval } from 'model/service/recurrent';
+// import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';
 import { toast } from 'react-toastify';
@@ -22,7 +22,7 @@ interface MarketState extends BaseState {
 
 interface MarketSnapshot extends BaseSnapshot {}
 
-const mapStateToProps = (state: MarketState | any, props: MarketProps | any) => ({
+const mapStateToProps = (state: MarketState | any) => ({
 	market: state.api.market,
 });
 
@@ -62,7 +62,7 @@ class MarketStructure extends Base<MarketProps, MarketState, MarketSnapshot> {
 
 	async componentWillUnmount() {
 		console.log('componentWillUnmount', arguments);
-		if (this.recurrentIntervalId) {
+		if (this.recurrentIntervalId !== undefined) {
 			clearInterval(this.recurrentIntervalId);
 		}
 	}
@@ -163,7 +163,7 @@ class MarketStructure extends Base<MarketProps, MarketState, MarketSnapshot> {
 
 			if (axios.isAxiosError(exception)) {
 				if (exception?.response?.status === 401) {
-					clearInterval(this.recurrentIntervalId);
+					clearInterval(this.recurrentIntervalId as number);
 					return;
 				}
 			}
@@ -217,11 +217,11 @@ class MarketStructure extends Base<MarketProps, MarketState, MarketSnapshot> {
 				this.setState({ error: message });
 				toast.error(message);
 
-				clearInterval(this.recurrentIntervalId);
+				clearInterval(this.recurrentIntervalId as number);
 			}
 		};
 
-		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
+		this.recurrentIntervalId = window.setInterval(recurrentFunction, this.recurrentDelay);
 	}
 
 	transformCandlesInCandlesticks(candles: any[]): (CandlestickData | WhitespaceData)[] {

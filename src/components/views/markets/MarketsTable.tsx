@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 
 interface Data {
 	id: number;
@@ -119,26 +119,25 @@ export default function MarketsTable({ rows }: Props) {
 	const [filterText, setFilterText] = React.useState('');
 	const navigate = useNavigate();
 
-	// @ts-ignore
-	const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
+	const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
 		const isAsc = orderBy === property && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
 		setOrderBy(property);
 	};
 
-	// @ts-ignore
-	const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+	const handleClick = (id: number) => {
 		navigate(`/market?marketId=${id}`);
 	};
 
-	// @ts-ignore
-	const handleChangePage = (event: unknown, newPage: number) => {
+	const handleChangePage = (newPage: number) => {
 		setPage(newPage);
 	};
 
-	const handleChangeRowsPerPage = (option: { value: number; label: string }) => {
-		setRowsPerPage(option.value);
-		setPage(0);
+	const handleChangeRowsPerPage = (option: SingleValue<{ value: number; label: string }>) => {
+		if (option) {
+			setRowsPerPage(option.value);
+			setPage(0);
+		}
 	};
 
 	const handleFilterTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,7 +180,7 @@ export default function MarketsTable({ rows }: Props) {
 						<tr
 							key={`${row.symbol}-${row.base}-${row.quote}`}
 							className="hover:bg-gray-700 cursor-pointer"
-							onClick={(event) => handleClick(event, row.id)}
+							onClick={() => handleClick(row.id)}
 						>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.symbol}</td>
 							<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.base}</td>
@@ -239,14 +238,14 @@ export default function MarketsTable({ rows }: Props) {
 				<div className="flex justify-between space-x-2">
 					<button
 						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
-						onClick={() => handleChangePage(null, page - 1)}
+						onClick={() => handleChangePage(page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
 						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
-						onClick={() => handleChangePage(null, page + 1)}
+						onClick={() => handleChangePage(page + 1)}
 						disabled={page >= Math.ceil(filteredRows.length / rowsPerPage) - 1}
 					>
 						Next
