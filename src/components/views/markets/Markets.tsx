@@ -1,13 +1,11 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun } from 'model/service/api';
 import Spinner from 'components/views/spinner/Spinner';
 import MarketsTable from 'components/views/markets/MarketsTable';
 import { toast } from 'react-toastify';
-import './Markets.css';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { apiPostRun } from 'model/service/api';
 
 interface MarketsProps extends BaseProps {
 	markets: any;
@@ -26,9 +24,7 @@ interface MarketsState extends BaseState {
 
 interface MarketsSnapshot extends BaseSnapshot {}
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state: any, props: any) => ({
+const mapStateToProps = (state: any) => ({
 	markets: state.api.markets,
 });
 
@@ -49,8 +45,8 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 
 	async componentDidMount() {
 		console.log('componentDidMount', arguments);
-		await this.fetchData();
-		this.recurrentIntervalId = executeAndSetInterval(this.fetchData.bind(this), this.recurrentDelay);
+		await this.initialize();
+		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
@@ -60,7 +56,19 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 		}
 	}
 
-	async fetchData() {
+	async initialize() {
+		try {
+			// Fetch markets data and update the store
+			await this.fetchMarketsData();
+		} catch (error) {
+			console.error('Initialization error:', error);
+			this.setState({ error: (error as Error).message });
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	}
+
+	async fetchMarketsData() {
 		try {
 			const response = await apiPostRun(
 				{
@@ -73,7 +81,6 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 			);
 
 			if (response.status !== 200) {
-				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Network response was not OK');
 			}
 
@@ -90,12 +97,21 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 
 			this.props.dispatch({ type: 'api.updateMarkets', payload: formattedMarkets });
 		} catch (exception: any) {
-			console.error(exception);
-			this.setState({ error: exception.message });
-			toast.error(exception as string);
-		} finally {
-			this.setState({ isLoading: false });
+			console.error('Fetch markets data error:', exception);
+			this.setState({ error: (exception as Error).message });
+			toast.error((exception as Error).message);
 		}
+	}
+
+	async doRecurrently() {
+		this.recurrentIntervalId = setInterval(async () => {
+			try {
+				await this.fetchMarketsData();
+			} catch (error) {
+				console.error('Recurrent fetch error:', error);
+				this.setState({ error: (error as Error).message });
+			}
+		}, this.recurrentDelay);
 	}
 
 	render() {
@@ -123,12 +139,12 @@ class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot>
 }
 
 const MarketsBehavior = (props: any) => {
+	const handleUnAuthorized = useHandleUnauthorized();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
 	const queryParams = new URLSearchParams(location.search);
 	const [searchParams] = useSearchParams();
-	const handleUnAuthorized = useHandleUnauthorized();
 
 	return (
 		<MarketsStructure

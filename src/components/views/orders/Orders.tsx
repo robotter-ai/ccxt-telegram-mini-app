@@ -49,14 +49,22 @@ class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
 	}
 
 	async componentDidMount() {
-		await this.fetchData();
-		this.recurrentIntervalId = executeAndSetInterval(this.fetchData.bind(this), this.recurrentDelay);
+		await this.initialize();
+		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
 		if (this.recurrentIntervalId) {
 			clearInterval(this.recurrentIntervalId as number);
 		}
+	}
+
+	async initialize() {
+		await this.fetchData();
+	}
+
+	async doRecurrently() {
+		this.recurrentIntervalId = executeAndSetInterval(this.fetchData.bind(this), this.recurrentDelay);
 	}
 
 	async fetchData() {
