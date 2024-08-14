@@ -167,8 +167,7 @@ const DevelopmentBehavior = (props: any) => {
 	const [searchParams] = useSearchParams();
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	return <
-		DevelopmentStructure
+	return <DevelopmentStructure
 		{...props}
 		location={location}
 		navigate={navigate}
