@@ -36,6 +36,8 @@ const MainLayout = () => {
 			return 'Orders';
 		case '/createOrder':
 			return 'Create Order';
+		case '/balance':
+			return 'Balance';
 		default:
 			return 'Home';
 		}
@@ -87,6 +89,9 @@ const MainLayout = () => {
 				</Link>
 				<Link to="/createOrder" className="hover:text-gray-400">
 					Create Order
+				</Link>
+				<Link to="/balance" className="hover:text-gray-400">
+					Balance
 				</Link>
 			</footer>
 		</div>

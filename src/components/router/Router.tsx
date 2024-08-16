@@ -8,6 +8,7 @@ import { Markets } from 'components/views/markets/Markets';
 import { Market } from 'components/views/market/Market';
 import MainLayout from 'components/views/main/MainLayout';
 import { CreateOrder } from 'components/views/order/CreateOrder.tsx';
+import Balance from 'components/views/balance/Balance';
 
 const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
@@ -37,6 +38,7 @@ const RouterStructure = () => {
 					<Route path="/market/:marketId" element={<NormalizedRoute element={<Market />} checkAuthentication />} />
 					<Route path="/development" element={<NormalizedRoute element={<Development />} />} />
 					<Route path="/createOrder" element={<NormalizedRoute element={<CreateOrder />} checkAuthentication />} />
+					<Route path="/balance" element={<NormalizedRoute element={<Balance />} checkAuthentication />} />
 					<Route path="*" element={<Navigate to="/" />} />
 				</Route>
 			</Routes>
