@@ -3,10 +3,10 @@ import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import Spinner from 'components/views/spinner/Spinner';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
 import './Orders.css';
 import { toast } from 'react-toastify';
-import OrdersTable from 'components/views/orders/OrdersTable';
+import { OrdersTable } from 'components/views/v1/orders/OrdersTable';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 interface OrdersProps extends BaseProps {

@@ -1,60 +1,92 @@
-import './Development.css';
 import { connect } from 'react-redux';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+// import PropTypes from 'prop-types';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import Spinner from 'components/views/spinner/Spinner';
-import { Map } from 'model/helper/extendable-immutable/map';
+import { Spinner } from 'components/views/v2/spinner/Spinner';
+import './Template.css';
+import { toast } from 'react-toastify';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-interface DevelopmentProps extends BaseProps {
-	stateValue: any,
-	propsValue: any,
-	fetchedData: any,
+interface TemplateProps extends BaseProps {
+	value: any;
+	queryParams: any;
+	params: any;
+	searchParams: any;
+	navigate: any;
+	handleUnAuthorized: any;
+	stateValue: any;
+	propsValue: any;
+	fetchedData: any;
 }
 
-interface DevelopmentState extends BaseState {
+interface TemplateState extends BaseState {
+	isLoading: boolean;
+	error?: string;
 }
 
-const mapStateToProps = (state: DevelopmentState | any, props: DevelopmentProps | any) => ({
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+interface TemplateSnapshot extends BaseSnapshot {
+}
+
+const mapStateToProps = (state: any, props: TemplateProps) => ({
 	stateValue: state.api.data,
 	propsValue: props.value,
+	fetchedData: state.api.fetchedData,
 })
 
-class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
+// @ts-ignore
+class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnapshot> {
 
-	properties: Map = new Map();
+	// static contextTypes = {
+	// 	handleUnAuthorized: PropTypes.func,
+	// };
 
-	constructor(props: DevelopmentProps) {
+	static defaultProps: Partial<BaseProps> = {};
+
+	recurrentIntervalId?: number;
+
+	recurrentDelay?: number;
+
+	constructor(props: TemplateProps) {
 		super(props);
 
 		this.state = {
 			isLoading: true,
 			error: undefined,
-		} as Readonly<DevelopmentState>;
+		};
 
-		this.properties.setIn('recurrent.5s.intervalId', undefined);
-		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
+		// @ts-ignore
+		this.context.handleUnAuthorized = this.props.handleUnAuthorized;
+
+		this.recurrentIntervalId = undefined;
+		this.recurrentDelay = 5 * 1000;
 	}
 
 	async componentDidMount() {
+		console.log('componentDidMount', arguments);
+
 		await this.initialize();
 		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
-		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
-			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
+		console.log('componentWillUnmount', arguments);
+
+		if (this.recurrentIntervalId) {
+			clearInterval(this.recurrentIntervalId);
 		}
 	}
 
 	render() {
+		console.log('render', arguments);
+
 		const { isLoading, error } = this.state;
-		const { fetchedData } = this.props;
+		const { fetchedData } = this.props;  // Ensure fetchedData is available in props
 
 		return (
 			<div>
@@ -77,7 +109,8 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 						param2: '<param2Value>',
 					},
 				},
-				this.props.handleUnAuthorized
+				// @ts-ignore
+				this.context.handleUnAuthorized
 			);
 
 			if (response.status !== 200) {
@@ -87,7 +120,7 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 
 			const payload = response.data.result;
 
-			dispatch('api.updateDevelopmentData', payload);
+			dispatch('api.updateTemplateData', payload);
 		} catch (exception) {
 			console.error(exception);
 
@@ -98,7 +131,7 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 				}
 			}
 
-			const message = 'An error has occurred while performing this operation'
+			const message = 'An error has occurred while performing this operation';
 
 			this.setState({ error: message });
 			toast.error(message);
@@ -121,7 +154,7 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 						},
 					},
 					// @ts-ignore
-					this.props.handleUnAuthorized
+					this.context.handleUnAuthorized
 				);
 
 				if (response.status !== 200) {
@@ -131,7 +164,7 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 
 				const payload = response.data.result;
 
-				dispatch('api.updateDevelopmentData', payload);
+				dispatch('api.updateTemplateData', payload);
 			} catch (exception) {
 				console.error(exception);
 
@@ -142,41 +175,40 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 					}
 				}
 
-				const message = 'An error has occurred while performing this operation'
+				const message = 'An error has occurred while performing this operation';
 
 				this.setState({ error: message });
 				toast.error(message);
 
-				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
+				clearInterval(this.recurrentIntervalId);
 			}
 		};
 
 		// @ts-ignore
-		this.properties.setIn(
-			'recurrent.5s.intervalId',
-			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
-		);
+		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
 	}
 }
 
-const DevelopmentBehavior = (props: any) => {
+const TemplateBehavior = (props: any) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
-	const queryParams = new URLSearchParams(location.search)
+	const queryParams = new URLSearchParams(location.search);
 	const [searchParams] = useSearchParams();
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	return <DevelopmentStructure
-		{...props}
-		location={location}
-		navigate={navigate}
-		params={params}
-		queryParams={queryParams}
-		searchParams={searchParams}
-		handleUnAuthorized={handleUnAuthorized}
-	/>;
+	return (
+		<TemplateStructure
+			{...props}
+			location={location}
+			navigate={navigate}
+			params={params}
+			queryParams={queryParams}
+			searchParams={searchParams}
+			handleUnAuthorized={handleUnAuthorized}
+		/>
+	);
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Development = connect(mapStateToProps)(DevelopmentBehavior)
+export const Template = connect(mapStateToProps)(TemplateBehavior);

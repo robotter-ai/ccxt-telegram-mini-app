@@ -4,7 +4,7 @@ import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
-const SignOut = () => {
+export const SignOut = () => {
 	const navigate = useNavigate();
 
 	const handleSignOut = async () => {
@@ -25,5 +25,3 @@ const SignOut = () => {
 		</button>
 	);
 };
-
-export default SignOut;

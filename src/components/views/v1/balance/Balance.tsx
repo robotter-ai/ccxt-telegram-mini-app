@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { apiPostRun } from 'model/service/api';
-import Spinner from 'components/views/spinner/Spinner';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 
 interface BalanceProps {
-	balanceData: any;
 }
 
-const Balance: React.FC<BalanceProps> = () => {
+export const Balance: React.FC<BalanceProps> = () => {
 	const [balance, setBalance] = useState<any>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
@@ -90,22 +89,20 @@ const Balance: React.FC<BalanceProps> = () => {
 						<span>{asset}</span>
 						<span>{amount}</span>
 						<span className="ml-4">
-                            {tickers[asset] ? (
-															<>
-																<span>{`$${tickers[asset].last || 'N/A'}`}</span>
-																<span className={`ml-2 ${tickers[asset].percentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                        {tickers[asset].percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A'}
-                                    </span>
-															</>
-														) : (
-															'N/A'
-														)}
-                        </span>
+								{tickers[asset] ? (
+									<>
+										<span>{`$${tickers[asset].last || 'N/A'}`}</span>
+										<span className={`ml-2 ${tickers[asset].percentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+														{tickers[asset].percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A'}
+												</span>
+									</>
+								) : (
+									'N/A'
+								)}
+						</span>
 					</div>
 				))}
 			</div>
 		</div>
 	);
 };
-
-export default Balance;

@@ -111,7 +111,7 @@ interface Props {
 	rows: Data[];
 }
 
-export default function MarketsTable({ rows }: Props) {
+export function MarketsTable({ rows }: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('symbol');
 	const [page, setPage] = React.useState(0);

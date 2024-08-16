@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import Spinner from 'components/views/spinner/Spinner';
-import MarketsTable from 'components/views/markets/MarketsTable';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
+import { MarketsTable } from 'components/views/v1/markets/MarketsTable';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { apiPostRun } from 'model/service/api';

@@ -3,10 +3,10 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from '@mui/icons-material';
 import { Drawer, IconButton, List, ListItem, ListItemText } from '@mui/material';
 import logo from 'src/assets/images/logo/exchange.png';
-import Spinner from 'components/views/spinner/Spinner';
-import SignOut from 'components/views/sign_out/SignOut';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
+import { SignOut } from 'components/views/v1/sign_out/SignOut';
 
-const MainLayout = () => {
+export const MainLayout = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -97,5 +97,3 @@ const MainLayout = () => {
 		</div>
 	);
 };
-
-export default MainLayout;

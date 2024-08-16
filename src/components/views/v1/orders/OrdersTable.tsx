@@ -147,12 +147,12 @@ interface Props {
 	cancelAllOpenOrders: (order: readonly any[]) => Promise<void>;
 }
 
-export default function OrdersTable({
-																			rows,
-																			cancelOpenOrder,
-																			cancelOpenOrders,
-																			cancelAllOpenOrders
-																		}: Props) {
+export function OrdersTable({
+	rows,
+	cancelOpenOrder,
+	cancelOpenOrders,
+	cancelAllOpenOrders
+}: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
 	const [selected, setSelected] = React.useState<readonly any[]>([]);

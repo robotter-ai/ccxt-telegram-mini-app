@@ -4,12 +4,12 @@ import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.t
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import Spinner from 'components/views/spinner/Spinner';
+import { Spinner}  from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { CandlestickData, createChart, LineData, UTCTimestamp, WhitespaceData } from 'lightweight-charts';
 import { createRef } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { CreateOrder } from 'components/views/order/CreateOrder.tsx';
+import { CreateOrder } from 'components/views/v1/order/CreateOrder';
 
 interface MarketProps extends BaseProps {
 	market: any;

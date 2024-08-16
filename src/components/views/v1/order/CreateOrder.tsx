@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import Select from 'react-select';
 import { Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import Spinner from 'components/views/spinner/Spinner';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { connect } from 'react-redux';
 
 // @ts-ignore
