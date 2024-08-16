@@ -19,9 +19,9 @@ const initialize = async () => {
 			// <React.StrictMode>
 				<Provider store={reduxStore}>
 					<AppContext.Provider value={{}}>
-						<TelegramUI id='telegramUI'>
-							<ToastContainer/>
-							<Router/>
+						<TelegramUI id='telegramUI' appearance='dark'>
+								<ToastContainer/>
+								<Router/>
 						</TelegramUI>
 					</AppContext.Provider>
 				</Provider>

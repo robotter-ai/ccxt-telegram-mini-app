@@ -3,7 +3,7 @@ import './Layout.css';
 import logo from 'src/assets/images/logo/exchange.png';
 import React, { Suspense, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Drawer, IconButton, List, ListItem, ListItemText } from '@mui/material';
+import { Drawer, IconButton, List, ListItemButton, ListItemText } from '@mui/material';
 import { Menu as MUIMenu } from '@mui/icons-material';
 import { Spinner } from 'components/views/v2/spinner/Spinner';
 import { SignOut } from 'components/views/v2/sign_out/SignOut';
@@ -32,7 +32,7 @@ const getTitle = () => {
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const Menu = (props: any) => {
-	const [ drawerOpen, setDrawerOpen ] = useState(false);
+	const [ drawerOpen, setDrawerOpen ] = useState(true);
 
 	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
 		if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
@@ -42,23 +42,28 @@ const Menu = (props: any) => {
 		setDrawerOpen(open);
 	};
 
-	return <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+	return <Drawer
+		id='drawer'
+		anchor="left"
+		open={drawerOpen}
+		onClose={toggleDrawer(false)}
+	>
 		<div
-			className="w-64 bg-gray-900 text-white h-full"
+			id='menu'
 			role="presentation"
 			onClick={toggleDrawer(false)}
 			onKeyDown={toggleDrawer(false)}
 		>
 			<List>
-				<ListItem button component={Link} to="/markets" className="hover:bg-gray-700">
+				<ListItemButton component={Link} to="/markets">
 					<ListItemText primary="Markets" />
-				</ListItem>
-				<ListItem button component={Link} to="/orders" className="hover:bg-gray-700">
+				</ListItemButton>
+				<ListItemButton component={Link} to="/orders">
 					<ListItemText primary="Orders" />
-				</ListItem>
-				<ListItem button component={Link} to="/createOrder" className="hover:bg-gray-700">
+				</ListItemButton>
+				<ListItemButton component={Link} to="/createOrder">
 					<ListItemText primary="Create Order" />
-				</ListItem>
+				</ListItemButton>
 				<SignOut />
 			</List>
 		</div>
@@ -84,17 +89,16 @@ const Header = (props: any) => {
 		props.navigate(Constant.rootPath.value);
 	};
 
-	return <header></header>
-
-	// return <header className="flex items-center justify-between p-4 bg-gray-800" style={{ height: '60px' }}>
-	// 	<div className="flex items-center" onClick={handleLogoClick}>
-	// 		<img src={logo} alt="Logo" className="h-8 w-8 mr-2"/>
-	// 	</div>
-	// 	<h1 className="text-xl font-bold">{getTitle()}</h1>
-	// 	<IconButton onClick={toggleDrawer(true)} className="text-white">
-	// 		<MUIMenu/>
-	// 	</IconButton>
-	// </header>;
+	return <header
+		className="flex items-center justify-between p-4">
+		<div className="flex items-center" onClick={handleLogoClick}>
+			<img src={logo} alt="Logo" className="h-10 w-10 mr-2"/>
+		</div>
+		<h1 className="text-xl font-bold">{getTitle()}</h1>
+		<IconButton onClick={toggleDrawer(true)} className="text-white">
+			<MUIMenu/>
+		</IconButton>
+	</header>;
 }
 
 // @ts-ignore
@@ -112,22 +116,22 @@ const Main = (props: any) => {
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const Footer = (props: any) => {
-	return <footer></footer>
-
-	// return <footer className="bg-gray-800 text-white p-4 flex justify-around" style={{ height: '60px' }}>
-	// 	<Link to="/markets" className="hover:text-gray-400">
-	// 		Markets
-	// 	</Link>
-	// 	<Link to="/orders" className="hover:text-gray-400">
-	// 		Orders
-	// 	</Link>
-	// 	<Link to="/createOrder" className="hover:text-gray-400">
-	// 		Create Order
-	// 	</Link>
-	// 	<Link to="/balance" className="hover:text-gray-400">
-	// 		Balance
-	// 	</Link>
-	// </footer>;
+	return <footer
+		className="flex justify-around p-4"
+	>
+		<Link to="/markets">
+			Markets
+		</Link>
+		<Link to="/orders">
+			Orders
+		</Link>
+		<Link to="/createOrder">
+			Create Order
+		</Link>
+		<Link to="/balance">
+			Balance
+		</Link>
+	</footer>;
 }
 
 // @ts-ignore

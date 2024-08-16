@@ -4,20 +4,34 @@
 	height: 100vh;
 }
 
+#layout > header,
+#layout > main,
+#layout > footer {
+	width: 100%;
+}
+
+#layout > header,
+#layout > footer {
+	@apply h-16;
+}
+
 #layout > header {
-	background-color: blue;
-	height: 3rem;
-	width: 100vw;
 }
 
 #layout > main {
 	background-color: red;
-	width: 100vw;
 	flex-grow: 1;
 }
 
 #layout > footer {
-	background-color: green;
-	height: 3rem;
-	width: 100vw;
+}
+
+#menu {
+	width: 64vw;
+	height: 100vh;
+	@apply bg-gray-800 text-white;
+}
+
+#menu .MuiListItemButton-root {
+	@apply hover:bg-gray-800 text-white;
 }

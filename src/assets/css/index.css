@@ -1,3 +1,9 @@
+:root {
+	--background-color: #212121;
+	--accent-color: #f28705;
+}
+
 body {
-	background-color: #111827;
+	/*background-color: var(--background-color);*/
+	@apply bg-gray-800 text-white;
 }

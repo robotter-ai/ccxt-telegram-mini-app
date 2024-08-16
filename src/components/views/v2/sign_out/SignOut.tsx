@@ -20,7 +20,7 @@ export const SignOut = () => {
 	};
 
 	return (
-		<button onClick={handleSignOut} className="hover:bg-gray-700 text-white w-full text-left p-4">
+		<button onClick={handleSignOut}>
 			Sign Out
 		</button>
 	);
