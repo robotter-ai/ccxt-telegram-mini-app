@@ -17,10 +17,9 @@ const initialize = async () => {
 	ReactDOM.createRoot(document.getElementById('root')!)
 		.render(
 			// <React.StrictMode>
-
 				<Provider store={reduxStore}>
 					<AppContext.Provider value={{}}>
-						<TelegramUI>
+						<TelegramUI id='telegramUI'>
 							<ToastContainer/>
 							<Router/>
 						</TelegramUI>

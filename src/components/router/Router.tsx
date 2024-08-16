@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Navigate, BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Constant } from 'model/enum/constant.ts';
 
-import { Main as V1Main } from 'components/views/v1/main/Main';
+import { Layout as V1Layout } from 'components/views/v1/main/Layout.tsx';
 import { SignIn as V1SignIn } from 'components/views/v1/sign_in/SignIn';
 import { Balances as V1Balances } from 'components/views/v1/balances/Balances';
 import { Markets as V1Markets } from 'components/views/v1/markets/Markets';
@@ -12,7 +12,7 @@ import { Orders as V1Orders } from 'components/views/v1/orders/Orders';
 import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOrder';
 import { Development as V1Development } from 'components/views/v1/development/Development';
 
-import { Main as V2Main } from 'components/views/v2/main/Main';
+import { Layout as V2Layout } from 'components/views/v2/main/Layout.tsx';
 // import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
 // import { Balances as V2Balances } from 'components/views/v2/balances/Balances';
 // import { Markets as V2Markets } from 'components/views/v2/markets/Markets';
@@ -69,7 +69,7 @@ const RouterContent = () => {
 			<Route path={Constant.developmentPath.value} element={<Navigate to={`${Constant.currentRoutePath.value}${Constant.developmentPath.value}`} />} />
 
 			<Route path={Constant.v1SignInPath.value}  element={<V1SignIn />} />
-			<Route path={Constant.v1Path.value} element={<V1Main />}>
+			<Route path={Constant.v1Path.value} element={<V1Layout />}>
 				<Route path={Constant.v1Path.value} element={<Navigate to={Constant.v1MarketsPath.value} />} />
 				<Route path={Constant.v1HomePath.value} element={<Navigate to={Constant.v1Path.value} />} />
 				<Route path={Constant.v1OrdersPath.value} element={<NormalizedRoute element={<V1Orders />} checkAuthentication />} />
@@ -81,7 +81,7 @@ const RouterContent = () => {
 			</Route>
 
 			{/* <Route path={Constant.v2SignInPath.value}  element={<V2SignIn />} /> */}
-			<Route path={Constant.v2Path.value} element={<V2Main />}>
+			<Route path={Constant.v2Path.value} element={<V2Layout />}>
 				<Route path={Constant.v2Path.value} element={<Navigate to={Constant.v2MarketsPath.value} />} />
 				<Route path={Constant.v2HomePath.value} element={<Navigate to={Constant.v2Path.value} />} />
 				{/* <Route path={Constant.v2OrdersPath.value} element={<NormalizedRoute element={<V2Orders />} checkAuthentication />} /> */}

@@ -1,0 +1,23 @@
+#layout {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+#layout > header {
+	background-color: blue;
+	height: 3rem;
+	width: 100vw;
+}
+
+#layout > main {
+	background-color: red;
+	width: 100vw;
+	flex-grow: 1;
+}
+
+#layout > footer {
+	background-color: green;
+	height: 3rem;
+	width: 100vw;
+}

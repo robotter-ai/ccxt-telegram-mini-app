@@ -1,3 +1,4 @@
+import './Template.css';
 import { connect } from 'react-redux';
 import axios from 'axios';
 // import PropTypes from 'prop-types';
@@ -7,7 +8,6 @@ import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v2/spinner/Spinner';
-import './Template.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 

@@ -6,7 +6,7 @@ import logo from 'src/assets/images/logo/exchange.png';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { SignOut } from 'components/views/v1/sign_out/SignOut';
 
-export const Main = () => {
+export const Layout = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -34,9 +34,9 @@ export const Main = () => {
 			return 'Market';
 		case '/orders':
 			return 'Orders';
-		case '/createOrder':
+		case '/order/create':
 			return 'Create Order';
-		case '/balance':
+		case '/balances':
 			return 'Balance';
 		default:
 			return 'Home';
@@ -68,7 +68,7 @@ export const Main = () => {
 						<ListItem button component={Link} to="/orders" className="hover:bg-gray-700">
 							<ListItemText primary="Orders" />
 						</ListItem>
-						<ListItem button component={Link} to="/createOrder" className="hover:bg-gray-700">
+						<ListItem button component={Link} to="/order/create" className="hover:bg-gray-700">
 							<ListItemText primary="Create Order" />
 						</ListItem>
 						<SignOut />
@@ -87,10 +87,10 @@ export const Main = () => {
 				<Link to="/orders" className="hover:text-gray-400">
 					Orders
 				</Link>
-				<Link to="/createOrder" className="hover:text-gray-400">
+				<Link to="/order/create" className="hover:text-gray-400">
 					Create Order
 				</Link>
-				<Link to="/balance" className="hover:text-gray-400">
+				<Link to="/balances" className="hover:text-gray-400">
 					Balance
 				</Link>
 			</footer>
