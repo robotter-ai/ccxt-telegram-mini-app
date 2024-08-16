@@ -6,7 +6,7 @@ import logo from 'src/assets/images/logo/exchange.png';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { SignOut } from 'components/views/v1/sign_out/SignOut';
 
-export const MainLayout = () => {
+export const Main = () => {
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();

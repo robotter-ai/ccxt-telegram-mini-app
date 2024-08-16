@@ -1,3 +1,4 @@
+import '@telegram-apps/telegram-ui/dist/styles.css';
 import './Root.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'model/initializer';
@@ -6,7 +7,7 @@ import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { AppContext } from 'model/contexts/AppContext';
 import { Router } from 'components/router/Router';
-import { AppRoot } from '@telegram-apps/telegram-ui'
+import { AppRoot as TelegramUI } from '@telegram-apps/telegram-ui';
 // import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized.ts';
 
 const initialize = async () => {
@@ -16,14 +17,15 @@ const initialize = async () => {
 	ReactDOM.createRoot(document.getElementById('root')!)
 		.render(
 			// <React.StrictMode>
-			<AppRoot>
-			<Provider store={reduxStore}>
-				<AppContext.Provider value={{}}>
-					<ToastContainer/>
-					<Router/>
-				</AppContext.Provider>
-			</Provider>
-			</AppRoot>
+
+				<Provider store={reduxStore}>
+					<AppContext.Provider value={{}}>
+						<TelegramUI>
+							<ToastContainer/>
+							<Router/>
+						</TelegramUI>
+					</AppContext.Provider>
+				</Provider>
 			// </React.StrictMode>
 		);
 }

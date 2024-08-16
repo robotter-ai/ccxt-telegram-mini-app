@@ -8,8 +8,8 @@ import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { Map } from 'model/helper/extendable-immutable/map';
+import { Spinner } from 'components/views/v2/spinner/Spinner';
 
 interface DevelopmentProps extends BaseProps {
 	stateValue: any,
@@ -179,37 +179,4 @@ const DevelopmentBehavior = (props: any) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Development2 = connect(mapStateToProps)(DevelopmentBehavior)
-
-
-import { Cell, Input, List, Section, Tappable } from '@telegram-apps/telegram-ui';
-import { Icon24Close } from '@telegram-apps/telegram-ui/dist/icons/24/close';
-
-// Example data for rendering list cells
-const cellsTexts = ['Chat Settings', 'Data and Storage', 'Devices'];
-
-export const Development = () => (
-	<div>
-		{/* List component to display a collection of items */}
-		<List>
-			{/* Section component to group items within the list */}
-			<Section header="Header for the section" footer="Footer for the section">
-				{/* Mapping through the cells data to render Cell components */}
-				{cellsTexts.map((cellText, index) => (
-					<Cell key={index}>
-						{cellText}
-					</Cell>
-				))}
-			</Section>
-		</List>
-		<Input header="Input" placeholder="I am usual input, just leave me alone" />
-		<Input status="error" header="Input" placeholder="I am error input, don't make my mistakes..." />
-		<Input status="focused" header="Input" placeholder="I am focused input, are u focused on me?" />
-		<Input disabled header="Input" placeholder="I am disabled input" />
-		<Input status="focused" header="Input" placeholder="Write and clean me" after={<Tappable Component="div" style={{
-			display: 'flex'
-		}}>
-			<Icon24Close />
-		</Tappable>} />
-	</div>
-);
+export const Development = connect(mapStateToProps)(DevelopmentBehavior);

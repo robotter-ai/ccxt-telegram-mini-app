@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 interface BalanceProps {
 }
 
-export const Balance: React.FC<BalanceProps> = () => {
+export const Balances: React.FC<BalanceProps> = () => {
 	const [balance, setBalance] = useState<any>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);

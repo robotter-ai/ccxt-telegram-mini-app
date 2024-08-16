@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select, { SingleValue } from 'react-select';
+import { Constant } from 'model/enum/constant.ts';
 
 interface Data {
 	id: number;
@@ -125,8 +126,10 @@ export function MarketsTable({ rows }: Props) {
 		setOrderBy(property);
 	};
 
-	const handleClick = (id: number) => {
-		navigate(`/market?marketId=${id}`);
+	const handleClick = (id: number | string = '') => {
+		const url  = `${Constant.marketPath.value}?marketId=${id}`;
+
+		navigate(url);
 	};
 
 	const handleChangePage = (newPage: number) => {
