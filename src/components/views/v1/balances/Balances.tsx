@@ -1,65 +1,107 @@
-import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 
-interface BalanceProps {
+interface BalanceProps extends BaseProps {}
+
+interface BalanceState extends BaseState {
+	isLoading: boolean;
+	error?: string;
+	balanceData: any;
+	tickers: { [key: string]: any };
 }
 
-export const Balances: React.FC<BalanceProps> = () => {
-	const [balance, setBalance] = useState<any>(null);
-	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState<string | null>(null);
-	const [tickers, setTickers] = useState<{ [key: string]: any }>({});
+interface BalanceSnapshot extends BaseSnapshot {}
 
-	useEffect(() => {
-		const fetchBalance = async () => {
-			try {
-				const response = await apiPostRun({
+const mapStateToProps = (state: BalanceState | any) => ({
+	balanceData: state.api.balanceData,
+	tickers: state.api.tickers,
+});
+
+class BalanceStructure extends Base<BalanceProps, BalanceState, BalanceSnapshot> {
+	static defaultProps: Partial<BaseProps> = {};
+
+	recurrentIntervalId?: number;
+	recurrentDelay?: number;
+
+	constructor(props: BalanceProps) {
+		super(props);
+
+		this.state = {
+			isLoading: true,
+			error: undefined,
+			balanceData: null,
+			tickers: {},
+		};
+
+		this.recurrentIntervalId = undefined;
+		this.recurrentDelay = 5 * 1000;
+	}
+
+	async componentDidMount() {
+		await this.initialize();
+	}
+
+	async componentWillUnmount() {
+		if (this.recurrentIntervalId) {
+			clearInterval(this.recurrentIntervalId);
+		}
+	}
+
+	async initialize() {
+		try {
+			const response = await apiPostRun(
+				{
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'fetch_balance',
-				});
+				},
+				this.props.handleUnAuthorized
+			);
 
-				if (response.status !== 200) {
-					throw new Error('Failed to fetch balance');
-				}
-
-				const balanceData = response.data.result;
-				console.log('Fetched Balance:', balanceData);
-				setBalance(balanceData);
-
-				// Fetch tickers for each symbol in the balance
-				const symbols = Object.keys(balanceData.total);
-				const tickerPromises = symbols.map(async (symbol) => {
-					const tickerResponse = await fetchTicker(symbol);
-					return { [symbol]: tickerResponse.data.result };
-				});
-
-				const tickersArray = await Promise.all(tickerPromises);
-				const tickersObject = tickersArray.reduce((acc, ticker) => ({ ...acc, ...ticker }), {});
-				setTickers(tickersObject);
-
-			} catch (error: any) {
-				console.error('Error fetching balance or tickers:', error);
-				setError('Failed to load balance');
-				toast.error('Failed to load balance');
-			} finally {
-				setLoading(false);
+			if (response.status !== 200) {
+				throw new Error('Failed to fetch balance');
 			}
-		};
 
-		fetchBalance();
-	}, []);
+			const balanceData = response.data.result;
+			console.log('Fetched balance data:', balanceData);
+			this.setState({ balanceData });
 
-	const fetchTicker = async (symbol: string) => {
-		try {
-			const response = await apiPostRun({
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_ticker',
-				parameters: { symbol: `TSOL/tUSDC` },
+			const symbols = Object.keys(balanceData.total);
+			const tickerPromises = symbols.map(async (symbol) => {
+				const tickerResponse = await this.fetchTicker(symbol);
+				return { [symbol]: tickerResponse.data.result };
 			});
+
+			const tickersArray = await Promise.all(tickerPromises);
+			const tickersObject = tickersArray.reduce((acc, ticker) => ({ ...acc, ...ticker }), {});
+			console.log('Fetched ticker data:', tickersObject);
+			this.setState({ tickers: tickersObject });
+
+		} catch (error) {
+			console.error('Error fetching balance or tickers:', error);
+			this.setState({ error: 'Failed to load balance' });
+			toast.error('Failed to load balance');
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	}
+
+	fetchTicker = async (symbol: string) => {
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_ticker',
+					parameters: { symbol: `TSOL/tUSDC` },
+				},
+				this.props.handleUnAuthorized
+			);
 
 			if (response.status !== 200) {
 				throw new Error(`Failed to fetch ticker for ${symbol}`);
@@ -73,36 +115,71 @@ export const Balances: React.FC<BalanceProps> = () => {
 		}
 	};
 
-	if (loading) {
-		return <Spinner />;
-	}
+	render() {
+		const { isLoading, error, balanceData, tickers } = this.state;
 
-	if (error) {
-		return <div className="text-red-500">{error}</div>;
+		if (isLoading) {
+			return <Spinner />;
+		}
+
+		if (error) {
+			return <div className="text-red-500">{error}</div>;
+		}
+
+		return (
+			<div className="p-4">
+				<table className="min-w-full bg-gray-800 rounded text-white">
+					<thead>
+					<tr>
+						<th className="px-4 py-2 text-left" colSpan={2}>Balances</th>
+						<th className="px-4 py-2 text-right">Price (USDC), 24h Chg</th>
+					</tr>
+					</thead>
+					<tbody>
+					{balanceData && Object.entries(balanceData.total).map(([asset, amount]) => (
+						<tr key={asset} className="bg-gray-700 border-b border-gray-600">
+							<td className="px-4 py-2 w-1/12">
+								<img src={`/icons/${asset.toLowerCase()}.svg`} alt={asset} className="w-6 h-6" />
+							</td>
+							<td className="px-4 py-2 w-7/12">
+								<div className="flex flex-col">
+									<span className="text-lg leading-none">{amount}</span>
+									<span className="text-sm text-gray-400">{asset}</span>
+								</div>
+							</td>
+							<td className="px-4 py-2 w-4/12 text-right">
+								<div className="flex flex-col items-end">
+									<span className="leading-none">{`$${tickers[asset]?.last || 'N/A'}`}</span>
+									<span className={`text-sm ${tickers[asset]?.percentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A'}
+                  </span>
+								</div>
+							</td>
+						</tr>
+					))}
+					</tbody>
+				</table>
+			</div>
+		);
 	}
+}
+
+const BalanceBehavior = (props: any) => {
+	const handleUnAuthorized = useHandleUnauthorized();
+	const location = useLocation();
+	const params = useParams();
+	const queryParams = new URLSearchParams(location.search);
+	const [searchParams] = useSearchParams();
 
 	return (
-		<div className="p-4">
-			<div className="space-y-2">
-				{Object.entries(balance.total).map(([asset, amount]) => (
-					<div key={asset} className="flex justify-between items-center bg-gray-800 p-2 rounded text-white">
-						<span>{asset}</span>
-						<span>{amount}</span>
-						<span className="ml-4">
-								{tickers[asset] ? (
-									<>
-										<span>{`$${tickers[asset].last || 'N/A'}`}</span>
-										<span className={`ml-2 ${tickers[asset].percentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-														{tickers[asset].percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A'}
-												</span>
-									</>
-								) : (
-									'N/A'
-								)}
-						</span>
-					</div>
-				))}
-			</div>
-		</div>
+		<BalanceStructure
+			{...props}
+			queryParams={queryParams}
+			params={params}
+			searchParams={searchParams}
+			handleUnAuthorized={handleUnAuthorized}
+		/>
 	);
 };
+
+export const Balances = connect(mapStateToProps)(BalanceBehavior);
