@@ -107,13 +107,11 @@ const Header = (props: any) => {
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const Main = (props: any) => {
-	return <main></main>
-
-	// return <main className="flex-grow p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
-	// 	<Suspense fallback={<Spinner/>}>
-	// 		<Outlet/>
-	// 	</Suspense>
-	// </main>;
+	return <main>
+		<Suspense fallback={<Spinner/>}>
+			<Outlet/>
+		</Suspense>
+	</main>;
 }
 
 // @ts-ignore

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ListItemButton, ListItemText } from '@mui/material';
 import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
@@ -20,8 +21,8 @@ export const SignOut = () => {
 	};
 
 	return (
-		<button onClick={handleSignOut}>
-			Sign Out
-		</button>
+		<ListItemButton onClick={handleSignOut}>
+			<ListItemText primary="Sign Out" />
+		</ListItemButton>
 	);
 };
