@@ -1,31 +1,29 @@
-// @ts-nocheck
 import './Layout.css';
 import logo from 'src/assets/images/logo/exchange.png';
 import React, { Suspense, useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { Drawer, IconButton, List, ListItemButton, ListItemText } from '@mui/material';
 import { Menu as MUIMenu } from '@mui/icons-material';
 import { Spinner } from 'components/views/v2/spinner/Spinner';
 import { SignOut } from 'components/views/v2/sign_out/SignOut';
 import { Constant } from 'model/enum/constant.ts';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized.ts';
 
 const getTitle = () => {
 	switch (location.pathname) {
 	case Constant.signInPath.value:
-		return 'Sign In';
+		return Constant.signInPath.title;
 	case Constant.marketsPath.value:
-		return 'Markets';
+		return Constant.marketsPath.title;
 	case Constant.marketPath.value:
-		return 'Market';
+		return Constant.marketPath.title;
 	case Constant.ordersPath.value:
-		return 'Orders';
+		return Constant.ordersPath.title;
 	case Constant.createOrderPath.value:
-		return 'Create Order';
+		return Constant.createOrderPath.title;
 	case Constant.balancesPath.value:
-		return 'Balances';
+		return Constant.balancesPath.title;
 	default:
-		return 'Home';
+		return Constant.homePath.title;
 	}
 };
 
@@ -108,7 +106,9 @@ const Header = (props: any) => {
 // noinspection JSUnusedLocalSymbols
 const Main = (props: any) => {
 	return <main>
-		<Suspense fallback={<Spinner/>}>
+		<Suspense
+			fallback={<Spinner/>}
+		>
 			<Outlet/>
 		</Suspense>
 	</main>;
@@ -120,17 +120,17 @@ const Footer = (props: any) => {
 	return <footer
 		className="flex justify-around p-4"
 	>
-		<Link to="/balances">
-			Balances
+		<Link to={Constant.balancesPath.value}>
+			{Constant.balancesPath.title}
 		</Link>
-		<Link to="/markets">
-			Markets
+		<Link to={Constant.marketsPath.value}>
+			{Constant.marketsPath.title}
 		</Link>
-		<Link to="/orders">
-			Orders
+		<Link to={Constant.ordersPath.value}>
+			{Constant.ordersPath.title}
 		</Link>
-		<Link to="/createOrder">
-			Create Order
+		<Link to={Constant.createOrderPath.value}>
+			{Constant.createOrderPath.title}
 		</Link>
 	</footer>;
 }
