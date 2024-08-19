@@ -23,7 +23,7 @@ const getTitle = () => {
 	case Constant.createOrderPath.value:
 		return 'Create Order';
 	case Constant.balancesPath.value:
-		return 'Balance';
+		return 'Balances';
 	default:
 		return 'Home';
 	}
@@ -55,6 +55,9 @@ const Menu = (props: any) => {
 			onKeyDown={toggleDrawer(false)}
 		>
 			<List>
+				<ListItemButton component={Link} to="/balances">
+					<ListItemText primary="Balances" />
+				</ListItemButton>
 				<ListItemButton component={Link} to="/markets">
 					<ListItemText primary="Markets" />
 				</ListItemButton>
@@ -119,6 +122,9 @@ const Footer = (props: any) => {
 	return <footer
 		className="flex justify-around p-4"
 	>
+		<Link to="/balances">
+			Balances
+		</Link>
 		<Link to="/markets">
 			Markets
 		</Link>
@@ -128,27 +134,13 @@ const Footer = (props: any) => {
 		<Link to="/createOrder">
 			Create Order
 		</Link>
-		<Link to="/balance">
-			Balance
-		</Link>
 	</footer>;
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
 export const Layout = (props: any = {}) => {
-	// props.location = useLocation();
-	// props.navigate = useNavigate();
-	// props.params = useParams();
-	// props.params.queryParams = new URLSearchParams(location.search);
-	// const [searchParams] = useSearchParams();
-	// props.searchParams = searchParams;
-	// props.params.handleUnAuthorized = useHandleUnauthorized();
-
 	return (
 		<div
 			id="layout"
-			// className="flex flex-col min-h-screen"
 		>
 			<Menu {...props}/>
 			<Header {...props}/>
