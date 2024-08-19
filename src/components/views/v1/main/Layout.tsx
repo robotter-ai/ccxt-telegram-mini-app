@@ -44,8 +44,8 @@ export const Layout = () => {
 	};
 
 	return (
-		<div className="flex flex-col min-h-screen bg-gray-900 text-white">
-			<header className="flex items-center justify-between p-4 bg-gray-800" style={{ height: '60px' }}>
+		<div className="flex flex-col min-h-screen bg-[#27272a] text-white">
+			<header className="flex items-center justify-between p-4 bg-[#181818]" style={{ height: '60px' }}>
 				<div className="flex items-center" onClick={handleLogoClick}>
 					<img src={logo} alt="Logo" className="h-8 w-8 mr-2" />
 				</div>
@@ -80,7 +80,7 @@ export const Layout = () => {
 					<Outlet />
 				</Suspense>
 			</main>
-			<footer className="bg-gray-800 text-white p-4 flex justify-around" style={{ height: '60px' }}>
+			<footer className="bg-[#181818] text-white p-4 flex justify-around" style={{ height: '60px' }}>
 				<Link to="/markets" className="hover:text-gray-400">
 					Markets
 				</Link>

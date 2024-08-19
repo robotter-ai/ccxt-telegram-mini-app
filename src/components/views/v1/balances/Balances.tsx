@@ -4,7 +4,11 @@ import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import logoutIcon from 'public/images/logout.svg';
+import { apiPostAuthSignOut } from 'model/service/api';
+import { dispatch } from 'model/state/redux/store';
+import { Constant } from 'model/enum/constant';
 
 interface BalanceProps extends BaseProps {}
 
@@ -115,6 +119,18 @@ class BalanceStructure extends Base<BalanceProps, BalanceState, BalanceSnapshot>
 		}
 	};
 
+	handleSignOut = async () => {
+		try {
+			await apiPostAuthSignOut();
+			dispatch('api.signOut', null);
+			toast.success('Signed out successfully!');
+			this.props.navigate(Constant.homePath.value as string);
+		} catch (exception) {
+			console.error(exception);
+			toast.error('An error occurred during sign out.');
+		}
+	};
+
 	render() {
 		const { isLoading, error, balanceData, tickers } = this.state;
 
@@ -128,18 +144,20 @@ class BalanceStructure extends Base<BalanceProps, BalanceState, BalanceSnapshot>
 
 		return (
 			<div className="p-4">
-				<table className="min-w-full bg-gray-800 rounded text-white">
+				<table className="min-w-full bg-[#181818] rounded text-white">
 					<thead>
 					<tr>
-						<th className="px-4 py-2 text-left" colSpan={2}>Balances</th>
+						<th className="px-4 py-2 text-left text-[#FE8A00]" colSpan={2}>
+							Balances
+						</th>
 						<th className="px-4 py-2 text-right">Price (USDC), 24h Chg</th>
 					</tr>
 					</thead>
 					<tbody>
 					{balanceData && Object.entries(balanceData.total).map(([asset, amount]) => (
-						<tr key={asset} className="bg-gray-700 border-b border-gray-600">
+						<tr key={asset} className="bg-[#393939] border-b border-gray-600">
 							<td className="px-4 py-2 w-1/12">
-								<img src={`/icons/${asset.toLowerCase()}.svg`} alt={asset} className="w-6 h-6" />
+								<img src={`/public/images/${asset.toLowerCase()}.svg`} alt={asset} className="w-6 h-6" />
 							</td>
 							<td className="px-4 py-2 w-7/12">
 								<div className="flex flex-col">
@@ -151,14 +169,20 @@ class BalanceStructure extends Base<BalanceProps, BalanceState, BalanceSnapshot>
 								<div className="flex flex-col items-end">
 									<span className="leading-none">{`$${tickers[asset]?.last || 'N/A'}`}</span>
 									<span className={`text-sm ${tickers[asset]?.percentage >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A'}
-                  </span>
+                                            {tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A'}
+                                        </span>
 								</div>
 							</td>
 						</tr>
 					))}
 					</tbody>
 				</table>
+				<div className="mt-6 flex flex-col items-center">
+					<img src={logoutIcon} alt="Logout Icon" className="w-6 h-6 mb-2" />
+					<button onClick={this.handleSignOut} className="text-[#FE8A00] hover:underline focus:outline-none">
+						Sign Out
+					</button>
+				</div>
 			</div>
 		);
 	}
@@ -170,6 +194,7 @@ const BalanceBehavior = (props: any) => {
 	const params = useParams();
 	const queryParams = new URLSearchParams(location.search);
 	const [searchParams] = useSearchParams();
+	const navigate = useNavigate();
 
 	return (
 		<BalanceStructure
@@ -178,6 +203,7 @@ const BalanceBehavior = (props: any) => {
 			params={params}
 			searchParams={searchParams}
 			handleUnAuthorized={handleUnAuthorized}
+			navigate={navigate}
 		/>
 	);
 };

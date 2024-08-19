@@ -73,7 +73,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 	};
 
 	return (
-		<thead className="bg-gray-800">
+		<thead className="bg-[#181818]">
 		<tr>
 			{headCells.map((headCell) => (
 				<th
@@ -96,13 +96,13 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	return (
-		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
+		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-[#181818]">
 			<input
 				type="text"
 				placeholder="Filter markets"
 				value={props.filterText}
 				onChange={props.onFilterTextChange}
-				className="mt-2 md:mt-0 p-2 rounded bg-gray-800 text-white border border-gray-700 w-full md:w-auto"
+				className="mt-2 md:mt-0 p-2 rounded bg-[#393939] text-white border border-gray-700 w-full md:w-auto"
 			/>
 		</div>
 	);
@@ -128,7 +128,6 @@ export function MarketsTable({ rows }: Props) {
 
 	const handleClick = (id: number | string = '') => {
 		const url  = `${Constant.marketPath.value}?marketId=${id}`;
-
 		navigate(url);
 	};
 
@@ -169,16 +168,16 @@ export function MarketsTable({ rows }: Props) {
 	];
 
 	return (
-		<div className="min-h-screen w-full p-4 bg-gray-900 text-white">
+		<div className="min-h-screen w-full p-4 bg-[#181818] text-white">
 			<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
 			<div className="overflow-x-auto max-h-[60vh]">
-				<table className={`min-w-full divide-y divide-gray-700 text-sm`}>
+				<table className="min-w-full divide-y divide-gray-700 text-sm">
 					<EnhancedTableHead
 						order={order}
 						orderBy={orderBy}
 						onRequestSort={handleRequestSort}
 					/>
-					<tbody className="bg-gray-800 divide-y divide-gray-700">
+					<tbody className="bg-[#393939] divide-y divide-gray-700">
 					{visibleRows.map((row) => (
 						<tr
 							key={`${row.symbol}-${row.base}-${row.quote}`}
@@ -204,11 +203,11 @@ export function MarketsTable({ rows }: Props) {
 						value={rowsPerPageOptions.find(option => option.value === rowsPerPage)}
 						onChange={handleChangeRowsPerPage}
 						options={rowsPerPageOptions}
-						className="bg-gray-800 text-white"
+						className="bg-[#393939] text-white"
 						styles={{
 							control: (provided) => ({
 								...provided,
-								backgroundColor: '#1F2937',
+								backgroundColor: '#393939',
 								borderColor: '#374151',
 								color: '#FFFFFF',
 								minHeight: '35px',
@@ -221,11 +220,11 @@ export function MarketsTable({ rows }: Props) {
 							}),
 							menu: (provided) => ({
 								...provided,
-								backgroundColor: '#1F2937',
+								backgroundColor: '#393939',
 							}),
 							option: (provided, state) => ({
 								...provided,
-								backgroundColor: state.isSelected ? '#374151' : '#1F2937',
+								backgroundColor: state.isSelected ? '#393939' : '#393939',
 								color: state.isSelected ? '#fff' : '#d1d5db',
 								'&:hover': {
 									backgroundColor: '#374151',
@@ -240,14 +239,14 @@ export function MarketsTable({ rows }: Props) {
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-[#393939] text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-[#393939] text-white rounded-md cursor-pointer hover:bg-gray-600"
 						onClick={() => handleChangePage(page + 1)}
 						disabled={page >= Math.ceil(filteredRows.length / rowsPerPage) - 1}
 					>

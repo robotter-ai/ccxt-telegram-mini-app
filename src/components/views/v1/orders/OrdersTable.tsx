@@ -83,12 +83,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 	};
 
 	return (
-		<thead className="bg-gray-800">
+		<thead className="bg-[#393939]">
 		<tr>
 			<th className="p-4">
 				<input
 					type="checkbox"
-					className="form-checkbox text-orange-500"
+					className="form-checkbox text-[#FE8A00]"
 					checked={rowCount > 0 && numSelected === rowCount}
 					onChange={onSelectAllClick}
 				/>
@@ -118,10 +118,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	const { numSelected, onCancelSelectedOpenOrdersClick, onCancelAllOpenOrdersClick, disableCancelAllButton } = props;
 
 	return (
-		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-gray-900">
+		<div className="flex flex-col md:flex-row items-center justify-between p-4 bg-[#181818]">
 			<div className="flex space-x-2 ml-auto">
 				<button
-					className={`px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 ${disableCancelAllButton ? 'opacity-50 cursor-not-allowed' : ''}`}
+					className={`px-4 py-2 bg-[#FE8A00] text-white rounded-md hover:bg-orange-600 ${disableCancelAllButton ? 'opacity-50 cursor-not-allowed' : ''}`}
 					onClick={onCancelAllOpenOrdersClick}
 					disabled={disableCancelAllButton}
 				>
@@ -129,7 +129,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 				</button>
 				{numSelected > 0 && (
 					<button
-						className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+						className="px-4 py-2 bg-[#FE8A00] text-white rounded-md hover:bg-orange-600"
 						onClick={onCancelSelectedOpenOrdersClick}
 					>
 						Cancel {numSelected} selected
@@ -148,11 +148,11 @@ interface Props {
 }
 
 export function OrdersTable({
-	rows,
-	cancelOpenOrder,
-	cancelOpenOrders,
-	cancelAllOpenOrders
-}: Props) {
+															rows,
+															cancelOpenOrder,
+															cancelOpenOrders,
+															cancelAllOpenOrders
+														}: Props) {
 	const [order, setOrder] = React.useState<Order>('asc');
 	const [orderBy, setOrderBy] = React.useState<keyof Data>('market');
 	const [selected, setSelected] = React.useState<readonly any[]>([]);
@@ -244,7 +244,7 @@ export function OrdersTable({
 	];
 
 	return (
-		<div className="h-full w-full p-4 bg-gray-900 text-white">
+		<div className="h-full w-full p-4 bg-[#181818] text-white">
 			<EnhancedTableToolbar
 				numSelected={selected.length}
 				onCancelSelectedOpenOrdersClick={handleCancelSelectedOpenOrdersClick}
@@ -261,7 +261,7 @@ export function OrdersTable({
 						onRequestSort={handleRequestSort}
 						rowCount={rows.length}
 					/>
-					<tbody className="bg-gray-800 divide-y divide-gray-700">
+					<tbody className="bg-[#393939] divide-y divide-gray-700">
 					{visibleRows.map((row, index) => {
 						const isItemSelected = isSelected(row.id);
 						const labelId = `enhanced-table-checkbox-${index}`;
@@ -269,13 +269,13 @@ export function OrdersTable({
 						return (
 							<tr
 								key={row.id}
-								className={`hover:bg-gray-700 cursor-pointer ${isItemSelected ? 'bg-gray-700' : ''}`}
+								className={`hover:bg-[#393939] cursor-pointer ${isItemSelected ? 'bg-[#393939}' : ''}`}
 								onClick={(event) => handleClick(event, row)}
 							>
 								<td className="p-4">
 									<input
 										type="checkbox"
-										className="form-checkbox text-orange-500"
+										className="form-checkbox text-[#FE8A00]"
 										checked={isItemSelected}
 										onChange={(event) => handleClick(event as unknown as React.MouseEvent<unknown>, row)}
 										aria-labelledby={labelId}
@@ -284,12 +284,12 @@ export function OrdersTable({
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.id}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.market}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.side.toString().toUpperCase()}</td>
-								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.amount}</td> {/* Ensure amount is a number */}
-								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.price}</td> {/* Ensure price is a number */}
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.amount}</td>
+								<td className="px-2 md:px-6 py-2 md:py-4 text-right">{row.price}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">{row.datetime}</td>
 								<td className="px-2 md:px-6 py-2 md:py-4 text-center">
 									<button
-										className="px-2 py-1 text-orange-500 border border-orange-500 rounded-md hover:bg-orange-500 hover:text-white"
+										className="px-2 py-1 text-[#FE8A00] border border-[#FE8A00] rounded-md hover:bg-[#FE8A00] hover:text-white"
 										onClick={handleCancelOpenOrderClick(row)}
 									>
 										Cancel
@@ -316,7 +316,7 @@ export function OrdersTable({
 						styles={{
 							control: (provided) => ({
 								...provided,
-								backgroundColor: '#1F2937',
+								backgroundColor: '#393939',
 								borderColor: '#374151',
 								color: '#FFFFFF',
 								minHeight: '35px',
@@ -329,14 +329,14 @@ export function OrdersTable({
 							}),
 							menu: (provided) => ({
 								...provided,
-								backgroundColor: '#1F2937',
+								backgroundColor: '#393939',
 							}),
 							option: (provided, state) => ({
 								...provided,
-								backgroundColor: state.isSelected ? '#374151' : '#1F2937',
+								backgroundColor: state.isSelected ? '#393939' : '#393939',
 								color: state.isSelected ? '#fff' : '#d1d5db',
 								'&:hover': {
-									backgroundColor: '#374151',
+									backgroundColor: '#393939',
 								},
 							}),
 							input: (provided) => ({
@@ -348,14 +348,14 @@ export function OrdersTable({
 				</div>
 				<div className="flex justify-between space-x-2">
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-[#393939] text-white rounded-md cursor-pointer hover:bg-[#393939]"
 						onClick={() => handleChangePage(null, page - 1)}
 						disabled={page === 0}
 					>
 						Previous
 					</button>
 					<button
-						className="px-4 py-2 bg-gray-700 text-white rounded-md cursor-pointer hover:bg-gray-600"
+						className="px-4 py-2 bg-[#393939] text-white rounded-md cursor-pointer hover:bg-[#393939]"
 						onClick={() => handleChangePage(null, page + 1)}
 						disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
 					>

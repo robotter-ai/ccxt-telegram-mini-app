@@ -8,8 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { connect } from 'react-redux';
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: any, props: any) => ({
 	markets: state.api.markets,
 });
@@ -18,8 +16,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 	const handleUnauthorized = useHandleUnauthorized();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-	}, [handleUnauthorized]);
+	useEffect(() => {}, [handleUnauthorized]);
 
 	markets = markets.map((market: any) => ({
 		value: market.symbol,
@@ -61,13 +58,8 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 			);
 
 			if (response.status !== 200) {
-				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Network response was not OK');
 			}
-
-			// const payload = response.data;
-
-			// dispatch({ type: 'api.addOrder', payload: payload.result });
 
 			toast.success('Order created successfully!');
 
@@ -79,7 +71,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 	};
 
 	return (
-		<div className="h-full w-full p-4 bg-gray-900 text-white">
+		<div className="h-full w-full p-4 bg-[#181818] text-white"> {/* Updated background color */}
 			<Formik
 				initialValues={{
 					market: marketId || '',
@@ -100,51 +92,53 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 							await handleSubmit(values);
 						}}
 					>
-						{!marketId && <div>
-							<label htmlFor="market" className="block text-sm font-medium text-gray-300">
-								Market
-							</label>
-							<Select
-								id="market"
-								name="market"
-								value={markets.find((option: any) => option.value ? option.value.toUpperCase() === values.market.toUpperCase() : false)}
-								onChange={(option) => setFieldValue('market', option?.value || '')}
-								options={markets}
-								className="mt-1"
-								placeholder="Select a market"
-								styles={{
-									control: (provided) => ({
-										...provided,
-										backgroundColor: '#1F2937',
-										borderColor: '#374151',
-										color: '#FFFFFF',
-										minHeight: '40px',
-										height: '40px',
-										fontSize: '15px',
-									}),
-									singleValue: (provided) => ({
-										...provided,
-										color: '#FFFFFF',
-									}),
-									menu: (provided) => ({
-										...provided,
-										backgroundColor: '#1F2937',
-									}),
-									option: (provided, state) => ({
-										...provided,
-										backgroundColor: state.isSelected ? '#374151' : '#1F2937',
-										color: state.isSelected ? '#fff' : '#d1d5db',
-										'&:hover': {
-											backgroundColor: '#374151',
-										},
-									}),
-									input: (provided) => ({
-										...provided,
-										color: '#FFFFFF',
-									}),
-								}}
-							/>
-						</div>}
+						{!marketId && (
+							<div>
+								<label htmlFor="market" className="block text-sm font-medium text-gray-300">
+									Market
+								</label>
+								<Select
+									id="market"
+									name="market"
+									value={markets.find((option: any) => option.value ? option.value.toUpperCase() === values.market.toUpperCase() : false)}
+									onChange={(option) => setFieldValue('market', option?.value || '')}
+									options={markets}
+									className="mt-1"
+									placeholder="Select a market"
+									styles={{
+										control: (provided) => ({
+											...provided,
+											backgroundColor: '#393939',
+											borderColor: '#374151',
+											color: '#FFFFFF',
+											minHeight: '40px',
+											height: '40px',
+											fontSize: '15px',
+										}),
+										singleValue: (provided) => ({
+											...provided,
+											color: '#FFFFFF',
+										}),
+										menu: (provided) => ({
+											...provided,
+											backgroundColor: '#393939',
+										}),
+										option: (provided, state) => ({
+											...provided,
+											backgroundColor: state.isSelected ? '#374151' : '#393939',
+											color: state.isSelected ? '#fff' : '#d1d5db',
+											'&:hover': {
+												backgroundColor: '#374151',
+											},
+										}),
+										input: (provided) => ({
+											...provided,
+											color: '#FFFFFF',
+										}),
+									}}
+								/>
+							</div>
+						)}
 						<div>
 							<label htmlFor="orderType" className="block text-sm font-medium text-gray-300">
 								Order Type
@@ -159,7 +153,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 								styles={{
 									control: (provided) => ({
 										...provided,
-										backgroundColor: '#1F2937',
+										backgroundColor: '#393939',
 										borderColor: '#374151',
 										color: '#FFFFFF',
 										minHeight: '40px',
@@ -172,11 +166,11 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 									}),
 									menu: (provided) => ({
 										...provided,
-										backgroundColor: '#1F2937',
+										backgroundColor: '#393939',
 									}),
 									option: (provided, state) => ({
 										...provided,
-										backgroundColor: state.isSelected ? '#374151' : '#1F2937',
+										backgroundColor: state.isSelected ? '#374151' : '#393939',
 										color: state.isSelected ? '#fff' : '#d1d5db',
 										'&:hover': {
 											backgroundColor: '#374151',
@@ -203,7 +197,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 								styles={{
 									control: (provided) => ({
 										...provided,
-										backgroundColor: '#1F2937',
+										backgroundColor: '#393939',
 										borderColor: '#374151',
 										color: '#FFFFFF',
 										minHeight: '40px',
@@ -216,11 +210,11 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 									}),
 									menu: (provided) => ({
 										...provided,
-										backgroundColor: '#1F2937',
+										backgroundColor: '#393939',
 									}),
 									option: (provided, state) => ({
 										...provided,
-										backgroundColor: state.isSelected ? '#374151' : '#1F2937',
+										backgroundColor: state.isSelected ? '#374151' : '#393939',
 										color: state.isSelected ? '#fff' : '#d1d5db',
 										'&:hover': {
 											backgroundColor: '#374151',
@@ -243,8 +237,9 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 								type="number"
 								step="0.0001"
 								required
-								className="mt-1 p-2 bg-gray-800 text-white rounded-md w-full"
+								className="mt-1 p-2 bg-[#393939] text-white rounded-md w-full"
 							/>
+
 						</div>
 						<div>
 							<label htmlFor="price" className="block text-sm font-medium text-gray-300">
@@ -258,7 +253,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 								required
 								disabled={values.orderType === 'market'}
 								className={`mt-1 p-2 rounded-md w-full ${
-									values.orderType === 'market' ? 'bg-gray-600' : 'bg-gray-800 text-white'
+									values.orderType === 'market' ? 'bg-gray-600' : 'bg-[#393939] text-white'
 								}`}
 							/>
 						</div>
@@ -266,7 +261,7 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 w-full flex items-center justify-center"
+								className="px-4 py-2 bg-[#FE8A00] text-white rounded-md hover:bg-orange-600 w-full flex items-center justify-center"
 								style={{ minHeight: '40px', height: '40px' }}
 							>
 								{isSubmitting ? <Spinner /> : 'Create Order'}
@@ -279,4 +274,4 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 	);
 };
 
-export const CreateOrder = connect(mapStateToProps)(CreateOrderStructure)
+export const CreateOrder = connect(mapStateToProps)(CreateOrderStructure);
