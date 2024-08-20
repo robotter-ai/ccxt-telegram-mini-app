@@ -12,6 +12,7 @@
 
 #layout > header,
 #layout > footer {
+	background-color: var(--palete-background-paper);
 	@apply h-16;
 }
 
@@ -19,7 +20,7 @@
 }
 
 #layout > main {
-	background-color: red;
+	background-color: var(--palete-background-default);
 	flex-grow: 1;
 }
 

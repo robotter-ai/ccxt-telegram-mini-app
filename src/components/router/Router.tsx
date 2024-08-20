@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Navigate, BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Constant } from 'model/enum/constant.ts';
 
-import { Layout as V1Layout } from 'components/views/v1/main/Layout.tsx';
+import { Layout as V1Layout } from 'components/views/v1/main/Layout';
 import { SignIn as V1SignIn } from 'components/views/v1/sign_in/SignIn';
 import { Balances as V1Balances } from 'components/views/v1/balances/Balances';
 import { Markets as V1Markets } from 'components/views/v1/markets/Markets';
@@ -12,7 +12,7 @@ import { Orders as V1Orders } from 'components/views/v1/orders/Orders';
 import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOrder';
 import { Development as V1Development } from 'components/views/v1/development/Development';
 
-import { Layout as V2Layout } from 'components/views/v2/main/Layout.tsx';
+import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
 // import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
 // import { Balances as V2Balances } from 'components/views/v2/balances/Balances';
 // import { Markets as V2Markets } from 'components/views/v2/markets/Markets';

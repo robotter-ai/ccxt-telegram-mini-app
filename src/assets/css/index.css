@@ -1,9 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-	--background-color: #212121;
-	--accent-color: #f28705;
+	--palete-mode: 'dark';
+	--pallete-primary-main: #181818;
+	--palete-secondary-main: #F18503;
+	--palete-background-default: #212121;
+	--palete-background-paper: #393939;
 }
 
 body {
-	/*background-color: var(--background-color);*/
-	@apply bg-gray-800 text-white;
+	background-color: var(--palete-background-default);
 }

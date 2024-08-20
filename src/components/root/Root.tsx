@@ -5,10 +5,12 @@ import 'model/initializer';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { AppRoot as TelegramUI } from '@telegram-apps/telegram-ui';
 import { AppContext } from 'model/contexts/AppContext';
 import { Router } from 'components/router/Router';
-import { AppRoot as TelegramUI } from '@telegram-apps/telegram-ui';
-// import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized.ts';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
 
 const initialize = async () => {
 	// noinspection UnnecessaryLocalVariableJS
@@ -19,10 +21,13 @@ const initialize = async () => {
 			// <React.StrictMode>
 				<Provider store={reduxStore}>
 					<AppContext.Provider value={{}}>
-						<TelegramUI id='telegramUI' appearance='dark'>
-								<ToastContainer/>
-								<Router/>
-						</TelegramUI>
+						<ThemeProvider theme={MaterialUITheme}>
+							<CssBaseline />
+							<TelegramUI id='telegramUI' appearance='dark'>
+									<ToastContainer/>
+									<Router/>
+							</TelegramUI>
+						</ThemeProvider>
 					</AppContext.Provider>
 				</Provider>
 			// </React.StrictMode>

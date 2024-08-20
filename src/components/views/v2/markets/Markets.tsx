@@ -6,7 +6,7 @@ import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import { Spinner } from 'components/views/v2/spinner/Spinner';
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 import './Template.css';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
