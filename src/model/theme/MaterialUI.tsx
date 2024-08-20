@@ -14,4 +14,17 @@ export const MaterialUITheme = createTheme({
 			paper: '#393939',
 		},
 	},
+	components: {
+		MuiBottomNavigationAction: {
+			styleOverrides: {
+				root: {
+					'&.Mui-selected': {
+						color: '#FF9800',
+					},
+					color: '#FF9800',
+					backgroundColor: '#181818',
+				},
+			},
+		},
+	},
 });

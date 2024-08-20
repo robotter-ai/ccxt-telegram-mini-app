@@ -3,36 +3,3 @@
 	flex-direction: column;
 	height: 100vh;
 }
-
-#layout > header,
-#layout > main,
-#layout > footer {
-	width: 100%;
-}
-
-#layout > header,
-#layout > footer {
-	background-color: var(--palete-background-paper);
-	@apply h-16;
-}
-
-#layout > header {
-}
-
-#layout > main {
-	background-color: var(--palete-background-default);
-	flex-grow: 1;
-}
-
-#layout > footer {
-}
-
-#menu {
-	width: 64vw;
-	height: 100vh;
-	@apply bg-gray-800 text-white;
-}
-
-#menu .MuiListItemButton-root {
-	@apply hover:bg-gray-800 text-white;
-}
