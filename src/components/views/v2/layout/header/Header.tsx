@@ -47,19 +47,30 @@ export const Header = (props: any) => {
 		<AppBar position="static">
 			<Toolbar
 				className="flex items-center justify-between p-4"
+				sx={{ justifyContent: 'space-between' }}
 			>
 				<div className="flex items-center" onClick={handleLogoClick}>
 					<img src={logo} alt="Logo" className="h-10 w-10 mr-2"/>
 				</div>
-				<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+				<Typography
+					variant="h6"
+					component="div"
+					sx={{
+						flexGrow: 1,
+						textAlign: 'center',
+						position: 'absolute',
+						left: '50%',
+						transform: 'translateX(-50%)'
+					}}
+				>
 					{getTitle()}
 				</Typography>
 				<IconButton
 					size="large"
-					edge="start"
+					edge="end"
 					color="inherit"
 					aria-label="menu"
-					sx={{ mr: 2 }}
+					sx={{ ml: 'auto' }}
 					onClick={toggleDrawer(true)}
 				>
 					<Menu />
