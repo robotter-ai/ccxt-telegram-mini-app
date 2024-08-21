@@ -1,5 +1,4 @@
 header {
 	width: 100%;
 	@apply h-16;
-	background-color: var(--palete-background-paper);
 }

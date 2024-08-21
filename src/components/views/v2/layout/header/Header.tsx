@@ -1,8 +1,8 @@
 import './Header.css';
 import logo from 'src/assets/images/logo/exchange.png';
 import React, { useState } from 'react';
-import { IconButton } from '@mui/material';
-import { Menu as MUIMenu } from '@mui/icons-material';
+import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { Menu } from '@mui/icons-material';
 import { Constant } from 'model/enum/constant.ts';
 
 const getTitle = () => {
@@ -43,14 +43,28 @@ export const Header = (props: any) => {
 		props.navigate(Constant.rootPath.value);
 	};
 
-	return <header
-		className="flex items-center justify-between p-4">
-		<div className="flex items-center" onClick={handleLogoClick}>
-			<img src={logo} alt="Logo" className="h-10 w-10 mr-2"/>
-		</div>
-		<h1 className="text-xl font-bold">{getTitle()}</h1>
-		<IconButton onClick={toggleDrawer(true)} className="text-white">
-			<MUIMenu/>
-		</IconButton>
-	</header>;
+	return (
+		<AppBar position="static">
+			<Toolbar
+				className="flex items-center justify-between p-4"
+			>
+				<div className="flex items-center" onClick={handleLogoClick}>
+					<img src={logo} alt="Logo" className="h-10 w-10 mr-2"/>
+				</div>
+				<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+					{getTitle()}
+				</Typography>
+				<IconButton
+					size="large"
+					edge="start"
+					color="inherit"
+					aria-label="menu"
+					sx={{ mr: 2 }}
+					onClick={toggleDrawer(true)}
+				>
+					<Menu />
+				</IconButton>
+			</Toolbar>
+		</AppBar>
+	);
 }
