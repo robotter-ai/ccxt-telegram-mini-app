@@ -75,7 +75,7 @@ export const Layout = () => {
 					</List>
 				</div>
 			</Drawer>
-			<main className="flex-grow p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+			<main className="flex-grow overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
 				<Suspense fallback={<Spinner />}>
 					<Outlet />
 				</Suspense>

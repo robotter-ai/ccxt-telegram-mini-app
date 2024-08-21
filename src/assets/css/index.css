@@ -1,3 +1,5 @@
+@import 'https://icons.cube.exchange/cube-icons.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,4 +14,15 @@
 
 body {
 	background-color: var(--palete-background-default);
+}
+
+@font-face {
+	font-family: cube-icons1;
+	src: url('/src/assets/fonts/cube-icons1.woff2') format("woff2"),
+	url('/src/assets/fonts/cube-icons1.ttf') format("truetype"),
+	url('/src/assets/fonts/cube-icons1.woff') format("woff"),
+	url('/src/assets/fonts/cube-icons1.svg') format("svg");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap
 }
