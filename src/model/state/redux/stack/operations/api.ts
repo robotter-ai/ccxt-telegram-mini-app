@@ -5,6 +5,26 @@ const { pushStack } = await import('model/state/redux/stack/methods');
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
+pushStack('app.toggleMenu', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	nextState.setIn(
+		'app.menu.isOpen',
+		!nextState.getIn('app.menu.isOpen')
+	);
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('app.menu.isOpen', nextState.app.menu.isOpen);
+
+	return nextState;
+});
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 pushStack('telegram.updateTelegramUser', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
 

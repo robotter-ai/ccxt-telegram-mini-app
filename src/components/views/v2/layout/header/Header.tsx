@@ -1,9 +1,12 @@
 import './Header.css';
 import logo from 'src/assets/images/logo/exchange.png';
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 import { Constant } from 'model/enum/constant.ts';
+import { connect } from 'react-redux';
+import { dispatch } from 'model/state/redux/store';
 
 const getTitle = () => {
 	switch (location.pathname) {
@@ -26,21 +29,27 @@ const getTitle = () => {
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-export const Header = (props: any) => {
-	const [ _, setDrawerOpen ] = useState(false);
+const mapStateToProps = (state: any, props: any) => ({
+	isMenuOpen: state.app.menu.isOpen,
+});
 
-	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+export const HeaderStructure = (props: any) => {
+	const navigate = useNavigate();
+
+	const toggleMenu = () => (event: React.KeyboardEvent | React.MouseEvent) => {
 		if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
 			return;
 		}
 
-		setDrawerOpen(open);
+		dispatch('app.toggleMenu', !props.isMenuOpen);
 	};
 
 	const handleLogoClick = (event: React.MouseEvent) => {
 		event.stopPropagation();
 
-		props.navigate(Constant.rootPath.value);
+		navigate(Constant.rootPath.value);
 	};
 
 	return (
@@ -71,7 +80,7 @@ export const Header = (props: any) => {
 					color="inherit"
 					aria-label="menu"
 					sx={{ ml: 'auto' }}
-					onClick={toggleDrawer(true)}
+					onClick={toggleMenu()}
 				>
 					<Menu />
 				</IconButton>
@@ -79,3 +88,5 @@ export const Header = (props: any) => {
 		</AppBar>
 	);
 }
+
+export const Header = connect(mapStateToProps)(HeaderStructure);

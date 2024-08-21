@@ -15,14 +15,27 @@ export const MaterialUITheme = createTheme({
 		},
 	},
 	components: {
+		MuiAppBar: {
+			styleOverrides: {
+				root: {
+					backgroundColor: '#181818',
+					backgroundImage: 'none',
+				},
+			},
+		},
+		MuiBottomNavigation: {
+			styleOverrides: {
+				root: {
+					backgroundColor: '#181818',
+				},
+			},
+		},
 		MuiBottomNavigationAction: {
 			styleOverrides: {
 				root: {
 					'&.Mui-selected': {
 						color: '#FF9800',
 					},
-					color: '#FF9800',
-					backgroundColor: '#181818',
 				},
 			},
 		},

@@ -1,33 +1,39 @@
 import './Menu.css';
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import { SignOut } from 'components/views/v2/sign_out/SignOut';
+import { connect } from 'react-redux';
+import { dispatch } from 'model/state/redux/store';
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-export const Menu = (props: any) => {
-	const [ drawerOpen, setDrawerOpen ] = useState(true);
+const mapStateToProps = (state: any, props: any) => ({
+	isMenuOpen: state.app.menu.isOpen,
+});
 
-	const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+export const MenuStructure = (props: any) => {
+	const toggleMenu = () => (event: React.KeyboardEvent | React.MouseEvent) => {
 		if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
 			return;
 		}
 
-		setDrawerOpen(open);
+		dispatch('app.toggleMenu', !props.isMenuOpen);
 	};
 
 	return <Drawer
 		id='drawer'
 		anchor="left"
-		open={drawerOpen}
-		onClose={toggleDrawer(false)}
+		open={props.isMenuOpen}
+		onClose={toggleMenu()}
 	>
 		<div
 			id='menu'
 			role="presentation"
-			onClick={toggleDrawer(false)}
-			onKeyDown={toggleDrawer(false)}
+			onClick={toggleMenu()}
+			onKeyDown={toggleMenu()}
 		>
 			<List>
 				<ListItemButton component={Link} to="/balances">
@@ -46,4 +52,6 @@ export const Menu = (props: any) => {
 			</List>
 		</div>
 	</Drawer>
-}
+};
+
+export const Menu = connect(mapStateToProps)(MenuStructure);
