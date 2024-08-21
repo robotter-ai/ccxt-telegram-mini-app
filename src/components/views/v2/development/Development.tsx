@@ -1,8 +1,8 @@
-import './Development.css';
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { Box, styled } from '@mui/material';
 import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
@@ -11,31 +11,36 @@ import { apiPostRun } from 'model/service/api';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
-interface DevelopmentProps extends BaseProps {
+interface Props extends BaseProps {
 	stateValue: any,
 	propsValue: any,
 	fetchedData: any,
 }
 
-interface DevelopmentState extends BaseState {
+interface State extends BaseState {
 }
 
-const mapStateToProps = (state: DevelopmentState | any, props: DevelopmentProps | any) => ({
+const mapStateToProps = (state: State | any, props: Props | any) => ({
 	stateValue: state.api.data,
 	propsValue: props.value,
 })
 
-class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled(Box)(({ theme }) => ({
+}));
+
+class Structure extends Base<Props, State> {
 
 	properties: Map = new Map();
 
-	constructor(props: DevelopmentProps) {
+	constructor(props: Props) {
 		super(props);
 
 		this.state = {
 			isLoading: true,
 			error: undefined,
-		} as Readonly<DevelopmentState>;
+		} as Readonly<State>;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
@@ -57,51 +62,51 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 		const { fetchedData } = this.props;
 
 		return (
-			<div>
+			<Style>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
-			</div>
+			</Style>
 		);
 	}
 
 	async initialize() {
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: '<apiFunction>',
-					parameters: {
-						param1: '<param1Value>',
-						param2: '<param2Value>',
-					},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-			}
-
-			const payload = response.data.result;
-
-			dispatch('api.updateDevelopmentData', payload);
-		} catch (exception) {
-			console.error(exception);
-
-			if (axios.isAxiosError(exception)) {
-				if (exception?.response?.status === 401) {
-					// TODO check if the hook is navigating to the signIn page!!!
-					return;
-				}
-			}
-
-			const message = 'An error has occurred while performing this operation'
-
-			this.setState({ error: message });
-			toast.error(message);
+			// 	const response = await apiPostRun(
+			// 		{
+			// 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			// 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			// 			method: '<apiFunction>',
+			// 			parameters: {
+			// 				param1: '<param1Value>',
+			// 				param2: '<param2Value>',
+			// 			},
+			// 		},
+			// 		this.props.handleUnAuthorized
+			// 	);
+			//
+			// 	if (response.status !== 200) {
+			// 		// noinspection ExceptionCaughtLocallyJS
+			// 		throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+			// 	}
+			//
+			// 	const payload = response.data.result;
+			//
+			// 	dispatch('api.updateDevelopmentData', payload);
+			// } catch (exception) {
+			// 	console.error(exception);
+			//
+			// 	if (axios.isAxiosError(exception)) {
+			// 		if (exception?.response?.status === 401) {
+			// 			// TODO check if the hook is navigating to the signIn page!!!
+			// 			return;
+			// 		}
+			// 	}
+			//
+			// 	const message = 'An error has occurred while performing this operation'
+			//
+			// 	this.setState({ error: message });
+			// 	toast.error(message);
 		} finally {
 			this.setState({ isLoading: false });
 		}
@@ -110,28 +115,28 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: '<apiFunction>',
-						parameters: {
-							param1: '<param1Value>',
-							param2: '<param2Value>',
-						},
-					},
-					// @ts-ignore
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-				}
-
-				const payload = response.data.result;
-
-				dispatch('api.updateDevelopmentData', payload);
+				// const response = await apiPostRun(
+				// 	{
+				// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				// 		method: '<apiFunction>',
+				// 		parameters: {
+				// 			param1: '<param1Value>',
+				// 			param2: '<param2Value>',
+				// 		},
+				// 	},
+				// 	// @ts-ignore
+				// 	this.props.handleUnAuthorized
+				// );
+				//
+				// if (response.status !== 200) {
+				// 	// noinspection ExceptionCaughtLocallyJS
+				// 	throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+				// }
+				//
+				// const payload = response.data.result;
+				//
+				// dispatch('api.updateDevelopmentData', payload);
 			} catch (exception) {
 				console.error(exception);
 
@@ -159,7 +164,7 @@ class DevelopmentStructure extends Base<DevelopmentProps, DevelopmentState> {
 	}
 }
 
-const DevelopmentBehavior = (props: any) => {
+const Behavior = (props: any) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -167,7 +172,7 @@ const DevelopmentBehavior = (props: any) => {
 	const [searchParams] = useSearchParams();
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	return <DevelopmentStructure
+	return <Structure
 		{...props}
 		location={location}
 		navigate={navigate}
@@ -179,4 +184,4 @@ const DevelopmentBehavior = (props: any) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Development = connect(mapStateToProps)(DevelopmentBehavior);
+export const Development = connect(mapStateToProps)(Behavior);
