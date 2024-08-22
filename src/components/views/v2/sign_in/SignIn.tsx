@@ -1,140 +1,112 @@
 import { connect } from 'react-redux';
-import axios from 'axios';
-// import PropTypes from 'prop-types';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { dispatch } from 'model/state/redux/store';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun } from 'model/service/api';
-import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
-import './Template.css';
-import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { Box, styled } from '@mui/material';
+import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
+// import { dispatch } from 'model/state/redux/store';
+import { executeAndSetInterval } from 'model/service/recurrent';
+// import { apiPostRun } from 'model/service/api';
+import { Map } from 'model/helper/extendable-immutable/map';
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
-interface TemplateProps extends BaseProps {
-	value: any;
-	queryParams: any;
-	params: any;
-	searchParams: any;
-	navigate: any;
-	handleUnAuthorized: any;
-	stateValue: any;
-	propsValue: any;
-	fetchedData: any;
+interface Props extends BaseProps {
+	stateValue: any,
+	propsValue: any,
+	fetchedData: any,
 }
 
-interface TemplateState extends BaseState {
-	isLoading: boolean;
-	error?: string;
+interface State extends BaseState {
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-interface TemplateSnapshot extends BaseSnapshot {
-}
-
-const mapStateToProps = (state: any, props: TemplateProps) => ({
+const mapStateToProps = (state: State | any, props: Props | any) => ({
 	stateValue: state.api.data,
 	propsValue: props.value,
-	fetchedData: state.api.fetchedData,
 })
 
 // @ts-ignore
-class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnapshot> {
+// noinspection JSUnusedLocalSymbols
+const Style = styled(Box)(({ theme }) => ({
+}));
 
-	// static contextTypes = {
-	// 	handleUnAuthorized: PropTypes.func,
-	// };
+class Structure extends Base<Props, State> {
 
-	static defaultProps: Partial<BaseProps> = {};
+	properties: Map = new Map();
 
-	recurrentIntervalId?: number;
-
-	recurrentDelay?: number;
-
-	constructor(props: TemplateProps) {
+	constructor(props: Props) {
 		super(props);
 
 		this.state = {
 			isLoading: true,
 			error: undefined,
-		};
+		} as Readonly<State>;
 
-		// @ts-ignore
-		this.context.handleUnAuthorized = this.props.handleUnAuthorized;
-
-		this.recurrentIntervalId = undefined;
-		this.recurrentDelay = 5 * 1000;
+		this.properties.setIn('recurrent.5s.intervalId', undefined);
+		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
 	}
 
 	async componentDidMount() {
-		console.log('componentDidMount', arguments);
-
 		await this.initialize();
 		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
-		console.log('componentWillUnmount', arguments);
-
-		if (this.recurrentIntervalId) {
-			clearInterval(this.recurrentIntervalId);
+		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
+			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 		}
 	}
 
 	render() {
-		console.log('render', arguments);
-
 		const { isLoading, error } = this.state;
-		const { fetchedData } = this.props;  // Ensure fetchedData is available in props
+		const { fetchedData } = this.props;
 
 		return (
-			<div>
+			<Style>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
-			</div>
+			</Style>
 		);
 	}
 
 	async initialize() {
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: '<apiFunction>',
-					parameters: {
-						param1: '<param1Value>',
-						param2: '<param2Value>',
-					},
-				},
-				// @ts-ignore
-				this.context.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-			}
-
-			const payload = response.data.result;
-
-			dispatch('api.updateTemplateData', payload);
-		} catch (exception) {
-			console.error(exception);
-
-			if (axios.isAxiosError(exception)) {
-				if (exception?.response?.status === 401) {
-					// TODO check if the hook is navigating to the signIn page!!!
-					return;
-				}
-			}
-
-			const message = 'An error has occurred while performing this operation';
-
-			this.setState({ error: message });
-			toast.error(message);
+			// 	const response = await apiPostRun(
+			// 		{
+			// 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			// 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			// 			method: '<apiFunction>',
+			// 			parameters: {
+			// 				param1: '<param1Value>',
+			// 				param2: '<param2Value>',
+			// 			},
+			// 		},
+			// 		this.props.handleUnAuthorized
+			// 	);
+			//
+			// 	if (response.status !== 200) {
+			// 		// noinspection ExceptionCaughtLocallyJS
+			// 		throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+			// 	}
+			//
+			// 	const payload = response.data.result;
+			//
+			// 	dispatch('api.updateDevelopmentData', payload);
+			// } catch (exception) {
+			// 	console.error(exception);
+			//
+			// 	if (axios.isAxiosError(exception)) {
+			// 		if (exception?.response?.status === 401) {
+			// 			// TODO check if the hook is navigating to the signIn page!!!
+			// 			return;
+			// 		}
+			// 	}
+			//
+			// 	const message = 'An error has occurred while performing this operation'
+			//
+			// 	this.setState({ error: message });
+			// 	toast.error(message);
 		} finally {
 			this.setState({ isLoading: false });
 		}
@@ -143,28 +115,28 @@ class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnaps
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: '<apiFunction>',
-						parameters: {
-							param1: '<param1Value>',
-							param2: '<param2Value>',
-						},
-					},
-					// @ts-ignore
-					this.context.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-				}
-
-				const payload = response.data.result;
-
-				dispatch('api.updateTemplateData', payload);
+				// const response = await apiPostRun(
+				// 	{
+				// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				// 		method: '<apiFunction>',
+				// 		parameters: {
+				// 			param1: '<param1Value>',
+				// 			param2: '<param2Value>',
+				// 		},
+				// 	},
+				// 	// @ts-ignore
+				// 	this.props.handleUnAuthorized
+				// );
+				//
+				// if (response.status !== 200) {
+				// 	// noinspection ExceptionCaughtLocallyJS
+				// 	throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+				// }
+				//
+				// const payload = response.data.result;
+				//
+				// dispatch('api.updateDevelopmentData', payload);
 			} catch (exception) {
 				console.error(exception);
 
@@ -175,40 +147,41 @@ class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnaps
 					}
 				}
 
-				const message = 'An error has occurred while performing this operation';
+				const message = 'An error has occurred while performing this operation'
 
 				this.setState({ error: message });
 				toast.error(message);
 
-				clearInterval(this.recurrentIntervalId);
+				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 			}
 		};
 
 		// @ts-ignore
-		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
+		this.properties.setIn(
+			'recurrent.5s.intervalId',
+			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+		);
 	}
 }
 
-const TemplateBehavior = (props: any) => {
+const Behavior = (props: any) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
-	const queryParams = new URLSearchParams(location.search);
+	const queryParams = new URLSearchParams(location.search)
 	const [searchParams] = useSearchParams();
 	const handleUnAuthorized = useHandleUnauthorized();
 
-	return (
-		<TemplateStructure
-			{...props}
-			location={location}
-			navigate={navigate}
-			params={params}
-			queryParams={queryParams}
-			searchParams={searchParams}
-			handleUnAuthorized={handleUnAuthorized}
-		/>
-	);
+	return <Structure
+		{...props}
+		location={location}
+		navigate={navigate}
+		params={params}
+		queryParams={queryParams}
+		searchParams={searchParams}
+		handleUnAuthorized={handleUnAuthorized}
+	/>;
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const SignIn = connect(mapStateToProps)(TemplateBehavior);
+export const SignIn = connect(mapStateToProps)(Behavior);
