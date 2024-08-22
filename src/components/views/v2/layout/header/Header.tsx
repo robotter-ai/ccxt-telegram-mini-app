@@ -1,8 +1,7 @@
-import './Header.css';
 import logo from 'src/assets/images/logo/exchange.png';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, IconButton, styled, Toolbar, Typography } from '@mui/material';
 import { Menu } from '@mui/icons-material';
 import { Constant } from 'model/enum/constant.ts';
 import { connect } from 'react-redux';
@@ -26,6 +25,12 @@ const getTitle = () => {
 		return Constant.homePath.title;
 	}
 };
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled(AppBar)(({ theme }) => ({
+	'@apply w-full h-16': {},
+}));
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -53,7 +58,7 @@ export const HeaderStructure = (props: any) => {
 	};
 
 	return (
-		<AppBar position="static">
+		<Style position="static">
 			<Toolbar
 				className="flex items-center justify-between p-4"
 				sx={{ justifyContent: 'space-between' }}
@@ -85,7 +90,7 @@ export const HeaderStructure = (props: any) => {
 					<Menu />
 				</IconButton>
 			</Toolbar>
-		</AppBar>
+		</Style>
 	);
 }
 

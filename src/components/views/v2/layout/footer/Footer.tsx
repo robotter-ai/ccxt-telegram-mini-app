@@ -1,10 +1,16 @@
-import './Footer.css';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { EmojiEvents, Toc, TrendingUp, Wallet } from '@mui/icons-material';
+import { styled } from '@mui/material';
 import { Constant } from 'model/enum/constant';
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled('footer')(({ theme }) => ({
+	'@apply w-full h-16': {},
+}));
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -12,7 +18,7 @@ export const Footer = (props: any) => {
 	const [value, setValue] = React.useState(0);
 
 	return (
-		<footer>
+		<Style>
 			<BottomNavigation
 				showLabels
 				value={value}
@@ -51,6 +57,6 @@ export const Footer = (props: any) => {
 					to={Constant.rewardsPath.value}
 				/>
 			</BottomNavigation>
-		</footer>
+		</Style>
 	);
 };

@@ -1,9 +1,0 @@
-#menu {
-	width: 64vw;
-	height: 100vh;
-	@apply bg-gray-800 text-white;
-}
-
-#menu .MuiListItemButton-root {
-	@apply hover:bg-gray-800 text-white;
-}

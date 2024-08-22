@@ -1,10 +1,26 @@
-import './Menu.css';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Drawer, List, ListItemButton, ListItemText } from '@mui/material';
+import { Drawer, List, ListItemButton, ListItemText, styled } from '@mui/material';
 import { SignOut } from 'components/views/v2/sign_out/SignOut';
 import { connect } from 'react-redux';
 import { dispatch } from 'model/state/redux/store';
+
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled(Drawer)(({ theme }) => ({
+	'& .MuiDrawer-paper > div': {
+		width: '64vw',
+		height: '100vh',
+		backgroundColor: theme.palette.background.default,
+		color: theme.palette.text.primary,
+	},
+	'& .MuiDrawer-paper > div > .MuiListItemButton-root': {
+		'&:hover': {
+			backgroundColor: theme.palette.background.paper,
+			color: theme.palette.text.secondary,
+		},
+	},
+}));
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -23,7 +39,7 @@ export const MenuStructure = (props: any) => {
 		dispatch('app.toggleMenu', !props.isMenuOpen);
 	};
 
-	return <Drawer
+	return <Style
 		id='drawer'
 		anchor="left"
 		open={props.isMenuOpen}
@@ -51,7 +67,7 @@ export const MenuStructure = (props: any) => {
 				<SignOut />
 			</List>
 		</div>
-	</Drawer>
+	</Style>
 };
 
 export const Menu = connect(mapStateToProps)(MenuStructure);
