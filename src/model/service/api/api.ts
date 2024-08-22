@@ -123,7 +123,11 @@ export const apiPostRun = async (data?: any, handleUnAuthorized?: () => void) =>
 	return await callAPIorMockAPI({
 		method: 'POST',
 		url: '/run',
-		data: data
+		data: {
+			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			...data
+		},
 	}, handleUnAuthorized);
 };
 

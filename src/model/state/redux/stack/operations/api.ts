@@ -3,6 +3,26 @@ import { Map } from 'model/helper/extendable-immutable/map';
 
 const { pushStack } = await import('model/state/redux/stack/methods');
 
+pushStack('api.updateTemplateData', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.template.data',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.template.data', nextState.api.template.data);
+
+	return nextState;
+});
+
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 pushStack('app.toggleMenu', (currentState: any, payload: any) => {
@@ -275,22 +295,6 @@ pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
 	// noinspection TypeScriptUnresolvedReference
 	// @ts-ignore
 	console.log('api.updateMarketCandles', nextState.api.market.candles);
-
-	return nextState;
-});
-
-
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-pushStack('api.updateTemplateData', (currentState: any, payload: any) => {
-	let nextState = new Map(currentState);
-
-	// @ts-ignore
-	nextState = nextState.toJS();
-
-	// noinspection TypeScriptUnresolvedReference
-	// @ts-ignore
-	console.log('api.updateTemplateData', nextState);
 
 	return nextState;
 });

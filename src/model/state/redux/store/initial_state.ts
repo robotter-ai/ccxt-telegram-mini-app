@@ -10,6 +10,9 @@ const map = new Map({
 		intervalsIds: []
 	},
 	api: {
+		template: {
+			data: null
+		},
 		status: Status.running.id,
 		token: null,
 		isSignedIn: false,

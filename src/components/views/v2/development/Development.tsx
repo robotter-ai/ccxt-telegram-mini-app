@@ -3,27 +3,28 @@ import { useLocation, useNavigate, useParams, useSearchParams } from 'react-rout
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Box, styled } from '@mui/material';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { dispatch } from 'model/state/redux/store';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun } from 'model/service/api';
 import { Map } from 'model/helper/extendable-immutable/map';
+import { executeAndSetInterval } from 'model/service/recurrent';
+import { dispatch } from 'model/state/redux/store';
+import { apiPostRun } from 'model/service/api';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
 interface Props extends BaseProps {
-	stateValue: any,
-	propsValue: any,
-	fetchedData: any,
+	data: any,
 }
 
 interface State extends BaseState {
+	isLoading: boolean;
+	error?: string;
 }
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State | any, props: Props | any) => ({
-	stateValue: state.api.data,
-	propsValue: props.value,
-})
+	data: state.api.template.data,
+});
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -59,13 +60,13 @@ class Structure extends Base<Props, State> {
 
 	render() {
 		const { isLoading, error } = this.state;
-		const { fetchedData } = this.props;
+		const { data } = this.props;
 
 		return (
 			<Style>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
-				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
+				<pre>{JSON.stringify(data, null, 2)}</pre>
 			</Style>
 		);
 	}
@@ -74,36 +75,41 @@ class Structure extends Base<Props, State> {
 		try {
 				const response = await apiPostRun(
 					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'describe',
+						method: 'fetch_tickers',
 						parameters: {
-							param1: '<param1Value>',
-							param2: '<param2Value>',
+							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
 						},
 					},
 					this.props.handleUnAuthorized
 				);
 
 				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
+					if (response.data?.title) {
+						const message = response.data.title;
+
+						this.setState({ error: message });
+						toast.error(message);
+
+						return;
+					} else {
+						// noinspection ExceptionCaughtLocallyJS
+						throw new Error(response.text);
+					}
 				}
 
 				const payload = response.data.result;
 
-				dispatch('api.updateDevelopmentData', payload);
-			} catch (exception) {
+				dispatch('api.updateTemplateData', payload);
+			} catch (exception: any) {
 				console.error(exception);
 
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
-						// TODO check if the hook is navigating to the signIn page!!!
 						return;
 					}
 				}
 
-				const message = 'An error has occurred while performing this operation'
+				const message = 'An error has occurred while performing this operation.'
 
 				this.setState({ error: message });
 				toast.error(message);
@@ -115,39 +121,43 @@ class Structure extends Base<Props, State> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				// const response = await apiPostRun(
-				// 	{
-				// 		exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				// 		environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				// 		method: '<apiFunction>',
-				// 		parameters: {
-				// 			param1: '<param1Value>',
-				// 			param2: '<param2Value>',
-				// 		},
-				// 	},
-				// 	// @ts-ignore
-				// 	this.props.handleUnAuthorized
-				// );
-				//
-				// if (response.status !== 200) {
-				// 	// noinspection ExceptionCaughtLocallyJS
-				// 	throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-				// }
-				//
-				// const payload = response.data.result;
-				//
-				// dispatch('api.updateDevelopmentData', payload);
+				const response = await apiPostRun(
+					{
+						method: 'fetch_tickers',
+						parameters: {
+							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
+						},
+					},
+					this.props.handleUnAuthorized
+				);
+
+				if (response.status !== 200) {
+					if (response.data?.title) {
+						const message = response.data.title;
+
+						this.setState({ error: message });
+						toast.error(message);
+
+						return;
+					} else {
+						// noinspection ExceptionCaughtLocallyJS
+						throw new Error(response.text);
+					}
+				}
+
+				const payload = response.data.result;
+
+				dispatch('api.updateTemplateData', payload);
 			} catch (exception) {
 				console.error(exception);
 
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
-						// TODO check if the hook is navigating to the signIn page!!!
 						return;
 					}
 				}
 
-				const message = 'An error has occurred while performing this operation'
+				const message = 'An error has occurred while performing this operation.'
 
 				this.setState({ error: message });
 				toast.error(message);
