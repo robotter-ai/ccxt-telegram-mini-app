@@ -1,58 +1,43 @@
-import { connect } from 'react-redux';
-import axios from 'axios';
-// import PropTypes from 'prop-types';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
+import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { dispatch } from 'model/state/redux/store';
-import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
-import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
-import './Template.css';
-import { toast } from 'react-toastify';
+import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import './Markets.css';
 
-interface TemplateProps extends BaseProps {
-	value: any;
+interface MarketsProps extends BaseProps {
+	markets: any;
+	dispatch: any;
 	queryParams: any;
 	params: any;
 	searchParams: any;
 	navigate: any;
 	handleUnAuthorized: any;
-	stateValue: any;
-	propsValue: any;
-	fetchedData: any;
 }
 
-interface TemplateState extends BaseState {
+interface MarketsState extends BaseState {
 	isLoading: boolean;
 	error?: string;
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-interface TemplateSnapshot extends BaseSnapshot {
-}
+interface MarketsSnapshot extends BaseSnapshot { }
 
-const mapStateToProps = (state: any, props: TemplateProps) => ({
-	stateValue: state.api.data,
-	propsValue: props.value,
-	fetchedData: state.api.fetchedData,
-})
+const mapStateToProps = (state: any) => ({
+	markets: state.api.markets,
+});
 
-// @ts-ignore
-class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnapshot> {
-
-	// static contextTypes = {
-	// 	handleUnAuthorized: PropTypes.func,
-	// };
+class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot> {
 
 	static defaultProps: Partial<BaseProps> = {};
 
-	recurrentIntervalId?: number;
+	recurrentIntervalId?: number | NodeJS.Timeout;
 
 	recurrentDelay?: number;
 
-	constructor(props: TemplateProps) {
+	constructor(props: MarketsProps) {
 		super(props);
 
 		this.state = {
@@ -60,155 +45,137 @@ class TemplateStructure extends Base<TemplateProps, TemplateState, TemplateSnaps
 			error: undefined,
 		};
 
-		// @ts-ignore
-		this.context.handleUnAuthorized = this.props.handleUnAuthorized;
-
 		this.recurrentIntervalId = undefined;
-		this.recurrentDelay = 5 * 1000;
+		this.recurrentDelay = 3 * 10 * 1000;
 	}
 
 	async componentDidMount() {
-		console.log('componentDidMount', arguments);
-
 		await this.initialize();
 		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
-		console.log('componentWillUnmount', arguments);
-
 		if (this.recurrentIntervalId) {
 			clearInterval(this.recurrentIntervalId);
 		}
 	}
 
-	render() {
-		console.log('render', arguments);
-
-		const { isLoading, error } = this.state;
-		const { fetchedData } = this.props;  // Ensure fetchedData is available in props
-
-		return (
-			<div>
-				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error}</div> : null}
-				<pre>{JSON.stringify(fetchedData, null, 2)}</pre>
-			</div>
-		);
-	}
-
 	async initialize() {
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: '<apiFunction>',
-					parameters: {
-						param1: '<param1Value>',
-						param2: '<param2Value>',
-					},
-				},
-				// @ts-ignore
-				this.context.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-			}
-
-			const payload = response.data.result;
-
-			dispatch('api.updateTemplateData', payload);
-		} catch (exception) {
-			console.error(exception);
-
-			if (axios.isAxiosError(exception)) {
-				if (exception?.response?.status === 401) {
-					// TODO check if the hook is navigating to the signIn page!!!
-					return;
-				}
-			}
-
-			const message = 'An error has occurred while performing this operation';
-
-			this.setState({ error: message });
-			toast.error(message);
+			await this.fetchMarketsData();
+		} catch (error) {
+			console.error('Initialization error:', error);
+			this.setState({ error: (error as Error).message });
 		} finally {
 			this.setState({ isLoading: false });
 		}
 	}
 
 	async doRecurrently() {
-		const recurrentFunction = async () => {
+		this.recurrentIntervalId = setInterval(async () => {
 			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: '<apiFunction>',
-						parameters: {
-							param1: '<param1Value>',
-							param2: '<param2Value>',
-						},
-					},
-					// @ts-ignore
-					this.context.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-				}
-
-				const payload = response.data.result;
-
-				dispatch('api.updateTemplateData', payload);
-			} catch (exception) {
-				console.error(exception);
-
-				if (axios.isAxiosError(exception)) {
-					if (exception?.response?.status === 401) {
-						// TODO check if the hook is navigating to the signIn page!!!
-						return;
-					}
-				}
-
-				const message = 'An error has occurred while performing this operation';
-
-				this.setState({ error: message });
-				toast.error(message);
-
-				clearInterval(this.recurrentIntervalId);
+				await this.fetchMarketsData();
+			} catch (error) {
+				console.error('Recurrent fetch error:', error);
+				this.setState({ error: (error as Error).message });
 			}
-		};
+		}, this.recurrentDelay);
+	}
 
-		// @ts-ignore
-		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
+	render() {
+		const { isLoading, error } = this.state;
+		const { markets } = this.props;
+
+		if (isLoading) {
+			return <Spinner />;
+		}
+
+		if (error) {
+			return <div>Error: {error}</div>;
+		}
+
+		if (!Array.isArray(markets)) {
+			return <div>Error: Invalid data format</div>;
+		}
+
+		return (
+			<div className='w-full'>
+				<MarketsTable rows={markets} />
+			</div>
+		);
+	}
+
+	async fetchMarketsData() {
+		try {
+			const marketResponse = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_markets',
+					parameters: {},
+				},
+				this.props.handleUnAuthorized
+			);
+
+			const tickersResponse = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_tickers',
+					parameters: {},
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (marketResponse.status !== 200) {
+				throw new Error('Network response was not OK');
+			}
+
+			if (marketResponse.status !== 200) {
+				throw new Error('Network response was not OK');
+			}
+
+			const payload = marketResponse.data.result;
+			const tickers = tickersResponse.data.result;
+
+			const formattedMarkets = payload.map((market: any) => ({
+				id: market.id,
+				symbol: market.symbol,
+				base: market.base,
+				quote: market.quote,
+				active: market.active,
+				precision: market.precision.amount,
+				price: tickers[market.symbol].last,
+				datetime: tickers[market.symbol].datetime,
+			}));
+
+			this.props.dispatch({ type: 'api.updateMarkets', payload: formattedMarkets });
+		} catch (exception: any) {
+			console.error('Fetch markets data error:', exception);
+			this.setState({ error: (exception as Error).message });
+			toast.error((exception as Error).message);
+		}
 	}
 }
 
-const TemplateBehavior = (props: any) => {
+const MarketsBehavior = (props: any) => {
+	const handleUnAuthorized = useHandleUnauthorized();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
 	const queryParams = new URLSearchParams(location.search);
 	const [searchParams] = useSearchParams();
-	const handleUnAuthorized = useHandleUnauthorized();
 
 	return (
-		<TemplateStructure
+		<MarketsStructure
 			{...props}
-			location={location}
-			navigate={navigate}
-			params={params}
 			queryParams={queryParams}
+			params={params}
 			searchParams={searchParams}
+			navigate={navigate}
 			handleUnAuthorized={handleUnAuthorized}
 		/>
 	);
 };
 
-// noinspection JSUnusedGlobalSymbols
-export const Markets = connect(mapStateToProps)(TemplateBehavior);
+export const Markets = connect(mapStateToProps)(MarketsBehavior);
