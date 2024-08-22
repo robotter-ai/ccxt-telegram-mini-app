@@ -126,3 +126,13 @@ export const apiPostRun = async (data?: any, handleUnAuthorized?: () => void) =>
 		data: data
 	}, handleUnAuthorized);
 };
+
+// @ts-ignore
+// noinspection JSUnusedGlobalSymbols
+export const apiPostDevelopmentExample = async (data?: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'POST',
+		url: '/developmemt/example',
+		data: data
+	}, handleUnAuthorized);
+};
