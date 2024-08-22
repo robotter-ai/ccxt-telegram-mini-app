@@ -4,38 +4,40 @@ export const MaterialUITheme = createTheme({
 	palette: {
 		mode: 'dark',
 		primary: {
-			main: '#181818',
+			main: '#FFFFFF',
 		},
 		secondary: {
-			main: '#F18503',
+			main: '#191919',
 		},
 		background: {
-			default: '#212121',
-			paper: '#393939',
+			default: '#000000',
+			paper: '#232322',
+		},
+		text: {
+			secondary: '#949494',
+			primary: '#ffffff',
+			disabled: '#595959',
+		},
+		error: {
+			main: '#f32d54',
+		},
+		success: {
+			main: '#1fce79',
 		},
 	},
 	components: {
 		MuiAppBar: {
 			styleOverrides: {
 				root: {
-					backgroundColor: '#181818',
 					backgroundImage: 'none',
+					backgroundColor: '#000000',
 				},
 			},
 		},
 		MuiBottomNavigation: {
 			styleOverrides: {
 				root: {
-					backgroundColor: '#181818',
-				},
-			},
-		},
-		MuiBottomNavigationAction: {
-			styleOverrides: {
-				root: {
-					'&.Mui-selected': {
-						color: '#FF9800',
-					},
+					backgroundColor: '#000000',
 				},
 			},
 		},

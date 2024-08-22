@@ -6,10 +6,10 @@
 
 :root {
 	--palete-mode: 'dark';
-	--pallete-primary-main: #181818;
-	--palete-secondary-main: #F18503;
-	--palete-background-default: #212121;
-	--palete-background-paper: #393939;
+	--pallete-primary-main: #FFFFFF;
+	--palete-secondary-main: #191919;
+	--palete-background-default: #000000;
+	--palete-background-paper: #232322;
 }
 
 body {
