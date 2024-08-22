@@ -1,3 +1,4 @@
+import './Markets.css';
 import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
@@ -6,7 +7,6 @@ import { apiPostRun } from 'model/service/api';
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import './Markets.css';
 
 interface MarketsProps extends BaseProps {
 	markets: any;
