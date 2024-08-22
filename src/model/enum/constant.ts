@@ -38,12 +38,12 @@ export class Constant extends BaseEnum {
 	static v2MarketsPath = new Constant('Markets', 'V2 Markets URL path.', '/v2/markets');
 	static v2MarketPath = new Constant('Market', 'V2 Market URL path.', '/v2/market');
 	static v2OrdersPath = new Constant('Orders', 'V2 Orders URL path.', '/v2/orders');
-	static v2OrderPath = new Constant('Order', 'V2 Order URL path.', '/V2/order');
-	static v2CreateOrderPath = new Constant('Create Order', 'V2 Create Order URL path.', '/V2/order/create');
+	static v2OrderPath = new Constant('Order', 'V2 Order URL path.', '/v2/order');
+	static v2CreateOrderPath = new Constant('Create Order', 'V2 Create Order URL path.', '/v2/order/create');
 	static v2RewardsPath = new Constant('Rewards', 'V2 Rewards URL path.', '/rewards');
 	static v2DevelopmentPath = new Constant('Development', 'V2 Development URL path.', '/v2/development');
 
-	static currentRoutePath = Constant.v1Path;
+	static currentRoutePath = Constant.v2Path;
 
 	title: string;
 
