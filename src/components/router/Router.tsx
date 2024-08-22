@@ -13,12 +13,12 @@ import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOr
 import { Development as V1Development } from 'components/views/v1/development/Development';
 
 import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
-// import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
-// import { Balances as V2Balances } from 'components/views/v2/balances/Balances';
-// import { Markets as V2Markets } from 'components/views/v2/markets/Markets';
-// import { Market as V2Market } from 'components/views/v2/market/Market';
-// import { Orders as V2Orders } from 'components/views/v2/orders/Orders';
-// import { CreateOrder as V2CreateOrder } from 'components/views/v2/order/CreateOrder';
+import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
+import { Balances as V2Balances } from 'components/views/v2/balances/Balances';
+import { Markets as V2Markets } from 'components/views/v2/markets/Markets';
+import { Market as V2Market } from 'components/views/v2/market/Market';
+import { Orders as V2Orders } from 'components/views/v2/orders/Orders';
+import { CreateOrder as V2CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Development as V2Development } from 'components/views/v2/development/Development';
 
 const mapStateToProps = (state: any) => ({
@@ -80,16 +80,16 @@ const RouterContent = () => {
 				<Route path={Constant.v1DevelopmentPath.value} element={<NormalizedRoute element={<V1Development />} />} />
 			</Route>
 
-			{/* <Route path={Constant.v2SignInPath.value}  element={<V2SignIn />} /> */}
+			<Route path={Constant.v2SignInPath.value}  element={<V2SignIn />} />
 			<Route path={Constant.v2Path.value} element={<V2Layout />}>
-				<Route path={Constant.v2Path.value} element={<Navigate to={Constant.v2MarketsPath.value} />} />
-				<Route path={Constant.v2HomePath.value} element={<Navigate to={Constant.v2Path.value} />} />
-				{/* <Route path={Constant.v2OrdersPath.value} element={<NormalizedRoute element={<V2Orders />} checkAuthentication />} /> */}
-				{/* <Route path={Constant.v2MarketsPath.value} element={<NormalizedRoute element={<V2Markets />} checkAuthentication />} /> */}
-				{/* <Route path={Constant.v2MarketPath.value} element={<NormalizedRoute element={<V2Market />} checkAuthentication />} /> */}
-				{/* <Route path={Constant.v2CreateOrderPath.value} element={<NormalizedRoute element={<V2CreateOrder />} checkAuthentication />} /> */}
-				{/* <Route path={Constant.v2BalancesPath.value} element={<NormalizedRoute element={<V2Balances />} checkAuthentication />} /> */}
-				<Route path={Constant.v2DevelopmentPath.value} element={<NormalizedRoute element={<V2Development />} />} />
+			<Route path={Constant.v2Path.value} element={<Navigate to={Constant.v2MarketsPath.value} />} />
+			<Route path={Constant.v2HomePath.value} element={<Navigate to={Constant.v2Path.value} />} />
+			<Route path={Constant.v2OrdersPath.value} element={<NormalizedRoute element={<V2Orders />} checkAuthentication />} />
+			<Route path={Constant.v2MarketsPath.value} element={<NormalizedRoute element={<V2Markets />} />} />
+			<Route path={Constant.v2MarketPath.value} element={<NormalizedRoute element={<V2Market />} checkAuthentication />} />
+			<Route path={Constant.v2CreateOrderPath.value} element={<NormalizedRoute element={<V2CreateOrder />} checkAuthentication />} />
+			<Route path={Constant.v2BalancesPath.value} element={<NormalizedRoute element={<V2Balances />} checkAuthentication />} />
+			<Route path={Constant.v2DevelopmentPath.value} element={<NormalizedRoute element={<V2Development />} />} />
 			</Route>
 
 			<Route path="*" element={<Navigate to={Constant.currentRoutePath.value} />} />
