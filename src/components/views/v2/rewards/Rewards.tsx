@@ -194,4 +194,4 @@ const Behavior = (props: any) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Market = connect(mapStateToProps)(Behavior);
+export const Rewards = connect(mapStateToProps)(Behavior);

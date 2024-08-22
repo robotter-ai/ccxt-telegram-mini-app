@@ -28,7 +28,7 @@ export class Constant extends BaseEnum {
 	static v1OrdersPath = new Constant('Orders', 'V1 Orders URL path.', '/v1/orders');
 	static v1OrderPath = new Constant('Order', 'V1 Order URL path.', '/v1/order');
 	static v1CreateOrderPath = new Constant('Create Order', 'V1 Create Order URL path.', '/v1/order/create');
-	static v1RewardsPath = new Constant('Rewards', 'V1 Rewards URL path.', '/rewards');
+	static v1RewardsPath = new Constant('Rewards', 'V1 Rewards URL path.', '/v1/rewards');
 	static v1DevelopmentPath = new Constant('Development', 'V1 Development URL path.', '/v1/development');
 
 	static v2Path = new Constant('V2 Root', 'V2 Root URL path.', '/v2');
@@ -40,7 +40,7 @@ export class Constant extends BaseEnum {
 	static v2OrdersPath = new Constant('Orders', 'V2 Orders URL path.', '/v2/orders');
 	static v2OrderPath = new Constant('Order', 'V2 Order URL path.', '/v2/order');
 	static v2CreateOrderPath = new Constant('Create Order', 'V2 Create Order URL path.', '/v2/order/create');
-	static v2RewardsPath = new Constant('Rewards', 'V2 Rewards URL path.', '/rewards');
+	static v2RewardsPath = new Constant('Rewards', 'V2 Rewards URL path.', '/v2/rewards');
 	static v2DevelopmentPath = new Constant('Development', 'V2 Development URL path.', '/v2/development');
 
 	static currentRoutePath = Constant.v2Path;
