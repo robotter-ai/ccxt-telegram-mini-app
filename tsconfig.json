@@ -25,7 +25,8 @@
 
 		"baseUrl": ".",
 		"paths": {
-			"*": ["src/*"]
+			"*": ["src/*"],
+			"@mui/styled-engine": ["./node_modules/@mui/styled-engine-sc"]
 		}
 	},
   "include": [
