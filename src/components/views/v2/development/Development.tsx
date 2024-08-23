@@ -1,15 +1,13 @@
 import { connect } from 'react-redux';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { styled } from "styled-components";
+import { styled } from 'styled-components';
 import { Box, styled as muiStyled } from '@mui/material';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { apiPostRun } from 'model/service/api';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { Base, BaseProps, BaseState } from 'components/base/Base';
+import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
 interface Props extends BaseProps {
@@ -35,9 +33,6 @@ const mapDispatchToProps = (reduxDispatch: any) => ({
 		dispatch('api.updateTemplateData', data);
 	},
 });
-
-const Style = styled(muiStyled(Box)(({ theme }) => ({
-})))``;
 
 class Structure extends Base<Props, State> {
 
@@ -71,11 +66,11 @@ class Structure extends Base<Props, State> {
 		const { data } = this.props;
 
 		return (
-			<Style>
+			<StyledBox>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(data, null, 2)}</pre>
-			</Style>
+			</StyledBox>
 		);
 	}
 
@@ -182,24 +177,12 @@ class Structure extends Base<Props, State> {
 	}
 }
 
-const Behavior = (props: any) => {
-	const location = useLocation();
-	const navigate = useNavigate();
-	const params = useParams();
-	const queryParams = new URLSearchParams(location.search)
-	const [searchParams] = useSearchParams();
-	const handleUnAuthorized = useHandleUnauthorized();
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const StyledBox = muiStyled(Box)(({ theme }) => ({
+}));
 
-	return <Structure
-		{...props}
-		location={location}
-		navigate={navigate}
-		params={params}
-		queryParams={queryParams}
-		searchParams={searchParams}
-		handleUnAuthorized={handleUnAuthorized}
-	/>;
-};
+const Style = styled(Structure)`
+`;
 
-// noinspection JSUnusedGlobalSymbols
-export const Development = connect(mapStateToProps, mapDispatchToProps)(Behavior);
+export const Development = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));

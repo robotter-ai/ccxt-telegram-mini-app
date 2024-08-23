@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
@@ -20,13 +20,11 @@ interface MarketState extends BaseState {
 	error?: string;
 }
 
-interface MarketSnapshot extends BaseSnapshot {}
-
 const mapStateToProps = (state: MarketState | any) => ({
 	market: state.api.market,
 });
 
-class MarketStructure extends Base<MarketProps, MarketState, MarketSnapshot> {
+class MarketStructure extends Base<MarketProps, MarketState> {
 	static defaultProps: Partial<BaseProps> = {};
 
 	recurrentIntervalId?: number;

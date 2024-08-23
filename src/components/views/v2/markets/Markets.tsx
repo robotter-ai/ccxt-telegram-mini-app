@@ -1,5 +1,5 @@
 import './Markets.css';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -23,13 +23,11 @@ interface MarketsState extends BaseState {
 	error?: string;
 }
 
-interface MarketsSnapshot extends BaseSnapshot { }
-
 const mapStateToProps = (state: any) => ({
 	markets: state.api.markets,
 });
 
-class MarketsStructure extends Base<MarketsProps, MarketsState, MarketsSnapshot> {
+class MarketsStructure extends Base<MarketsProps, MarketsState> {
 
 	static defaultProps: Partial<BaseProps> = {};
 

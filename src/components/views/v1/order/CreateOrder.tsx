@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { connect } from 'react-redux';
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: any, props: any) => ({
 	markets: state.api.markets,
 });

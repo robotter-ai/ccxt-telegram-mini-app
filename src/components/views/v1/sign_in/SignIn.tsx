@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { clearAllIntervals, executeAndSetInterval } from 'model/service/recurrent';
@@ -81,15 +81,13 @@ interface SignInState extends BaseState {
 	queryRedirect?: string;
 }
 
-interface SignInSnapshot extends BaseSnapshot {}
-
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: any, props: any) => ({
 	isSignedIn: state.api.isSignedIn,
 });
 
-class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
+class SignInStructure extends Base<SignInProps, SignInState> {
 	recurrentIntervalId?: number;
 	recurrentDelay?: number;
 

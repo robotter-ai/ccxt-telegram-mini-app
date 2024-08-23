@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
@@ -19,14 +19,12 @@ interface BalanceState extends BaseState {
 	tickers: { [key: string]: any };
 }
 
-interface BalanceSnapshot extends BaseSnapshot {}
-
 const mapStateToProps = (state: BalanceState | any) => ({
 	balanceData: state.api.balanceData,
 	tickers: state.api.tickers,
 });
 
-class BalanceStructure extends Base<BalanceProps, BalanceState, BalanceSnapshot> {
+class BalanceStructure extends Base<BalanceProps, BalanceState> {
 	static defaultProps: Partial<BaseProps> = {};
 
 	recurrentIntervalId?: number;
