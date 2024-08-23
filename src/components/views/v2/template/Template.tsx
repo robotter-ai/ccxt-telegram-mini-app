@@ -66,11 +66,11 @@ class Structure extends Base<Props, State> {
 		const { data } = this.props;
 
 		return (
-			<StyledBox>
+			<Style>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(data, null, 2)}</pre>
-			</StyledBox>
+			</Style>
 		);
 	}
 
@@ -182,7 +182,7 @@ class Structure extends Base<Props, State> {
 const StyledBox = muiStyled(Box)(({ theme }) => ({
 }));
 
-const Style = styled(Structure)`
+const Style = styled(StyledBox)`
 `;
 
-export const Template = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));
+export const Template = connect(mapStateToProps, mapDispatchToProps)(withHooks(Structure));
