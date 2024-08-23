@@ -1,4 +1,3 @@
-import './Markets.css';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
@@ -7,6 +6,7 @@ import { apiPostRun } from 'model/service/api';
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import './Markets.css';
 
 interface MarketsProps extends BaseProps {
 	markets: any;
@@ -129,14 +129,14 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 				throw new Error('Network response was not OK');
 			}
 
-			if (marketResponse.status !== 200) {
+			if (tickersResponse.status !== 200) {
 				throw new Error('Network response was not OK');
 			}
 
-			const payload = marketResponse.data.result;
+			const markets = marketResponse.data.result;
 			const tickers = tickersResponse.data.result;
 
-			const formattedMarkets = payload.map((market: any) => ({
+			const formattedMarkets = markets.map((market: any) => ({
 				id: market.id,
 				symbol: market.symbol,
 				base: market.base,
@@ -145,6 +145,9 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 				precision: market.precision.amount,
 				price: tickers[market.symbol].last,
 				datetime: tickers[market.symbol].datetime,
+				percentage: tickers[market.symbol].close && tickers[market.symbol].open
+					? ((tickers[market.symbol].close - tickers[market.symbol].open) / tickers[market.symbol].open) * 100
+					: 0,
 			}));
 
 			this.props.dispatch({ type: 'api.updateMarkets', payload: formattedMarkets });
