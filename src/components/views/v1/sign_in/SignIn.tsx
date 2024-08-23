@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { clearAllIntervals, executeAndSetInterval } from 'model/service/recurrent';
@@ -11,6 +11,11 @@ import { useLocation, useParams, useSearchParams, useNavigate } from 'react-rout
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import DOMPurify from 'dompurify';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+// import logo from 'src/assets/images/logo/exchange.png';
 import {
 	Container,
 	Typography,
@@ -24,11 +29,6 @@ import {
 	InputAdornment,
 	Snackbar,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from 'src/assets/images/logo/exchange.png';
 
 const SignInSchema = Yup.object().shape({
 	apiKey: Yup.string()
@@ -140,7 +140,7 @@ class SignInStructure extends Base<SignInProps, SignInState, SignInSnapshot> {
 				>
 					<Container component="main" maxWidth="xs">
 						<Paper elevation={6} sx={{ padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-							<img src={logo} alt="Logo" style={{ height: '100px', marginBottom: '20px' }} />
+							{/*<img src={logo} alt="Logo" style={{ height: '100px', marginBottom: '20px' }} />*/}
 							<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 								{isLoading && <CircularProgress sx={{ mt: 2 }} />}
 								{error && <Typography color="error">{error}</Typography>}
