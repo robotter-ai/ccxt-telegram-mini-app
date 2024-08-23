@@ -140,7 +140,7 @@ export const apiDeleteCancelAllOrders = async (data?: any, handleUnAuthorized?: 
 		data: {
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-			method: 'cancelAllOrders',
+			method: 'cancel_all_orders',
 			parameters: {
 				...data
 			}
@@ -156,7 +156,7 @@ export const apiDeleteCancelOrder = async (data?: any, handleUnAuthorized?: () =
 		data: {
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-			method: 'cancelOrder',
+			method: 'cancel_order',
 			parameters: {
 				...data
 			}
@@ -172,7 +172,7 @@ export const apiPostCreateOrder = async (data?: any, handleUnAuthorized?: () => 
 		data: {
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-			method: 'createOrder',
+			method: 'create_order',
 			parameters: {
 				...data
 			}
@@ -220,7 +220,7 @@ export const apiGetFetchBalance = async (data?: any, handleUnAuthorized?: () => 
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchBalance',
+			method: 'fetch_balance',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -234,7 +234,7 @@ export const apiGetFetchClosedOrders = async (data?: any, handleUnAuthorized?: (
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchClosedOrders',
+			method: 'fetch_closed_orders',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -248,7 +248,7 @@ export const apiGetFetchCurrencies = async (data?: any, handleUnAuthorized?: () 
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchCurrencies',
+			method: 'fetch_currencies',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -262,7 +262,7 @@ export const apiGetFetchDepositAddresses = async (data?: any, handleUnAuthorized
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchDepositAddresses',
+			method: 'fetch_deposit_addresses',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -276,7 +276,7 @@ export const apiGetFetchMarkets = async (data?: any, handleUnAuthorized?: () => 
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchMarkets',
+			method: 'fetch_markets',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -290,7 +290,7 @@ export const apiGetFetchMyTrades = async (data?: any, handleUnAuthorized?: () =>
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchMyTrades',
+			method: 'fetch_my_trades',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -304,7 +304,7 @@ export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => vo
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOHLCV',
+			method: 'fetch_oHLCV',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -318,7 +318,7 @@ export const apiGetFetchOpenOrder = async (data?: any, handleUnAuthorized?: () =
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOpenOrder',
+			method: 'fetch_open_order',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -332,7 +332,7 @@ export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () 
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOpenOrders',
+			method: 'fetch_open_orders',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -346,7 +346,7 @@ export const apiGetFetchOrder = async (data?: any, handleUnAuthorized?: () => vo
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOrder',
+			method: 'fetch_order',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -360,7 +360,7 @@ export const apiGetFetchOrderBook = async (data?: any, handleUnAuthorized?: () =
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOrderBook',
+			method: 'fetch_order_book',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -374,7 +374,7 @@ export const apiGetFetchOrders = async (data?: any, handleUnAuthorized?: () => v
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOrders',
+			method: 'fetch_orders',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -388,7 +388,7 @@ export const apiGetFetchOrdersAllMarkets = async (data?: any, handleUnAuthorized
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchOrdersAllMarkets',
+			method: 'fetch_orders_all_markets',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -402,7 +402,7 @@ export const apiGetFetchStatus = async (data?: any, handleUnAuthorized?: () => v
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchStatus',
+			method: 'fetch_status',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -416,7 +416,7 @@ export const apiGetFetchTicker = async (data?: any, handleUnAuthorized?: () => v
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchTicker',
+			method: 'fetch_ticker',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -430,7 +430,7 @@ export const apiGetFetchTickers = async (data?: any, handleUnAuthorized?: () => 
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchTickers',
+			method: 'fetch_tickers',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -444,7 +444,7 @@ export const apiGetFetchTrades = async (data?: any, handleUnAuthorized?: () => v
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchTrades',
+			method: 'fetch_trades',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -458,7 +458,7 @@ export const apiGetFetchTradingFee = async (data?: any, handleUnAuthorized?: () 
 		params: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetchTradingFee',
+			method: 'fetch_trading_fee',
 			...data
 		},
 	}, handleUnAuthorized);
@@ -472,7 +472,7 @@ export const apiPostSetSandboxMode = async (data?: any, handleUnAuthorized?: () 
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'setSandboxMode',
+			method: 'set_sandbox_mode',
 			parameters: {
 				...data
 			}
@@ -501,7 +501,7 @@ export const apiPostWithdraw = async (data?: any, handleUnAuthorized?: () => voi
 export const apiPostDevelopmentExample = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'POST',
-		url: '/developmem t/example',
+		url: '/developmemt/example',
 		data: data
 	}, handleUnAuthorized);
 };
