@@ -118,6 +118,7 @@ export const apiGetServiceStatus = async (data?: any, handleUnAuthorized?: () =>
 	}, handleUnAuthorized);
 };
 
+
 // noinspection JSUnusedGlobalSymbols
 export const apiPostRun = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
@@ -131,12 +132,376 @@ export const apiPostRun = async (data?: any, handleUnAuthorized?: () => void) =>
 	}, handleUnAuthorized);
 };
 
+// noinspection JSUnusedGlobalSymbols
+export const apiDeleteCancelAllOrders = async (data?: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'DELETE',
+		url: '/run',
+		data: {
+			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			method: 'cancelAllOrders',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiDeleteCancelOrder = async (data?: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'DELETE',
+		url: '/run',
+		data: {
+			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			method: 'cancelOrder',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiPostCreateOrder = async (data?: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			method: 'createOrder',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetDescribe = async (data?: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		data: {
+			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			method: 'describe',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiPostDeposit = async (data?: any, handleUnAuthorized?: () => void) => {
+	return await callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+			method: 'deposit',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchBalance = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchBalance',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchClosedOrders = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchClosedOrders',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchCurrencies = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchCurrencies',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchDepositAddresses = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchDepositAddresses',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchMarkets = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchMarkets',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchMyTrades = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchMyTrades',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOHLCV',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOpenOrder = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOpenOrder',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOpenOrders',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOrder = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOrder',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOrderBook = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOrderBook',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOrders = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOrders',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchOrdersAllMarkets = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchOrdersAllMarkets',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchStatus = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchStatus',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchTicker = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchTicker',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchTickers = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchTickers',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchTrades = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchTrades',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetFetchTradingFee = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'GET',
+		url: '/run',
+		params: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'fetchTradingFee',
+			...data
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiPostSetSandboxMode = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'setSandboxMode',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiPostWithdraw = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'withdraw',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
 // @ts-ignore
 // noinspection JSUnusedGlobalSymbols
 export const apiPostDevelopmentExample = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'POST',
-		url: '/developmemt/example',
+		url: '/developmem t/example',
 		data: data
 	}, handleUnAuthorized);
 };
