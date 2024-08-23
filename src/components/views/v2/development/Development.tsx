@@ -2,7 +2,8 @@ import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { Box, styled } from '@mui/material';
+import { styled } from "styled-components";
+import { Box, styled as muiStyled } from '@mui/material';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
@@ -13,6 +14,7 @@ import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
 interface Props extends BaseProps {
 	data: any,
+	updateTemplateData: (data: any) => void,
 }
 
 interface State extends BaseState {
@@ -27,9 +29,15 @@ const mapStateToProps = (state: State | any, props: Props | any) => ({
 });
 
 // @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const Style = styled(Box)(({ theme }) => ({
-}));
+// noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+const mapDispatchToProps = (reduxDispatch: any) => ({
+	updateTemplateData(data: any) {
+		dispatch('api.updateTemplateData', data);
+	},
+});
+
+const Style = styled(muiStyled(Box)(({ theme }) => ({
+})))``;
 
 class Structure extends Base<Props, State> {
 
@@ -99,7 +107,7 @@ class Structure extends Base<Props, State> {
 
 				const payload = response.data.result;
 
-				dispatch('api.updateTemplateData', payload);
+				this.props.updateTemplateData(payload);
 			} catch (exception: any) {
 				console.error(exception);
 
@@ -147,7 +155,7 @@ class Structure extends Base<Props, State> {
 
 				const payload = response.data.result;
 
-				dispatch('api.updateTemplateData', payload);
+				this.props.updateTemplateData(payload);
 			} catch (exception) {
 				console.error(exception);
 
@@ -194,4 +202,4 @@ const Behavior = (props: any) => {
 };
 
 // noinspection JSUnusedGlobalSymbols
-export const Development = connect(mapStateToProps)(Behavior);
+export const Development = connect(mapStateToProps, mapDispatchToProps)(Behavior);
