@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Navigate, BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { Constant } from 'model/enum/constant.ts';
+import { Constant } from 'model/enum/constant';
 
 import { Layout as V1Layout } from 'components/views/v1/main/Layout';
 import { SignIn as V1SignIn } from 'components/views/v1/sign_in/SignIn';
@@ -10,7 +10,6 @@ import { Markets as V1Markets } from 'components/views/v1/markets/Markets';
 import { Market as V1Market } from 'components/views/v1/market/Market';
 import { Orders as V1Orders } from 'components/views/v1/orders/Orders';
 import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOrder';
-import { Development as V1Development } from 'components/views/v1/development/Development';
 
 import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
 import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
@@ -78,7 +77,6 @@ const RouterContent = () => {
 				<Route path={Constant.v1MarketPath.value} element={<NormalizedRoute element={<V1Market />} checkAuthentication />} />
 				<Route path={Constant.v1CreateOrderPath.value} element={<NormalizedRoute element={<V1CreateOrder />} checkAuthentication />} />
 				<Route path={Constant.v1BalancesPath.value} element={<NormalizedRoute element={<V1Balances />} checkAuthentication />} />
-				<Route path={Constant.v1DevelopmentPath.value} element={<NormalizedRoute element={<V1Development />} />} />
 			</Route>
 
 			<Route path={Constant.v2SignInPath.value}  element={<V2SignIn />} />
