@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { Component, ContextType } from 'react';
 // import { AppContext } from 'model/contexts/AppContext.tsx';
 
@@ -18,7 +20,7 @@ export interface BaseState {
 export interface BaseSnapshot {
 }
 
-export class Base<Props = BaseProps, State = BaseState, Snapshot = BaseSnapshot> extends Component<Props, State, Snapshot> {
+export class Base<Props = BaseProps, State = BaseState> extends Component<Props, State> {
 
 	// static contextType = AppContext;
 	// declare context: ContextType<typeof AppContext>;
@@ -85,3 +87,27 @@ export class Base<Props = BaseProps, State = BaseState, Snapshot = BaseSnapshot>
 	// 	return <></>;
 	// }
 }
+
+export const withHooks = <P extends object>(TargetComponent: React.ComponentType<P>) => {
+	return (props: P) => {
+		const location = useLocation();
+		const navigate = useNavigate();
+		const params = useParams();
+		const queryParams = new URLSearchParams(location.search);
+		const [searchParams] = useSearchParams();
+		const handleUnAuthorized = useHandleUnauthorized();
+
+		// noinspection HtmlUnknownAttribute
+		return (
+			<TargetComponent
+				{...props}
+				location={location}
+				navigate={navigate}
+				params={params}
+				queryParams={queryParams}
+				searchParams={searchParams}
+				handleUnAuthorized={handleUnAuthorized}
+			/>
+		);
+	};
+};
