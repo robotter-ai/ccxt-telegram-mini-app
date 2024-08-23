@@ -501,7 +501,7 @@ export const apiPostWithdraw = async (data?: any, handleUnAuthorized?: () => voi
 export const apiPostDevelopmentExample = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
 		method: 'POST',
-		url: '/developmemt/example',
+		url: '/development/example',
 		data: data
 	}, handleUnAuthorized);
 };
