@@ -177,10 +177,12 @@ class Structure extends Base<Props, State> {
 	}
 }
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const StyledBox = muiStyled(Box)(({ theme }) => ({
 }));
 
 const Style = styled(Structure)`
 `;
 
-export const Development = connect(mapStateToProps, mapDispatchToProps)(withHooks(Structure));
+export const Development = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));

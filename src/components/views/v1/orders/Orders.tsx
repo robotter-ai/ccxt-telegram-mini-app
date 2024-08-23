@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseSnapshot, BaseState } from 'components/base/Base';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiPostRun } from 'model/service/api';
@@ -24,13 +24,11 @@ interface OrdersState extends BaseState {
 	error?: string;
 }
 
-interface OrdersSnapshot extends BaseSnapshot {}
-
 const mapStateToProps = (state: any) => ({
 	openOrders: state.api.orders.open,
 });
 
-class OrdersStructure extends Base<OrdersProps, OrdersState, OrdersSnapshot> {
+class OrdersStructure extends Base<OrdersProps, OrdersState> {
 	static defaultProps: Partial<BaseProps> = {};
 
 	recurrentIntervalId?: number | ReturnType<typeof setInterval>;

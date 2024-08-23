@@ -17,10 +17,7 @@ export interface BaseState {
 	error?: string,
 }
 
-export interface BaseSnapshot {
-}
-
-export class Base<Props = BaseProps, State = BaseState> extends Component<Props, State> {
+export class Base<BaseProps = any, BaseState = any> extends Component<BaseProps, BaseState> {
 
 	// static contextType = AppContext;
 	// declare context: ContextType<typeof AppContext>;
@@ -64,7 +61,7 @@ export class Base<Props = BaseProps, State = BaseState> extends Component<Props,
 	// }
 
 	// // @ts-ignore
-	// componentDidUpdate(prevProps: Readonly<BaseProps>, prevState: Readonly<BaseState>, snapshot?: BaseSnapshot) {
+	// componentDidUpdate(prevProps: Readonly<BaseProps>, prevState: Readonly<BaseState>) {
 	// 	console.log('componentDidUpdate', arguments);
 	// }
 
