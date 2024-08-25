@@ -1,36 +1,16 @@
-import { useSelector } from 'react-redux';
-// import * as React from 'react';
-// import Select from 'react-select';
-// import { toast } from 'react-toastify';
-
+import {useState} from 'react';
 import {apiPostRun} from "model/service/api";
 import {toast} from "react-toastify";
 import {useHandleUnauthorized} from "model/hooks/useHandleUnauthorized.ts";
-
-export type Order = {
-	id: string;
-	market: string;
-	amount: string;
-	price: number;
-	datetime: Date;
-	side: "buy" | "sell";
-	status: number | null;
-}
+import Order, {Order as IOrder} from "components/views/v2/orders/Order.tsx";
+import Button, {ButtonType} from "components/views/v2/orders/Button.tsx";
 
 const handleUnAuthorized = useHandleUnauthorized();
 
+function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, fetchData: () => Promise<void> }) {
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-function OrderCard(props: { order: Order, canceledOrdersRef: Set<string>, fetchData: () => Promise<void> }) {
-	const getOrderMarket = (market: string) => {
-		const markets = useSelector((state: any) => state.api.markets);
-		const marketData = markets.find((m: any) => m.symbol === market);
-		return {
-			base: marketData.base,
-			quote: marketData.quote,
-		}
-	}
-
-	const handleCancelOrder = async (order: Order) => {
+	const handleCancelOrder = async (order: IOrder) => {
 		console.log(order);
 		try {
 			const response = await apiPostRun(
@@ -62,22 +42,44 @@ function OrderCard(props: { order: Order, canceledOrdersRef: Set<string>, fetchD
 		}
 	}
 
+	const openModal = () => setIsModalOpen(true);
+	const closeModal = () => setIsModalOpen(false);
+	const confirmCancelOrder = () => {
+		handleCancelOrder(props.order);
+		closeModal();
+	};
+
 	return (
-		<div className="px-6 py-4 border-t border-[#606060] bg-white-500 flex">
-			<div className="flex-grow text-left">
-				<p className="py-0.5 text-xs font-normal text-[#707579]">Order ID: {props.order.id}</p>
-				<p className="py-1 text-white font-normal text-xl">{props.order.amount} {getOrderMarket(props.order.market).base}</p>
-				<p className="py-0.5 text-xs font-normal text-[#A2ACB0]">{getOrderMarket(props.order.market).base} / {getOrderMarket(props.order.market).quote}</p>
-				<p className="py-0.5 text-xs font-normal text-[#707579]">{new Date(props.order.datetime).toLocaleString()}</p>
-				<button
-					className="my-2 px-4 py-2 border border-orange-primary rounded-3xl text-orange-primary"
-					onClick={() => handleCancelOrder(props.order)}
-				>X Cancel
-				</button>
-			</div>
-			<div className="flex flex-col items-center justify-center text-right">
-				<p className="text-xl font-normal text-white">{props.order.price}</p>
-				<p className="text-xl font-normal text-white">{props.order.side}</p>
+		<div className="py-4 border-t border-white flex flex-col">
+			<Order
+				order={props.order}
+				canceledOrdersRef={props.canceledOrdersRef}
+				fetchData={props.fetchData}
+			/>
+			<div className="flex">
+				<div className="text-left">
+					<Button icon={"⤬"} value={"Cancel"} type={ButtonType.Bordered} onClick={openModal} />
+				</div>
+
+				{isModalOpen && (
+					<div className="fixed inset-0 flex items-end justify-center bg-black bg-opacity-50">
+						<div className="p-2 bg-black w-full h-2/5 rounded-t-lg border-t border-white">
+							<p className="p-3 font-bold text-2xl text-center w-full">Cancel order?</p>
+							<div className="-m-2">
+								<Order
+									bgColor={"bg-gray-600"}
+									order={props.order}
+									canceledOrdersRef={props.canceledOrdersRef}
+									fetchData={props.fetchData}
+								/>
+							</div>
+							<div className="mt-4 flex flex-row justify-between w-full">
+								<Button value={"Yes, cancel"} type={ButtonType.Bordered} onClick={confirmCancelOrder} />
+								<Button value={"No, back"} type={ButtonType.Full} onClick={closeModal} />
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);
