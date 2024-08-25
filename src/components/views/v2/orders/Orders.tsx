@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { Box, styled } from '@mui/material';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
@@ -11,6 +10,7 @@ import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 import OrdersList from './OrdersList';
+import { Order } from "components/views/v2/orders/Order.tsx";
 
 interface Props extends BaseProps {
 	openOrders: any;
@@ -36,8 +36,6 @@ const Style = styled(Box)(({ theme }) => ({
 class Structure extends Base<Props, State> {
 	static defaultProps: Partial<BaseProps> = {};
 
-	recurrentIntervalId?: number | ReturnType<typeof setInterval>;
-	recurrentDelay: number = 30000;
 	canceledOrdersRef: Set<string>;
 
 	properties: Map = new Map();
@@ -52,8 +50,8 @@ class Structure extends Base<Props, State> {
 
 		this.canceledOrdersRef = new Set();
 
-		this.properties.setIn('recurrent.5s.intervalId', undefined);
-		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
+		this.properties.setIn('recurrent.30s.intervalId', undefined);
+		this.properties.setIn('recurrent.30s.delay', 30 * 1000);
 	}
 
 	async componentDidMount() {
@@ -62,221 +60,21 @@ class Structure extends Base<Props, State> {
 	}
 
 	async componentWillUnmount() {
-		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
-			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
+		if (this.properties.getIn<number>('recurrent.30s.intervalId')) {
+			clearInterval(this.properties.getIn<number>('recurrent.30s.intervalId'));
 		}
 	}
 
-	render() {
-		const { isLoading, error } = this.state;
-		const { data } = this.props;
-
-		// const orders = [
-		// 	{
-		// 		checkbox: false,
-		// 		id: '1',
-		// 		market: 'tSOLtUSDC',
-		// 		status: 'open',
-		// 		side: 'buy',
-		// 		amount: '1',
-		// 		price: 100,
-		// 		datetime: '2021-10-02 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '2',
-		// 		market: 'tBTCtUSDC',
-		// 		status: 'open',
-		// 		side: 'sell',
-		// 		amount: '0.1',
-		// 		price: 60000,
-		// 		datetime: '2021-10-01 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '3',
-		// 		market: 'tSOLtUSDC',
-		// 		status: 'open',
-		// 		side: 'buy',
-		// 		amount: '1',
-		// 		price: 100,
-		// 		datetime: '2021-10-02 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '4',
-		// 		market: 'tBTCtUSDC',
-		// 		status: 'open',
-		// 		side: 'sell',
-		// 		amount: '0.1',
-		// 		price: 60000,
-		// 		datetime: '2021-10-01 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '5',
-		// 		market: 'tSOLtUSDC',
-		// 		status: 'open',
-		// 		side: 'buy',
-		// 		amount: '1',
-		// 		price: 100,
-		// 		datetime: '2021-10-02 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '6',
-		// 		market: 'tBTCtUSDC',
-		// 		status: 'open',
-		// 		side: 'sell',
-		// 		amount: '0.1',
-		// 		price: 60000,
-		// 		datetime: '2021-10-01 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '7',
-		// 		market: 'tSOLtUSDC',
-		// 		status: 'open',
-		// 		side: 'buy',
-		// 		amount: '1',
-		// 		price: 100,
-		// 		datetime: '2021-10-02 12:00:00',
-		// 		actions: null,
-		// 	},
-		// 	{
-		// 		checkbox: false,
-		// 		id: '8',
-		// 		market: 'tBTCtUSDC',
-		// 		status: 'open',
-		// 		side: 'sell',
-		// 		amount: '0.1',
-		// 		price: 60000,
-		// 		datetime: '2021-10-01 12:00:00',
-		// 		actions: null,
-		// 	}
-		// ]
-
-		return (
-			<Style>
-				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error}</div> : null}
-				<pre>{JSON.stringify(data, null, 2)}</pre>
-				<OrdersList
-					orders={this.props.openOrders}
-					canceledOrdersRef={this.canceledOrdersRef}
-					cancelAllOpenOrders={this.cancelAllOpenOrders}
-					fetchData={this.fetchData}
-				/>
-			</Style>
-		);
-	}
-
 	async initialize() {
-		// try {
-		// 	const response = await apiPostRun(
-		// 		{
-		// 			method: 'fetch_tickers',
-		// 			parameters: {
-		// 				symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-		// 			},
-		// 		},
-		// 		this.props.handleUnAuthorized
-		// 	);
-		//
-		// 	if (response.status !== 200) {
-		// 		if (response.data?.title) {
-		// 			const message = response.data.title;
-		//
-		// 			this.setState({ error: message });
-		// 			toast.error(message);
-		//
-		// 			return;
-		// 		} else {
-		// 			// noinspection ExceptionCaughtLocallyJS
-		// 			throw new Error(response.text);
-		// 		}
-		// 	}
-		//
-		// 	const payload = response.data.result;
-		//
-		// 	dispatch('api.updateTemplateData', payload);
-		// } catch (exception: any) {
-		// 	console.error(exception);
-		//
-		// 	if (axios.isAxiosError(exception)) {
-		// 		if (exception?.response?.status === 401) {
-		// 			return;
-		// 		}
-		// 	}
-		//
-		// 	const message = 'An error has occurred while performing this operation.'
-		//
-		// 	this.setState({ error: message });
-		// 	toast.error(message);
-		// } finally {
-		// 	this.setState({ isLoading: false });
-		// }
 		await this.fetchData();
 	}
 
 	async doRecurrently() {
-		const recurrentFunction = async () => {
-			try {
-				const response = await apiPostRun(
-					{
-						method: 'fetch_tickers',
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					if (response.data?.title) {
-						const message = response.data.title;
-
-						this.setState({ error: message });
-						toast.error(message);
-
-						return;
-					} else {
-						// noinspection ExceptionCaughtLocallyJS
-						throw new Error(response.text);
-					}
-				}
-
-				const payload = response.data.result;
-
-				dispatch('api.updateTemplateData', payload);
-			} catch (exception) {
-				console.error(exception);
-
-				if (axios.isAxiosError(exception)) {
-					if (exception?.response?.status === 401) {
-						return;
-					}
-				}
-
-				const message = 'An error has occurred while performing this operation.'
-
-				this.setState({ error: message });
-				toast.error(message);
-
-				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
-			}
-		};
 
 		// @ts-ignore
 		this.properties.setIn(
-			'recurrent.5s.intervalId',
-			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+			'recurrent.30s.intervalId',
+			executeAndSetInterval(this.fetchData.bind(this), this.properties.getIn<number>('recurrent.30s.delay'))
 		);
 	}
 
@@ -333,26 +131,32 @@ class Structure extends Base<Props, State> {
 		dispatch('api.updateOpenOrders', output);
 	}
 
-	async cancelOpenOrder(order: any) {
+	async apiCancelOrder(order: any, handleUnAuthorized: () => void) {
+		const response = await apiPostRun(
+			{
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'cancel_order',
+				parameters: {
+					id: order.id,
+					symbol: order.market,
+				},
+			},
+			handleUnAuthorized
+		);
+
+		if (response.status !== 200) {
+			throw new Error('Network response was not OK');
+		}
+
+		return response;
+	}
+
+	async cancelOpenOrder(order: Order) {
 		if (!order || !order.id) return;
 
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'cancel_order',
-					parameters: {
-						id: order.id,
-						symbol: order.market,
-					},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				throw new Error('Network response was not OK');
-			}
+			await this.apiCancelOrder(order, this.props.handleUnAuthorized);
 
 			this.canceledOrdersRef.add(order.id);
 
@@ -365,8 +169,7 @@ class Structure extends Base<Props, State> {
 			throw error;
 		}
 	}
-
-	async cancelOpenOrders(orders: readonly any[]) {
+	async cancelOpenOrders(orders: readonly Order[]) {
 		if (!orders || !(orders.length > 0)) return;
 
 		const errors: any[] = [];
@@ -386,7 +189,7 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
-	async cancelAllOpenOrders(orders: readonly any[]) {
+	async cancelAllOpenOrders(orders: readonly Order[]) {
 		try {
 			await this.cancelOpenOrders(orders);
 
@@ -400,6 +203,26 @@ class Structure extends Base<Props, State> {
 			toast.error('Failed to cancel all orders.');
 		}
 	}
+
+	render() {
+		const { isLoading, error } = this.state;
+		const { data } = this.props;
+
+		return (
+			<Style>
+				{isLoading ? <Spinner /> : null}
+				{error ? <div>Error: {error}</div> : null}
+				<pre>{JSON.stringify(data, null, 2)}</pre>
+				<OrdersList
+					orders={this.props.openOrders}
+					canceledOrdersRef={this.canceledOrdersRef}
+					cancelAllOpenOrders={this.cancelAllOpenOrders}
+					fetchData={this.fetchData}
+				/>
+			</Style>
+		);
+	}
+
 }
 
 const Behavior = (props: any) => {
