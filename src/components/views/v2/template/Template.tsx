@@ -74,13 +74,11 @@ class Structure extends Base<Props, State> {
 		);
 	}
 
-	async initialize() {
+	async initialize(symbol?: string) {
 		try {
 			const response = await apiGetFetchTickers(
 				{
-					parameters: {
-						symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-					},
+					symbols: [symbol],
 				},
 				this.props.handleUnAuthorized
 			);
@@ -121,13 +119,11 @@ class Structure extends Base<Props, State> {
 	}
 
 	async doRecurrently() {
-		const recurrentFunction = async () => {
+		const recurrentFunction = async (symbol: string) => {
 			try {
 				const response = await apiGetFetchTickers(
 					{
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-						},
+						symbols: [symbol],
 					},
 					this.props.handleUnAuthorized
 				);
