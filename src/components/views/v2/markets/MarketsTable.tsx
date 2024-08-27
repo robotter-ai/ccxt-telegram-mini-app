@@ -1,5 +1,7 @@
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import { Constant } from 'model/enum/constant';
 import * as React from 'react';
+import { useNavigate } from 'react-router';
 
 interface Data {
 	id: number;
@@ -78,6 +80,12 @@ function SegmentControl() {
 }
 
 function ListMarkets({ markets }: { markets: Data[] }) {
+	const navigate = useNavigate();
+	const handleClick = (id: number | string = '') => {
+		const url  = `${Constant.marketPath.value}?marketId=${id}`;
+		navigate(url);
+	};
+
 	return (
 		<div className="overflow-x-auto mt-8 block">
 			<table className="table-fixed w-full">
@@ -95,6 +103,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 							<tr
 								className="h-16 shadow-[0_0.5px_0_0_rgba(255,255,255,0.2)] flex items-center"
 								key={`${row.symbol}-${row.base}-${row.quote}`}
+								onClick={() => handleClick(row.id)}
 							>
 								<td className="w-1/2 text-left flex items-center">
 									{/* will not be used now */}
