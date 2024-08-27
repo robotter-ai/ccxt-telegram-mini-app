@@ -78,7 +78,7 @@ const RouterContent = () => {
 				<Route path={Constant.v1MarketPath.value} element={<NormalizedRoute element={<V1Market />} checkAuthentication />} />
 				<Route path={Constant.v1CreateOrderPath.value} element={<NormalizedRoute element={<V1CreateOrder />} checkAuthentication />} />
 				<Route path={Constant.v1BalancesPath.value} element={<NormalizedRoute element={<V1Balances />} checkAuthentication />} />
-				<Route path={`${Constant.v1Path.value}${Constant.rewardsPath.value}`} element={<NormalizedRoute element={<V1Rewards />} checkAuthentication />} />
+				<Route path={`${Constant.v1Path.value}${Constant.rewardsPath.value}`} element={<NormalizedRoute element={<V2Rewards />} checkAuthentication />} />
 				<Route path={Constant.v1DevelopmentPath.value} element={<NormalizedRoute element={<V2Development />} />} />
 			</Route>
 
