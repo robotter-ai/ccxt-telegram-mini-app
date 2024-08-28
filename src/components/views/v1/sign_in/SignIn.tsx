@@ -4,7 +4,13 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { clearAllIntervals, executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun, apiPostAuthSignIn, apiPostAuthIsSignedIn } from 'model/service/api';
+import {
+	apiPostRun,
+	apiPostAuthSignIn,
+	apiPostAuthIsSignedIn,
+	apiGetFetchCurrencies,
+	apiGetFetchMarkets
+} from 'model/service/api';
 import './SignIn.css';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -410,12 +416,8 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 		this.setState({ isLoading: true, error: undefined });
 
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_markets',
-				},
+			const response = await apiGetFetchMarkets(
+				{},
 				// @ts-ignore
 				this.context.handleUnAuthorized
 			);
@@ -441,12 +443,8 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 		this.setState({ isLoading: true, error: undefined });
 
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_currencies',
-				},
+			const response = await apiGetFetchCurrencies(
+				{},
 				// @ts-ignore
 				this.context.handleUnAuthorized
 			);
