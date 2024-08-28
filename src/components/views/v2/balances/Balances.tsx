@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiGetFetchBalance, apiGetFetchTickers} from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -56,12 +56,8 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 	async initialize() {
 		try {
-			const balanceResponse = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_balance',
-				},
+			const balanceResponse = await apiGetFetchBalance(
+				{},
 				this.props.handleUnAuthorized
 			);
 
@@ -73,12 +69,8 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 			console.log('Fetched balance data:', balanceData);
 			this.setState({ balanceData });
 
-			const tickersResponse = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_tickers',
-				},
+			const tickersResponse = await apiGetFetchTickers(
+				{},
 				this.props.handleUnAuthorized
 			);
 
@@ -88,6 +80,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 			const allTickers = tickersResponse.data.result;
 
+			// @ts-ignore
 			const relevantTickers = Object.entries(balanceData.total).reduce((acc, [symbol, amount]) => {
 				const tickerKey = Object.keys(allTickers).find(key => key.includes(`t${symbol.slice(1)}tUSDC`));
 				if (tickerKey) {
@@ -132,9 +125,11 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 		}
 
 		const totalBalanceUSDC = balanceData
+
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
 				// If the asset is TUSDC, use the fixed price of $1 and multiply by the user's balance
 				const price = asset === 'TUSDC' ? 1 : (tickers[asset]?.last || 0);
+				// @ts-ignore
 				return acc + price * amount;
 			}, 0)
 			: 0;
