@@ -12,6 +12,16 @@ import { Constant } from 'model/enum/constant';
 
 interface BalanceProps extends BaseProps {}
 
+interface TickerData {
+	last: number;
+	percentage: number;
+	// Add other properties relevant to your ticker data
+}
+
+interface TickersMap {
+	[key: string]: TickerData;
+}
+
 interface BalanceState extends BaseState {
 	isLoading: boolean;
 	error?: string;
@@ -78,10 +88,10 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 				throw new Error('Failed to fetch tickers');
 			}
 
-			const allTickers = tickersResponse.data.result;
+			const allTickers: TickersMap  = tickersResponse.data.result;
 
 			// @ts-ignore
-			const relevantTickers = Object.entries(balanceData.total).reduce((acc, [symbol, amount]) => {
+			const relevantTickers = Object.entries(balanceData.total).reduce<TickersMap>((acc, [symbol, amount]) => {
 				const tickerKey = Object.keys(allTickers).find(key => key.includes(`t${symbol.slice(1)}tUSDC`));
 				if (tickerKey) {
 					acc[symbol] = allTickers[tickerKey];
@@ -167,7 +177,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col">
-													<span className="text-lg leading-none">{amount}</span>
+													<span className="text-lg leading-none">{amount as number}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>
@@ -175,8 +185,8 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 												<div className="flex flex-col items-end">
 													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
 													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
-                                                    {percentage}
-                                                </span>
+															{percentage}
+												 </span>
 												</div>
 											</td>
 										</tr>
