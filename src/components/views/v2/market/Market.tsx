@@ -1,10 +1,10 @@
 import { Box, styled } from '@mui/material';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
-import { createChart, LineData, UTCTimestamp } from 'lightweight-charts';
+import { createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiGetFetchOHLCV, apiGetFetchTicker} from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 interface MarketProps extends BaseProps {
 	market: {
 		id: string;
+		precision: number;
 	};
 }
 
@@ -29,32 +30,30 @@ const mapStateToProps = (state: MarketState | any) => ({
 });
 
 const Container = styled(Box)({
-	padding: '22px',
-	height: '50vh',
+	padding: '10px',
+	height: '100%',
 	width: '100%',
 	display: 'flex',
 	flexDirection: 'column',
-	justifyContent: 'center',
-	alignItems: 'center'
+	alignItems: 'center',
 });
 
 const Title = styled(Box)({
-	fontSize: '1.5rem',
 	fontWeight: '700',
-	margin: '0 4px',
 	textAlign: 'center',
 	color: MaterialUITheme.palette.text.primary,
 });
 
 const ChartContainer = styled(Box)({
+	margin: '10px 0',
 	width: '100%',
-	height: '100%'
+	height: '35vh',
 });
 
 class MarketStructure extends Base<MarketProps, MarketState> {
 	properties: Map = new Map();
 
-	chart?: any;
+	chart?: IChartApi;
 	chartSeries?: any;
 
 	chartReference = createRef<HTMLDivElement>();
@@ -68,6 +67,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		} as Readonly<MarketState>;
 
 		this.props.market.id = this.props.queryParams.get('marketId');
+		this.props.market.precision = Number(this.props.queryParams.get('marketPrecision'));
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
@@ -87,8 +87,15 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	render() {
 		return (
 			<Container>
-				<Title>{this.props.market.id}</Title>
-				<ChartContainer id="chart" className="h-full w-full" ref={this.chartReference}></ChartContainer>
+				<Title>
+					{this.props.market.id}
+				</Title>
+
+				<ChartContainer id="chart" ref={this.chartReference} />
+
+				<Title>
+					Place an Order
+				</Title>
 			</Container>
 		);
 	}
@@ -100,41 +107,50 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			}
 
 			this.chart = createChart(this.chartReference.current, {
+				autoSize: true,
 				layout: {
 					background: { color: 'transparent' },
 					textColor: MaterialUITheme.palette.text.primary,
+					fontSize: 11,
 				},
 				grid: {
 					vertLines: {
-						color: MaterialUITheme.palette.text.primary,
-						style: 1,
-						// visible: false,
+						visible: false,
 					},
 					horzLines: {
-						color: MaterialUITheme.palette.text.primary,
+						style: 4,
+						color: MaterialUITheme.palette.text.secondary,
 					},
 				},
 				timeScale: {
 					timeVisible: true,
 					secondsVisible: true,
-					borderVisible: false,
+					borderVisible: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					fixLeftEdge: true,
+					fixRightEdge: true,
 				},
 				rightPriceScale: {
-					borderVisible: false,
+					borderVisible: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					autoScale: true,
+					scaleMargins: {
+						top: 0.1,
+						bottom: 0.1,
+					},
 				},
-				autoSize: true,
-				handleScale: false,
+				handleScale: {
+					axisPressedMouseMove: {
+						time: true,
+						price: false,
+					},
+				},
 			});
 
-			const response = await apiPostRun(
+			const response = await apiGetFetchOHLCV(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ohlcv',
-					parameters: {
 						symbol: this.props.market.id,
 						timeframe: '1s',
-					},
 				},
 				this.props.handleUnAuthorized
 			);
@@ -152,26 +168,25 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				}
 			}
 
-			const payload = response.data.result;
-
 			window.addEventListener('resize', this.handleChartResize);
 
+			const payload = response.data.result;
 			const lines = this.transformCandlesInLines(payload);
 
 			this.chartSeries = this.chart.addLineSeries({
 				color: MaterialUITheme.palette.success.main,
+				lineWidth: 2,
+				lineStyle: 0,
+				priceLineWidth: 1,
+				priceLineStyle: 3,
+				priceLineVisible: true,
+				lastValueVisible: true,
+				priceLineColor: MaterialUITheme.palette.success.main,
+				lastPriceAnimation: 1,
 				priceFormat: {
 					type: 'price',
-					precision: 10,
+					precision: this.props.market.precision,
 					minMove: 0.0000000001,
-				},
-			});
-
-			this.chartSeries.priceScale().applyOptions({
-				autoScale: true,
-				scaleMargins: {
-					top: 0.1,
-					bottom: 0.2,
 				},
 			});
 
@@ -181,9 +196,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 			window.removeEventListener('resize', this.handleChartResize);
 			dispatch('api.updateTemplateData', payload);
-		} catch (exception: any) {
-			console.error(exception);
-
+		} catch (exception) {
 			if (axios.isAxiosError(exception)) {
 				if (exception?.response?.status === 401) {
 					return;
@@ -193,7 +206,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			const message = 'An error has occurred while performing this operation.'
 
 			this.setState({ error: message });
-
 			toast.error(message);
 		} finally {
 			this.setState({ isLoading: false });
@@ -203,14 +215,9 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
+				const response = await apiGetFetchTicker(
 					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'fetch_ticker',
-						parameters: {
 							symbol: this.props.market.id,
-						},
 					},
 					this.props.handleUnAuthorized
 				);
@@ -238,8 +245,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				this.chartSeries.update(line);
 				dispatch('api.updateTemplateData', payload);
 			} catch (exception) {
-				console.error(exception);
-
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
 						return;
@@ -272,7 +277,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	handleChartResize = () => {
 		if (this.chartReference.current) {
-			this.chart.applyOptions({ width: this.chartReference.current.clientWidth });
+			this.chart!.applyOptions({ width: this.chartReference.current.clientWidth });
 		}
 	};
 }

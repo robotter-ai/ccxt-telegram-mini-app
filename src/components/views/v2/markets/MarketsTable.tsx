@@ -49,6 +49,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 // will not be used now
+// @ts-ignore
 function SegmentControl() {
 	const [activeTab, setActiveTab] = React.useState("all");
 
@@ -81,8 +82,8 @@ function SegmentControl() {
 
 function ListMarkets({ markets }: { markets: Data[] }) {
 	const navigate = useNavigate();
-	const handleClick = (id: number | string = '') => {
-		const url  = `${Constant.marketPath.value}?marketId=${id}`;
+	const handleClick = (id: number | string = '', precision: number | string) => {
+		const url  = `${Constant.marketPath.value}?marketId=${id}&marketPrecision=${precision}`;
 		navigate(url);
 	};
 
@@ -103,7 +104,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 							<tr
 								className="h-16 shadow-[0_0.5px_0_0_rgba(255,255,255,0.2)] flex items-center"
 								key={`${row.symbol}-${row.base}-${row.quote}`}
-								onClick={() => handleClick(row.id)}
+								onClick={() => handleClick(row.id, row.precision)}
 							>
 								<td className="w-1/2 text-left flex items-center">
 									{/* will not be used now */}
@@ -119,7 +120,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 								<td className="w-1/2 text-right flex items-center justify-end">
 									<div className="flex flex-col items-end">
 										{formatCryptoValue(row.price, row.precision)}
-										<span className={`flex items-center justify-center rounded-[20px] text-[13px] font-semibold h-5 w-14 py-0 px-1 ${row.percentage >= 0 ? "bg-[#3A9F20]" : "bg-[#E53935]"}`}>
+										<span className={`text-[13px] font-semibold ${row.percentage >= 0 ? "text-[#3A9F20]" : "text-[#E53935]"}`}>
 											{row.percentage.toFixed(2)}%
 										</span>
 									</div>
