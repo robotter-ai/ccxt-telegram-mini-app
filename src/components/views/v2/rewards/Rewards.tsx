@@ -148,7 +148,7 @@ class RewardsStructure extends Base<RewardsProps, RewardsState> {
 				}
 			}
 
-			render()
+		render()
 			{
 				const {isLoading, error, claimStatus} = this.state;
 
