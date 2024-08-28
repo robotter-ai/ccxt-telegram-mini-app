@@ -1,8 +1,7 @@
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { styled } from 'styled-components';
-import { Box, styled as muiStyled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
@@ -66,11 +65,11 @@ class Structure extends Base<Props, State> {
 		const { data } = this.props;
 
 		return (
-			<Style>
+			<Box className={this.props.className}>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(data, null, 2)}</pre>
-			</Style>
+			</Box>
 		);
 	}
 
@@ -179,10 +178,10 @@ class Structure extends Base<Props, State> {
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-const StyledBox = muiStyled(Box)(({ theme }) => ({
-}));
+const Style = styled(Structure)(({ theme }) => `
+	background-color: green;
+`);
 
-const Style = styled(StyledBox)`
-`;
+const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));
 
-export const Development = connect(mapStateToProps, mapDispatchToProps)(withHooks(Structure));
+export const Development = Behavior;

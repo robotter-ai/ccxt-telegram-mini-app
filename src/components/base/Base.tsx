@@ -5,6 +5,8 @@ import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { AppContext } from 'model/contexts/AppContext.tsx';
 
 export interface BaseProps {
+	id?: any;
+	className?: any;
 	queryParams: any;
 	params: any;
 	searchParams: any;
