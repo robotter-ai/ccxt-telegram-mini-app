@@ -4,7 +4,7 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiGetFetchOHLCV, apiGetFetchTicker} from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
@@ -147,15 +147,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				},
 			});
 
-			const response = await apiPostRun(
+			const response = await apiGetFetchOHLCV(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ohlcv',
-					parameters: {
 						symbol: this.props.market.id,
 						timeframe: '1s',
-					},
 				},
 				this.props.handleUnAuthorized
 			);
@@ -220,14 +215,9 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
+				const response = await apiGetFetchTicker(
 					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'fetch_ticker',
-						parameters: {
 							symbol: this.props.market.id,
-						},
 					},
 					this.props.handleUnAuthorized
 				);
