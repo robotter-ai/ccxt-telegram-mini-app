@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiGetFetchBalance, apiGetFetchTicker} from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -56,12 +56,8 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 	async initialize() {
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_balance',
-				},
+			const response = await apiGetFetchBalance(
+				{},
 				this.props.handleUnAuthorized
 			);
 
@@ -95,12 +91,9 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 	fetchTicker = async (symbol: string) => {
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchTicker(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ticker',
-					parameters: { symbol: `TSOL/tUSDC` },
+					 symbol: symbol
 				},
 				this.props.handleUnAuthorized
 			);
@@ -178,7 +171,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col">
-													<span className="text-lg leading-none">{amount}</span>
+													<span className="text-lg leading-none">{amount as string}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>
@@ -190,10 +183,10 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 															tickers[asset]?.percentage >= 0 ? 'text-green-500' : 'text-red-500'
 														}`}
 													>
-                                                            {tickers[asset]?.percentage !== undefined
-																															? `${tickers[asset].percentage.toFixed(2)}%`
-																															: 'N/A'}
-                                                        </span>
+															{tickers[asset]?.percentage !== undefined
+																? `${tickers[asset].percentage.toFixed(2)}%`
+																: 'N/A'}
+													</span>
 												</div>
 											</td>
 										</tr>
