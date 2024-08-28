@@ -1,9 +1,9 @@
 import {useState} from 'react';
-import {apiPostRun} from "model/service/api";
+import {apiDeleteCancelOrder} from "model/service/api";
 import {toast} from "react-toastify";
-import {useHandleUnauthorized} from "model/hooks/useHandleUnauthorized.ts";
-import Order, {Order as IOrder} from "components/views/v2/orders/Order.tsx";
-import Button, {ButtonType} from "components/views/v2/orders/Button.tsx";
+import {useHandleUnauthorized} from "model/hooks/useHandleUnauthorized";
+import Order, {Order as IOrder} from "components/views/v2/orders/Order";
+import Button, {ButtonType} from "components/views/v2/orders/Button";
 
 const handleUnAuthorized = useHandleUnauthorized();
 
@@ -13,15 +13,10 @@ function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, fetch
 	const handleCancelOrder = async (order: IOrder) => {
 		console.log(order);
 		try {
-			const response = await apiPostRun(
+			const response = await apiDeleteCancelOrder(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'cancel_order',
-					parameters: {
 						id: order.id,
 						symbol: order.market,
-					},
 				},
 				handleUnAuthorized
 			);
