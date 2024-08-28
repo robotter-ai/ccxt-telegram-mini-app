@@ -1,12 +1,17 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
-import { apiPostAuthSignIn, apiPostAuthIsSignedIn, apiPostRun } from 'model/service/api';
+import {
+	apiPostAuthSignIn,
+	apiPostAuthIsSignedIn,
+	apiGetFetchMarkets,
+	apiGetFetchCurrencies
+} from 'model/service/api';
 import './SignIn.css';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import DOMPurify from 'dompurify';
@@ -27,7 +32,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from 'src/assets/images/logo/cube.png';
-import { clearAllIntervals } from 'model/service/recurrent.ts';
+import { clearAllIntervals } from 'model/service/recurrent';
 
 const SignInSchema = Yup.object().shape({
 	apiKey: Yup.string()
@@ -290,11 +295,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	loadMarkets = async () => {
 		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun({
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_markets',
-			}, this.props.handleUnAuthorized);
+			const response = await apiGetFetchMarkets({}, this.props.handleUnAuthorized);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 			dispatch('api.updateMarkets', response.data.result);
@@ -310,11 +311,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	loadCurrencies = async () => {
 		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun({
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_currencies',
-			}, this.props.handleUnAuthorized);
+			const response = await apiGetFetchCurrencies({}, this.props.handleUnAuthorized);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 			dispatch('api.updateCurrencies', response.data.result);
