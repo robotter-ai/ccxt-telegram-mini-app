@@ -141,7 +141,7 @@ export const apiDeleteCancelAllOrders = async (data?: any, handleUnAuthorized?: 
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 			method: 'cancel_all_orders',
-			parameters: {
+			params: {
 				...data
 			}
 		},
@@ -157,7 +157,7 @@ export const apiDeleteCancelOrder = async (data?: any, handleUnAuthorized?: () =
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 			method: 'cancel_order',
-			parameters: {
+			params: {
 				...data
 			}
 		},
@@ -173,7 +173,7 @@ export const apiPostCreateOrder = async (data?: any, handleUnAuthorized?: () => 
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 			method: 'create_order',
-			parameters: {
+			params: {
 				...data
 			}
 		},
@@ -189,7 +189,7 @@ export const apiGetDescribe = async (data?: any, handleUnAuthorized?: () => void
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 			method: 'describe',
-			parameters: {
+			params: {
 				...data
 			}
 		},
@@ -205,7 +205,7 @@ export const apiPostDeposit = async (data?: any, handleUnAuthorized?: () => void
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 			environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 			method: 'deposit',
-			parameters: {
+			params: {
 				...data
 			}
 		},
@@ -217,10 +217,12 @@ export const apiGetFetchBalance = async (data?: any, handleUnAuthorized?: () => 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_balance',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -231,10 +233,13 @@ export const apiGetFetchClosedOrders = async (data?: any, handleUnAuthorized?: (
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_closed_orders',
+		},
+		params: {
+
 			...data
 		},
 	}, handleUnAuthorized);
@@ -245,10 +250,12 @@ export const apiGetFetchCurrencies = async (data?: any, handleUnAuthorized?: () 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_currencies',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -259,10 +266,12 @@ export const apiGetFetchDepositAddresses = async (data?: any, handleUnAuthorized
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_deposit_addresses',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -273,10 +282,12 @@ export const apiGetFetchMarkets = async (data?: any, handleUnAuthorized?: () => 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_markets',
+	},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -287,10 +298,12 @@ export const apiGetFetchMyTrades = async (data?: any, handleUnAuthorized?: () =>
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_my_trades',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -301,10 +314,13 @@ export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => vo
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_oHLCV',
+		},
+		params: {
+
 			...data
 		},
 	}, handleUnAuthorized);
@@ -315,10 +331,12 @@ export const apiGetFetchOpenOrder = async (data?: any, handleUnAuthorized?: () =
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_open_order',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -329,10 +347,12 @@ export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_open_orders',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -343,10 +363,12 @@ export const apiGetFetchOrder = async (data?: any, handleUnAuthorized?: () => vo
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_order',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -357,10 +379,12 @@ export const apiGetFetchOrderBook = async (data?: any, handleUnAuthorized?: () =
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_order_book',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -371,10 +395,12 @@ export const apiGetFetchOrders = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_orders',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -385,10 +411,12 @@ export const apiGetFetchOrdersAllMarkets = async (data?: any, handleUnAuthorized
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_orders_all_markets',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -399,10 +427,12 @@ export const apiGetFetchStatus = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_status',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -413,10 +443,12 @@ export const apiGetFetchTicker = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_ticker',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -427,10 +459,12 @@ export const apiGetFetchTickers = async (data?: any, handleUnAuthorized?: () => 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_tickers',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -441,10 +475,12 @@ export const apiGetFetchTrades = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_trades',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
@@ -455,10 +491,12 @@ export const apiGetFetchTradingFee = async (data?: any, handleUnAuthorized?: () 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_trading_fee',
+		},
+		params: {
 			...data
 		},
 	}, handleUnAuthorized);
