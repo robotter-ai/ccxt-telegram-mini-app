@@ -15,7 +15,6 @@ interface BalanceProps extends BaseProps {}
 interface TickerData {
 	last: number;
 	percentage: number;
-	// Add other properties relevant to your ticker data
 }
 
 interface TickersMap {
