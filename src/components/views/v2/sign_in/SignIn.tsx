@@ -3,11 +3,10 @@ import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
-import { clearAllIntervals, executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun, apiPostAuthSignIn, apiPostAuthIsSignedIn } from 'model/service/api';
+import { apiPostAuthSignIn, apiPostAuthIsSignedIn, apiPostRun } from 'model/service/api';
 import './SignIn.css';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import DOMPurify from 'dompurify';
@@ -16,19 +15,19 @@ import {
 	Typography,
 	TextField,
 	Button,
-	CircularProgress,
 	Box,
 	CssBaseline,
 	Paper,
 	IconButton,
 	InputAdornment,
 	Snackbar,
+	Link, CircularProgress,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from 'src/assets/images/logo/exchange.png';
+import logo from 'src/assets/images/logo/cube.png';
+import { clearAllIntervals } from 'model/service/recurrent.ts';
 
 const SignInSchema = Yup.object().shape({
 	apiKey: Yup.string()
@@ -46,82 +45,63 @@ const SignInSchema = Yup.object().shape({
 const theme = createTheme({
 	palette: {
 		mode: 'dark',
-		primary: {
-			main: '#FFA500',
-		},
-		background: {
-			default: '#121212',
-			paper: '#1d1d1d',
-		},
+		primary: { main: '#FFA500' },
+		background: { default: 'black', paper: 'black' },
 	},
 });
 
-const sanitizeInput = (input: string) => {
-	return DOMPurify.sanitize(input);
-};
+const sanitizeInput = (input: string) => DOMPurify.sanitize(input);
 
 interface SignInProps extends BaseProps {
-	location: any;
-	navigate: any;
-	params: any;
-	queryParams: any;
-	searchParams: any;
-	handleUnAuthorized: any;
 	isSignedIn: boolean;
 }
 
 interface SignInState extends BaseState {
 	isLoading: boolean;
 	error?: string;
-	showApiKey?: boolean;
-	showApiSecret?: boolean;
-	showSubAccountId?: boolean;
-	openSnackbar?: boolean;
+	showPassword: {
+		apiKey: boolean;
+		apiSecret: boolean;
+		subAccountId: boolean;
+	};
+	openSnackbar: boolean;
 	telegramUser?: any;
-	queryRedirect?: string;
+	queryRedirect: string;
+	focusedField: string | null;
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state: any, props: any) => ({
+const mapStateToProps = (state: any) => ({
 	isSignedIn: state.api.isSignedIn,
 });
 
 class SignInStructure extends Base<SignInProps, SignInState> {
 	recurrentIntervalId?: number;
-	recurrentDelay?: number;
 
 	constructor(props: SignInProps) {
 		super(props);
-
 		this.state = {
 			isLoading: true,
 			error: undefined,
-			showApiKey: false,
-			showApiSecret: false,
-			showSubAccountId: false,
+			showPassword: { apiKey: false, apiSecret: false, subAccountId: false },
 			openSnackbar: false,
 			telegramUser: undefined,
-			queryRedirect: this.props.searchParams.get('redirect') || '/',
+			queryRedirect: new URLSearchParams(window.location.search).get('redirect') || '/',
+			focusedField: null,
 		};
-
-		this.recurrentIntervalId = undefined;
-		this.recurrentDelay = 5 * 1000;
 	}
 
 	async componentDidMount() {
 		await this.initialize();
-		// await this.doRecurrently();
 	}
 
-	async componentWillUnmount() {
+	componentWillUnmount() {
 		if (this.recurrentIntervalId) {
 			clearInterval(this.recurrentIntervalId);
 		}
 	}
 
 	render() {
-		const { isLoading, error } = this.state;
+		const { isLoading, error, showPassword, openSnackbar, focusedField } = this.state;
 
 		return (
 			<ThemeProvider theme={theme}>
@@ -133,176 +113,167 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 						flexDirection: 'column',
 						justifyContent: 'center',
 						alignItems: 'center',
-						bgcolor: 'background.default',
+						bgcolor: 'background.default', // Uses the default background color from the theme
+						width: '100%',
 					}}
 				>
-					<Container component="main" maxWidth="xs">
-						<Paper elevation={6} sx={{ padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-							<img src={logo} alt="Logo" style={{ height: '100px', marginBottom: '20px' }} />
-							<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+					<Container component="main" maxWidth="md">
+						<Paper
+							elevation={0} // Remove elevation to avoid any shadow effects
+							sx={{
+								p: 4,
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								width: '100%',
+								backgroundColor: 'transparent', // Ensure the Paper background is transparent
+							}}
+						>
+							<img src={logo} alt="Logo" style={{ height: '50px', marginBottom: '20px', borderRadius: '10%' }} />
+							<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
 								{isLoading && <CircularProgress sx={{ mt: 2 }} />}
 								{error && <Typography color="error">{error}</Typography>}
 								<Formik
 									initialValues={{
 										apiKey: `${import.meta.env.VITE_EXCHANGE_API_KEY}`,
 										apiSecret: `${import.meta.env.VITE_EXCHANGE_API_SECRET}`,
-										subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`
+										subAccountId: `${import.meta.env.VITE_EXCHANGE_OPTIONS_SUB_ACCOUNT_ID}`,
 									}}
 									validationSchema={SignInSchema}
-									onSubmit={async (values, { setSubmitting }) => {
-										await this.signIn(values.apiKey, values.apiSecret, Number(values.subAccountId));
-										setSubmitting(false);
-									}}
+									onSubmit={this.handleSubmit}
 								>
 									{({ isSubmitting }) => (
-										<Form>
-											<Field
-												name="apiKey"
-												as={TextField}
-												variant="outlined"
-												margin="normal"
-												fullWidth
-												label="API Key"
-												autoComplete="apiKey"
-												type={this.state.showApiKey ? 'text' : 'password'}
-												autoFocus
-												InputProps={{
-													endAdornment: (
-														<InputAdornment position="end">
-															<IconButton
-																aria-label="toggle API key visibility"
-																onClick={() => this.handleClickShowPassword('showApiKey')}
-																edge="end"
-															>
-																{this.state.showApiKey ? <VisibilityOff /> : <Visibility />}
-															</IconButton>
-														</InputAdornment>
-													),
-												}}
-												helperText={<ErrorMessage name="apiKey" />}
-											/>
-											<Field
-												name="apiSecret"
-												as={TextField}
-												variant="outlined"
-												margin="normal"
-												fullWidth
-												label="API Secret"
-												type={this.state.showApiSecret ? 'text' : 'password'}
-												autoComplete="apiSecret"
-												InputProps={{
-													endAdornment: (
-														<InputAdornment position="end">
-															<IconButton
-																aria-label="toggle API secret visibility"
-																onClick={() => this.handleClickShowPassword('showApiSecret')}
-																edge="end"
-															>
-																{this.state.showApiSecret ? <VisibilityOff /> : <Visibility />}
-															</IconButton>
-														</InputAdornment>
-													),
-												}}
-												helperText={<ErrorMessage name="apiSecret" />}
-											/>
-											<Field
-												name="subAccountId"
-												as={TextField}
-												variant="outlined"
-												margin="normal"
-												fullWidth
-												label="Sub Account ID"
-												type={this.state.showSubAccountId ? 'text' : 'password'}
-												autoComplete="subAccountId"
-												InputProps={{
-													endAdornment: (
-														<InputAdornment position="end">
-															<IconButton
-																aria-label="toggle sub account ID visibility"
-																onClick={() => this.handleClickShowPassword('showSubAccountId')}
-																edge="end"
-															>
-																{this.state.showSubAccountId ? <VisibilityOff /> : <Visibility />}
-															</IconButton>
-														</InputAdornment>
-													),
-												}}
-												helperText={<ErrorMessage name="subAccountId" />}
-											/>
+										<Form style={{ width: '100%' }}>
+											{['apiKey', 'apiSecret', 'subAccountId'].map((field) => (
+												<Field
+													key={field}
+													name={field}
+													as={TextField}
+													variant="outlined"
+													margin="normal"
+													fullWidth
+													label={field.replace(/([A-Z])/g, ' $1')}
+													type={showPassword[field as keyof SignInState['showPassword']] ? 'text' : 'password'}
+													onFocus={() => this.setState({ focusedField: field })}
+													onBlur={() => this.setState({ focusedField: null })}
+													InputProps={{
+														endAdornment: (
+															<InputAdornment position="end">
+																<IconButton
+																	aria-label={`toggle ${field} visibility`}
+																	onClick={() => this.toggleShowPassword(field as keyof SignInState['showPassword'])}
+																	sx={{
+																		color: focusedField === field ? 'primary.main' : 'inherit',
+																	}}
+																>
+																	{showPassword[field as keyof SignInState['showPassword']] ? <VisibilityOff /> : <Visibility />}
+																</IconButton>
+															</InputAdornment>
+														),
+													}}
+													helperText={<ErrorMessage name={field} />}
+												/>
+											))}
 											<Button
 												type="submit"
 												fullWidth
 												variant="contained"
 												color="primary"
 												disabled={isSubmitting}
-												sx={{ mt: 3, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+												sx={{ mt: 3, mb: 2, borderRadius: '50px', fontWeight: 'bold' }}
 											>
-												<LockOutlinedIcon sx={{ mr: 1 }} />
 												Sign In
 											</Button>
+											<Link href="#" variant="body2" sx={{ color: 'primary.main', textAlign: 'center', display: 'block' }}>
+												Where to get it?
+											</Link>
 										</Form>
 									)}
 								</Formik>
 							</Box>
 						</Paper>
 						<Snackbar
-							open={this.state.openSnackbar}
+							open={openSnackbar}
 							autoHideDuration={6000}
 							onClose={this.handleCloseSnackbar}
-							message={error ? error : 'An error occurred'}
+							message={error || 'An error occurred'}
 						/>
+						{/*<Link
+							component={RouterLink}
+							to="google-login"
+							variant="body2"
+							sx={{ color: 'primary.main', textAlign: 'center', display: 'block', mt: 4 }}
+						>
+							Login with Google
+						</Link>*/}
 					</Container>
 				</Box>
 			</ThemeProvider>
 		);
 	}
 
+	toggleShowPassword = (field: keyof SignInState['showPassword']) => {
+		this.setState((prevState) => ({
+			showPassword: { ...prevState.showPassword, [field]: !prevState.showPassword[field] },
+		}));
+	};
+
+	handleCloseSnackbar = () => this.setState({ openSnackbar: false });
+
+	handleSubmit = async (values: any, { setSubmitting }: any) => {
+		this.setState({ isLoading: true, error: undefined });
+		try {
+			const response = await apiPostAuthSignIn({
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				userTelegramId: `${this.state.telegramUser ? sanitizeInput(this.state.telegramUser.id) : undefined}`,
+				exchangeApiKey: `${sanitizeInput(values.apiKey)}`,
+				exchangeApiSecret: `${sanitizeInput(values.apiSecret)}`,
+				exchangeOptions: { subAccountId: `${Number(values.subAccountId)}` },
+			}, this.props.handleUnAuthorized);
+
+			if (response.status !== 200) throw new Error('Network response was not OK');
+
+			dispatch('api.signIn', response.data.token);
+			await this.initializeAfterSignIn();
+			this.props.navigate(this.state.queryRedirect);
+		} catch (exception: any) {
+			console.error(exception);
+			this.setState({ error: exception.message, openSnackbar: true });
+			toast.error(exception.message);
+		} finally {
+			this.setState({ isLoading: false });
+			setSubmitting(false);
+		}
+	};
+
 	async initialize() {
 		try {
-			if (Telegram && Telegram.WebApp) {
+			if (Telegram?.WebApp) {
 				Telegram.WebApp.ready();
-
-				let telegramUser = Telegram.WebApp.initDataUnsafe.user;
-
-				if (!telegramUser) {
-					telegramUser = {
-						id: import.meta.env.VITE_TELEGRAM_USER_ID,
-					} as any;
-				}
-
+				let telegramUser = Telegram.WebApp.initDataUnsafe.user || { id: import.meta.env.VITE_TELEGRAM_USER_ID };
 				this.setState({ telegramUser });
 				dispatch('telegram.updateTelegramUser', telegramUser);
 
-				const response = await apiPostAuthIsSignedIn(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						// @ts-ignore
-						userTelegramId: `${sanitizeInput(telegramUser.id)}`,
-					}
-				);
+				const response = await apiPostAuthIsSignedIn({
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					userTelegramId: `${sanitizeInput(telegramUser.id)}`,
+				});
 
-				const payload = response.data.result;
+				const isSignedIn = response.data.result;
+				dispatch('api.updateIsSignedIn', isSignedIn);
 
-				if (response.status === 200 && payload === true) {
-					dispatch('api.updateIsSignedIn', payload);
-
-					await this.loadCurrencies();
-					await this.loadMarkets();
-
+				if (isSignedIn) {
+					await this.initializeAfterSignIn();
 					this.props.navigate(this.state.queryRedirect);
-				} else {
-					dispatch('api.updateIsSignedIn', false);
 				}
 			}
 		} catch (exception: any) {
-			if (axios.isAxiosError(exception)) {
-				if ([401, 417].includes(Number(exception?.response?.status))) {
-					clearAllIntervals();
-					return;
-				}
+			if (axios.isAxiosError(exception) && [401, 417].includes(Number(exception.response?.status))) {
+				clearAllIntervals();
+				return;
 			}
-
 			console.error(exception);
 			this.setState({ error: exception.message });
 			toast.error(exception.message);
@@ -311,123 +282,22 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 		}
 	}
 
-	async doRecurrently() {
-		const recurrentFunction = async () => {
-			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: '<apiFunction>',
-						parameters: {
-							param1: '<param1Value>',
-							param2: '<param2Value>',
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-				}
-
-				const payload = response.data.result;
-				dispatch('api.updateSignInData', payload);
-			} catch (exception: any) {
-				if (axios.isAxiosError(exception)) {
-					if (exception?.response?.status === 401) {
-						clearInterval(this.recurrentIntervalId);
-						return;
-					}
-				}
-
-				console.error(exception);
-				this.setState({ error: exception.message });
-				toast.error(exception.message);
-			}
-		};
-
-		// @ts-ignore
-		this.recurrentIntervalId = executeAndSetInterval(recurrentFunction, this.recurrentDelay);
+	async initializeAfterSignIn() {
+		await this.loadMarkets();
+		await this.loadCurrencies();
 	}
 
-	handleClickShowPassword = (field: string) => {
-		// @ts-ignore
-		this.setState((prevState: any) => ({
-			[field]: !(prevState[field] as boolean),
-		}));
-	};
-
-	handleCloseSnackbar = () => {
-		this.setState({ openSnackbar: false });
-	};
-
-	signIn = async (apiKey: string, apiSecret: string, subAccountId: number) => {
-		this.setState({ isLoading: true, error: undefined });
-
-		try {
-			const response = await apiPostAuthSignIn(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					userTelegramId: `${this.state.telegramUser ? sanitizeInput(this.state.telegramUser.id) : undefined}`,
-					exchangeApiKey: `${sanitizeInput(apiKey)}`,
-					exchangeApiSecret: `${sanitizeInput(apiSecret)}`,
-					exchangeOptions: {
-						subAccountId: `${Number(subAccountId)}`,
-					},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (!(response.status === 200)) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Error('Network response was not OK');
-			}
-
-			const payload = response.data;
-
-			dispatch('api.signIn', payload.token);
-
-			const { configure } = await import('model/service/recurrent');
-			configure(this.props.handleUnAuthorized);
-
-			await this.loadCurrencies();
-			await this.loadMarkets();
-
-			this.props.navigate(this.state.queryRedirect);
-		} catch (exception: any) {
-			console.error(exception);
-			this.setState({ error: exception.message, openSnackbar: true });
-			toast.error(exception.message);
-		} finally {
-			this.setState({ isLoading: false });
-		}
-	};
-
 	loadMarkets = async () => {
-		this.setState({ isLoading: true, error: undefined });
-
+		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_markets',
-				},
-				// @ts-ignore
-				this.context.handleUnAuthorized
-			);
+			const response = await apiPostRun({
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'fetch_markets',
+			}, this.props.handleUnAuthorized);
 
-			if (!(response.status === 200)) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Error('Network response was not OK');
-			}
-
-			const payload = response.data.result;
-
-			dispatch('api.updateMarkets', payload);
+			if (response.status !== 200) throw new Error('Network response was not OK');
+			dispatch('api.updateMarkets', response.data.result);
 		} catch (exception: any) {
 			console.error(exception);
 			this.setState({ error: exception.message, openSnackbar: true });
@@ -438,27 +308,16 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	};
 
 	loadCurrencies = async () => {
-		this.setState({ isLoading: true, error: undefined });
-
+		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_currencies',
-				},
-				// @ts-ignore
-				this.context.handleUnAuthorized
-			);
+			const response = await apiPostRun({
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'fetch_currencies',
+			}, this.props.handleUnAuthorized);
 
-			if (!(response.status === 200)) {
-				// noinspection ExceptionCaughtLocallyJS
-				throw new Error('Network response was not OK');
-			}
-
-			const payload = response.data.result;
-
-			dispatch('api.updateCurrencies', payload);
+			if (response.status !== 200) throw new Error('Network response was not OK');
+			dispatch('api.updateCurrencies', response.data.result);
 		} catch (exception: any) {
 			console.error(exception);
 			this.setState({ error: exception.message, openSnackbar: true });

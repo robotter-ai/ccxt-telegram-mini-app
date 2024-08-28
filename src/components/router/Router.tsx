@@ -14,6 +14,7 @@ import { Rewards as V1Rewards } from 'components/views/v1/rewards/Rewards';
 
 import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
 import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
+// import { GoogleSignIn } from 'components/views/v2/sign_in/GoogleSignIn';
 import { Balances as V2Balances } from 'components/views/v2/balances/Balances';
 import { Markets as V2Markets } from 'components/views/v2/markets/Markets';
 import { Market as V2Market } from 'components/views/v2/market/Market';
@@ -82,7 +83,7 @@ const RouterContent = () => {
 				<Route path={Constant.v1DevelopmentPath.value} element={<NormalizedRoute element={<V2Development />} />} />
 			</Route>
 
-			<Route path={Constant.v2SignInPath.value}  element={<V2SignIn />} />
+			<Route path={Constant.v2SignInPath.value} element={<V2SignIn />} />
 			<Route path={Constant.v2Path.value} element={<V2Layout />}>
 				<Route path={Constant.v2Path.value} element={<Navigate to={Constant.v2BalancesPath.value} />} />
 				<Route path={Constant.v2HomePath.value} element={<Navigate to={Constant.v2Path.value} />} />
@@ -93,12 +94,14 @@ const RouterContent = () => {
 				<Route path={Constant.v2CreateOrderPath.value} element={<NormalizedRoute element={<V2CreateOrder />} checkAuthentication />} />
 				<Route path={Constant.v2RewardsPath.value} element={<NormalizedRoute element={<V2Rewards />} checkAuthentication />} />
 				<Route path={Constant.v2DevelopmentPath.value} element={<NormalizedRoute element={<V2Development />} />} />
+				{/*<Route path="google-login" element={<GoogleSignIn />} />*/}
 			</Route>
 
 			<Route path="*" element={<Navigate to={Constant.currentRoutePath.value} />} />
 		</Routes>
 	);
 };
+
 
 const RouterStructure = () => {
 	return (
