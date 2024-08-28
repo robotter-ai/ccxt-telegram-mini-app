@@ -49,6 +49,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 // will not be used now
+// @ts-ignore
 function SegmentControl() {
 	const [activeTab, setActiveTab] = React.useState("all");
 
