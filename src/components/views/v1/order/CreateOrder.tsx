@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiPostCreateOrder} from 'model/service/api';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import { Field, Form, Formik } from 'formik';
@@ -43,18 +43,13 @@ const CreateOrderStructure = ({ markets, marketId }: any) => {
 				return;
 			}
 
-			const response = await apiPostRun(
+			const response = await apiPostCreateOrder(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'create_order',
-					parameters: {
 						symbol: values.market,
 						type: values.orderType,
 						side: values.side,
 						amount: parseFloat(values.amount),
 						price: values.orderType === 'market' ? null : parseFloat(values.price),
-					},
 				},
 				handleUnauthorized
 			);
