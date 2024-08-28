@@ -10,7 +10,7 @@ import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
 import {Base, BaseProps, BaseState} from 'components/base/Base';
 import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
 import OrdersList from './OrdersList';
-import {Order} from "components/views/v2/orders/Order.tsx";
+import {Order} from "components/views/v2/orders/Order";
 
 interface Props extends BaseProps {
 	openOrders: any;
