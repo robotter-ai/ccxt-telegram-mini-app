@@ -1,9 +1,14 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { dispatch } from 'model/state/redux/store';
-import { Constant } from 'model/enum/constant';
+import {apiGetFetchTickers} from 'model/service/api';
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import {Style} from "@mui/icons-material";
+import axios from "axios";
+import React from "react";
+
 
 interface RewardsProps extends BaseProps {}
 
@@ -17,6 +22,7 @@ const mapStateToProps = (state: any) => ({});
 
 class RewardsStructure extends Base<RewardsProps, RewardsState> {
 	static defaultProps: Partial<BaseProps> = {};
+	private handleClaimReward: React.MouseEventHandler<HTMLButtonElement> | undefined;
 
 	constructor(props: RewardsProps) {
 		super(props);
@@ -24,24 +30,115 @@ class RewardsStructure extends Base<RewardsProps, RewardsState> {
 		this.state = {
 			isLoading: false,
 			error: undefined,
-			claimStatus: false,
-		};
+		} as Readonly<State>;
+
+		this.properties.setIn('recurrent.5s.intervalId', undefined);
+		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
 	}
 
-	handleSignOut = async () => {
-		try {
-			dispatch('api.signOut', null);
-			toast.success('Signed out successfully!');
-			this.props.navigate(Constant.homePath.value as string);
-		} catch (exception) {
-			console.error(exception);
-			toast.error('An error occurred during sign out.');
-		}
-	};
+	async componentDidMount() {
+		await this.initialize();
+		await this.doRecurrently();
+	}
 
-	handleClaimReward = () => {
-		this.setState({ claimStatus: true });
-	};
+	async componentWillUnmount() {
+		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
+			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
+		}
+	}
+
+	render() {
+		const { isLoading, error } = this.state;
+		const { data } = this.props;
+
+		return (
+			<Style>
+				{isLoading ? <Spinner /> : null}
+				{error ? <div>Error: {error}</div> : null}
+				<pre>{JSON.stringify(data, null, 2)}</pre>
+			</Style>
+		);
+	}
+
+	async initialize(symbol?: string) {
+		try {
+			const response = await apiGetFetchTickers(
+				{
+					symbols: [symbol],
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				if (response.data?.title) {
+					const message = response.data.title;
+
+					this.setState({ error: message });
+					toast.error(message);
+
+					return;
+				} else {
+					// noinspection ExceptionCaughtLocallyJS
+					throw new Error(response.text);
+				}
+			}
+
+			const payload = response.data.result;
+
+			dispatch('api.updateTemplateData', payload);
+		} catch (exception: any) {
+			console.error(exception);
+
+			if (axios.isAxiosError(exception)) {
+				if (exception?.response?.status === 401) {
+					return;
+				}
+			}
+
+			const message = 'An error has occurred while performing this operation.'
+
+			this.setState({ error: message });
+			toast.error(message);
+		} finally {
+			this.setState({ isLoading: false });
+		}
+	}
+
+	async doRecurrently() {
+		const recurrentFunction = async (symbol: string) => {
+			try {
+				const response = await apiGetFetchTickers(
+					{
+						symbols: [symbol],
+					},
+					this.props.handleUnAuthorized
+				);
+
+				if (response.status !== 200) {
+					if (response.data?.title) {
+						const message = response.data.title;
+
+						this.setState({ error: message });
+						toast.error(message);
+
+						return;
+					} else {
+						// noinspection ExceptionCaughtLocallyJS
+						throw new Error(response.text);
+					}
+				}
+
+				const payload = response.data.result;
+
+				dispatch('api.updateTemplateData', payload);
+			} catch (exception) {
+				console.error(exception);
+
+				if (axios.isAxiosError(exception)) {
+					if (exception?.response?.status === 401) {
+						return;
+					}
+				}
 
 	render() {
 		const { isLoading, error, claimStatus } = this.state;
