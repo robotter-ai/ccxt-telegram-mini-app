@@ -136,7 +136,6 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 		const totalBalanceUSDC = balanceData
 
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				// If the asset is TUSDC, use the fixed price of $1 and multiply by the user's balance
 				const price = asset === 'TUSDC' ? 1 : (tickers[asset]?.last || 0);
 				// @ts-ignore
 				return acc + price * amount;
@@ -176,7 +175,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col">
-													<span className="text-lg leading-none">{amount as number}</span>
+													<span className="text-lg leading-none">{amount as string}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>
