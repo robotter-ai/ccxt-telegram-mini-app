@@ -1,19 +1,20 @@
-import { connect } from 'react-redux';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { Box, styled } from '@mui/material';
-import { Map } from 'model/helper/extendable-immutable/map';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { dispatch } from 'model/state/redux/store';
-import { apiPostRun } from 'model/service/api';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { Base, BaseProps, BaseState } from 'components/base/Base';
-import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import {connect} from 'react-redux';
+import {useLocation, useNavigate, useParams, useSearchParams} from 'react-router-dom';
+import {toast} from 'react-toastify';
+import {Box, styled} from '@mui/material';
+import {Map} from 'model/helper/extendable-immutable/map';
+import {executeAndSetInterval} from 'model/service/recurrent';
+import {dispatch} from 'model/state/redux/store';
+import {apiPostRun} from 'model/service/api';
+import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
+import {Base, BaseProps, BaseState} from 'components/base/Base';
+import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
 import OrdersList from './OrdersList';
-import { Order } from "components/views/v2/orders/Order.tsx";
+import {Order} from "components/views/v2/orders/Order.tsx";
 
 interface Props extends BaseProps {
 	openOrders: any;
+	market: string;
 	data: any,
 }
 
@@ -30,7 +31,9 @@ const mapStateToProps = (state: State | any, props: Props | any) => ({
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-const Style = styled(Box)(({ theme }) => ({
+const Style = styled(Box)(({theme}) => ({
+	width: '100%',
+	height: '100%',
 }));
 
 class Structure extends Base<Props, State> {
@@ -84,10 +87,10 @@ class Structure extends Base<Props, State> {
 			this.handleFetchResponse(response);
 		} catch (exception: any) {
 			console.error(exception);
-			this.setState({ error: exception.message });
+			this.setState({error: exception.message});
 			toast.error(exception.message);
 		} finally {
-			this.setState({ isLoading: false });
+			this.setState({isLoading: false});
 		}
 	}
 
@@ -169,6 +172,7 @@ class Structure extends Base<Props, State> {
 			throw error;
 		}
 	}
+
 	async cancelOpenOrders(orders: readonly Order[]) {
 		if (!orders || !(orders.length > 0)) return;
 
@@ -205,16 +209,16 @@ class Structure extends Base<Props, State> {
 	}
 
 	render() {
-		const { isLoading, error } = this.state;
-		const { data } = this.props;
+		const {isLoading, error} = this.state;
+		const {data} = this.props;
 
 		return (
 			<Style>
-				{isLoading ? <Spinner /> : null}
+				{isLoading ? <Spinner/> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(data, null, 2)}</pre>
 				<OrdersList
-					orders={this.props.openOrders}
+					orders={this.props.market ? this.props.openOrders.filter((order: Order) => order.market === this.props.market) : this.props.openOrders}
 					canceledOrdersRef={this.canceledOrdersRef}
 					cancelAllOpenOrders={this.cancelAllOpenOrders}
 					fetchData={this.fetchData}
