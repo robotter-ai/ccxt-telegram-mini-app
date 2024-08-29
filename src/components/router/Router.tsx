@@ -10,7 +10,7 @@ import { Markets as V1Markets } from 'components/views/v1/markets/Markets';
 import { Market as V1Market } from 'components/views/v1/market/Market';
 import { Orders as V1Orders } from 'components/views/v1/orders/Orders';
 import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOrder';
-import { Rewards as V1Rewards } from 'components/views/v1/rewards/Rewards';
+// import { Rewards as V1Rewards } from 'components/views/v1/rewards/Rewards';
 
 import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
 import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
@@ -30,11 +30,11 @@ const mapStateToProps = (state: any) => ({
 const NormalizedRouteStructure: React.FC<{ element: React.ReactNode, checkAuthentication?: boolean, isSignedIn: boolean }> = ({ element, checkAuthentication = false, isSignedIn = false }) => {
 	if (checkAuthentication && !isSignedIn) {
 		let redirectUrl = `${location.pathname}${location.search}`;
-		if (redirectUrl.includes(Constant.v2Path.value)) {
-			return <Navigate to={`${Constant.v2SignInPath.value}?redirect=${encodeURIComponent(redirectUrl)}`} />;
-		} else {
-			if (!redirectUrl) redirectUrl = Constant.v1Path.value;
+		if (redirectUrl.includes(Constant.v1Path.value)) {
 			return <Navigate to={`${Constant.v1SignInPath.value}?redirect=${encodeURIComponent(redirectUrl)}`} />;
+		} else {
+			if (!redirectUrl) redirectUrl = Constant.v2Path.value;
+			return <Navigate to={`${Constant.v2SignInPath.value}?redirect=${encodeURIComponent(redirectUrl)}`} />;
 		}
 	}
 	return <>{element}</>;
@@ -72,7 +72,7 @@ const RouterContent = () => {
 
 			<Route path={Constant.v1SignInPath.value} element={<V1SignIn />} />
 			<Route path={Constant.v1Path.value} element={<V1Layout />}>
-				<Route path={Constant.v1Path.value} element={<Navigate to={Constant.v1MarketsPath.value} />} />
+				<Route path={Constant.v1Path.value} element={<Navigate to={Constant.v1BalancesPath.value} />} />
 				<Route path={Constant.v1HomePath.value} element={<Navigate to={Constant.v1Path.value} />} />
 				<Route path={Constant.v1OrdersPath.value} element={<NormalizedRoute element={<V1Orders />} checkAuthentication />} />
 				<Route path={Constant.v1MarketsPath.value} element={<NormalizedRoute element={<V1Markets />} checkAuthentication />} />
@@ -84,6 +84,7 @@ const RouterContent = () => {
 			</Route>
 
 			<Route path={Constant.v2SignInPath.value} element={<V2SignIn />} />
+			{/*<Route path="google-login" element={<GoogleSignIn />} />*/}
 			<Route path={Constant.v2Path.value} element={<V2Layout />}>
 				<Route path={Constant.v2Path.value} element={<Navigate to={Constant.v2BalancesPath.value} />} />
 				<Route path={Constant.v2HomePath.value} element={<Navigate to={Constant.v2Path.value} />} />
@@ -94,7 +95,6 @@ const RouterContent = () => {
 				<Route path={Constant.v2CreateOrderPath.value} element={<NormalizedRoute element={<V2CreateOrder />} checkAuthentication />} />
 				<Route path={Constant.v2RewardsPath.value} element={<NormalizedRoute element={<V2Rewards />} checkAuthentication />} />
 				<Route path={Constant.v2DevelopmentPath.value} element={<NormalizedRoute element={<V2Development />} />} />
-				{/*<Route path="google-login" element={<GoogleSignIn />} />*/}
 			</Route>
 
 			<Route path="*" element={<Navigate to={Constant.currentRoutePath.value} />} />
