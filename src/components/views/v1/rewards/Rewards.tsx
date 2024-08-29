@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { dispatch } from 'model/state/redux/store';
@@ -13,7 +13,7 @@ interface RewardsState extends BaseState {
 	claimStatus: boolean;
 }
 
-const mapStateToProps = (state: any) => ({});
+const mapStateToProps = () => ({});
 
 class RewardsStructure extends Base<RewardsProps, RewardsState> {
 	static defaultProps: Partial<BaseProps> = {};
