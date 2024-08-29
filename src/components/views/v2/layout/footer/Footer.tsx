@@ -23,8 +23,8 @@ export const Footer = (props: any) => {
 			<BottomNavigation
 				showLabels
 				value={value}
-				onChange={(_event, newValue) => {
-					setValue(newValue);
+				onChange={(_event, _newValue) => {
+					setValue(getCurrentRouteOrder());
 				}}
 			>
 				<BottomNavigationAction
