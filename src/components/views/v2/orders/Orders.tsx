@@ -5,12 +5,12 @@ import {Box, styled} from '@mui/material';
 import {Map} from 'model/helper/extendable-immutable/map';
 import {executeAndSetInterval} from 'model/service/recurrent';
 import {dispatch} from 'model/state/redux/store';
-import {apiPostRun} from 'model/service/api';
+import {apiDeleteCancelOrder, apiGetFetchOpenOrders} from 'model/service/api';
 import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
 import {Base, BaseProps, BaseState} from 'components/base/Base';
 import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
 import OrdersList from './OrdersList';
-import {Order} from "components/views/v2/orders/Order.tsx";
+import {Order} from "components/views/v2/orders/Order";
 
 interface Props extends BaseProps {
 	openOrders: any;
@@ -95,13 +95,8 @@ class Structure extends Base<Props, State> {
 	}
 
 	private async fetchOpenOrders() {
-		return await apiPostRun(
-			{
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_open_orders',
-				parameters: {},
-			},
+		return await apiGetFetchOpenOrders(
+			{},
 			this.props.handleUnAuthorized
 		);
 	}
@@ -135,15 +130,10 @@ class Structure extends Base<Props, State> {
 	}
 
 	async apiCancelOrder(order: any, handleUnAuthorized: () => void) {
-		const response = await apiPostRun(
+		const response = await apiDeleteCancelOrder(
 			{
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'cancel_order',
-				parameters: {
 					id: order.id,
 					symbol: order.market,
-				},
 			},
 			handleUnAuthorized
 		);
