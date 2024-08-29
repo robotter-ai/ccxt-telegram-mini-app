@@ -5,7 +5,7 @@ import { Box, styled } from '@mui/material';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
-import { apiPostRun } from 'model/service/api';
+import {apiGetFetchTickers} from 'model/service/api';
 import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
@@ -73,18 +73,14 @@ class Structure extends Base<Props, State> {
 		);
 	}
 
-	async initialize() {
+	async initialize(symbol?: string) {
 		try {
-				const response = await apiPostRun(
-					{
-						method: 'fetch_tickers',
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
+			const response = await apiGetFetchTickers(
+				{
+					symbols: [symbol],
+				},
+				this.props.handleUnAuthorized
+			);
 				if (response.status !== 200) {
 					if (response.data?.title) {
 						const message = response.data.title;
@@ -121,14 +117,11 @@ class Structure extends Base<Props, State> {
 	}
 
 	async doRecurrently() {
-		const recurrentFunction = async () => {
+		const recurrentFunction = async (symbol: string) => {
 			try {
-				const response = await apiPostRun(
+				const response = await apiGetFetchTickers(
 					{
-						method: 'fetch_tickers',
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-						},
+							symbols: [symbol],
 					},
 					this.props.handleUnAuthorized
 				);
