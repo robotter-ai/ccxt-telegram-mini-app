@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select, { SingleValue } from 'react-select';
-import { Constant } from 'model/enum/constant.ts';
+import { Constant } from 'model/enum/constant';
 
 interface Data {
 	id: number;
