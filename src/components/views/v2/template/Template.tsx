@@ -2,7 +2,6 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Box, styled } from '@mui/material';
-import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { apiPostRun } from 'model/service/api';
@@ -34,8 +33,6 @@ const mapDispatchToProps = (reduxDispatch: any) => ({
 });
 
 class Structure extends Base<Props, State> {
-
-	properties: Map = new Map();
 
 	constructor(props: Props) {
 		super(props);
