@@ -5,6 +5,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { EmojiEvents, Toc, TrendingUp, Wallet } from '@mui/icons-material';
 import { styled } from '@mui/material';
 import { Constant } from 'model/enum/constant';
+import { getCurrentRouteOrder } from 'components/views/v2/utils/utils';
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -15,7 +16,7 @@ const Style = styled('footer')(({ theme }) => ({
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 export const Footer = (props: any) => {
-	const [value, setValue] = React.useState(0);
+	const [value, setValue] = React.useState(getCurrentRouteOrder());
 
 	return (
 		<Style>
