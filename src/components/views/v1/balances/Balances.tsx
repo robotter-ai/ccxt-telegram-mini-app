@@ -10,10 +10,6 @@ import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
-type Ticker = {
-	last: number;
-};
-
 interface BalanceProps extends BaseProps {}
 
 interface BalanceState extends BaseState {
@@ -141,9 +137,9 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				const ticker: Ticker = tickers[asset];
+				const ticker = tickers[asset];
 				const price = ticker?.last || 0;
-				return acc + price * (amount as number);
+				return acc + price * amount;
 			}, 0)
 			: 0;
 
@@ -177,7 +173,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col">
-													<span className="text-lg leading-none">{amount as string}</span>
+													<span className="text-lg leading-none">{amount}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>
