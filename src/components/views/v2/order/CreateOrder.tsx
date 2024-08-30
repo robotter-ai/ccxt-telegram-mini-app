@@ -6,16 +6,17 @@ import {Box, SelectChangeEvent,styled } from '@mui/material';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
-import {apiGetFetchTickers} from 'model/service/api';
+import {apiGetFetchTicker, apiGetFetchTickers} from 'model/service/api';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
-import { Spinner } from 'components/views/v2/layout/spinner/Spinner';import DropDownSelector from "components/general/DropdownSelector.tsx";
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import DropDownSelector from "components/general/DropdownSelector";
 import {ChangeEvent} from "react";
-import TextInput from "components/general/TextInput.tsx";
-import Button, {ButtonType} from "components/general/Button.tsx";
-import ButtonGroupToggle from "components/general/ButtonGroupToggle.tsx";
-import {Market} from "api/types/markets.ts";
-import {formatPrice} from "components/views/v2/utils/utils.tsx";
+import TextInput from "components/general/TextInput";
+import Button, {ButtonType} from "components/general/Button";
+import ButtonGroupToggle from "components/general/ButtonGroupToggle";
+import {Market} from "api/types/markets";
+import {formatPrice} from "components/views/v2/utils/utils";
 
 interface Props extends BaseProps {
 	markets: Market[];
@@ -109,14 +110,9 @@ class Structure extends Base<Props, State> {
 
 	async getTotalPrice(marketId: string) {
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchTicker(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ticker',
-					parameters: {
 						symbol: marketId,
-					},
 				},
 				this.props.handleUnAuthorized
 			);
