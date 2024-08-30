@@ -64,3 +64,11 @@ export const getCurrentRouteTitle = () => {
 			return Constant.homePath.title;
 	}
 };
+
+export const formatPrice = (price: number, precision?: number) => {
+	return new Intl.NumberFormat('de-DE', {
+		style: 'decimal',
+		minimumFractionDigits: precision ?? 2,
+		maximumFractionDigits: precision ?? 2,
+	}).format(price);
+}
