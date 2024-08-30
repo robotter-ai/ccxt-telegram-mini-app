@@ -351,7 +351,7 @@ export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () 
 			method: 'fetch_open_orders',
 			parameters: {
 			...data
-		},
+			},
 		},
 	}, handleUnAuthorized);
 };
