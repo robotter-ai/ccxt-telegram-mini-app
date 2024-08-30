@@ -3,7 +3,7 @@ import {apiPostRun} from "model/service/api";
 import {toast} from "react-toastify";
 import {useHandleUnauthorized} from "model/hooks/useHandleUnauthorized.ts";
 import Order, {Order as IOrder} from "components/views/v2/orders/Order.tsx";
-import Button, {ButtonType} from "components/views/v2/orders/Button.tsx";
+import Button, {ButtonType} from "components/general/Button.tsx";
 
 const handleUnAuthorized = useHandleUnauthorized();
 

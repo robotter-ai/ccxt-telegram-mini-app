@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { formatPrice } from "components/views/v2/utils/utils.tsx";
 
 export type Order = {
 	id: string;
@@ -20,6 +21,8 @@ function Order(props: { order: Order, canceledOrdersRef: Set<string>, fetchData:
 		}
 	}
 
+
+
 	const formatDate = (datetime: string): string => {
 		const date = new Date(datetime);
 
@@ -31,14 +34,6 @@ function Order(props: { order: Order, canceledOrdersRef: Set<string>, fetchData:
 		const seconds = String(date.getSeconds()).padStart(2, '0');
 
 		return `${year}-${month}-${day} • ${hours}:${minutes}:${seconds}`;
-	}
-
-	const formatPrice = (price: number): string => {
-		const priceString = price.toFixed(2);
-		const [integerPart, decimalPart] = priceString.split('.');
-		const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-		return `${formattedIntegerPart},${decimalPart}`;
 	}
 
 	return (
