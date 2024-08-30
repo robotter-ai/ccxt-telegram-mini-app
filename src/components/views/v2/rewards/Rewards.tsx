@@ -26,7 +26,7 @@ const mapStateToProps = () => ({});
 class RewardsStructure extends Base<RewardsProps, RewardsState> {
 	static defaultProps: Partial<BaseProps> = {};
 	handleClaimReward: React.MouseEventHandler<HTMLButtonElement> | undefined;
-	properties: any;
+
 
 	constructor(props: RewardsProps) {
 		super(props);
