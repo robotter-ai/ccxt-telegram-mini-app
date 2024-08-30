@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
+import { Map } from 'model/helper/extendable-immutable/map.ts';
 // import { Component, ContextType } from 'react';
 // import { AppContext } from 'model/contexts/AppContext.tsx';
 
@@ -20,6 +21,8 @@ export interface BaseState {
 }
 
 export class Base<BaseProps = any, BaseState = any> extends Component<BaseProps, BaseState> {
+
+	properties: Map = new Map();
 
 	// static contextType = AppContext;
 	// declare context: ContextType<typeof AppContext>;

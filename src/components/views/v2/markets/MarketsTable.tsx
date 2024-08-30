@@ -24,11 +24,7 @@ interface EnhancedTableToolbarProps {
 }
 
 function formatCryptoValue(price: number | string, precision: number | string) {
-	return Number(price) > 0 ? new Intl.NumberFormat('de-DE', {
-		style: 'decimal',
-		minimumFractionDigits: Number(precision),
-		maximumFractionDigits: Number(precision),
-	}).format(Number(price)) : 0;
+	return Number(price) > 0 ? Number(price).toFixed(Number(precision)) : 0;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {

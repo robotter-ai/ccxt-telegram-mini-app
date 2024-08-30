@@ -61,9 +61,9 @@ export const MenuStructure = (props: any) => {
 				<ListItemButton component={Link} to="/orders">
 					<ListItemText primary="Orders" />
 				</ListItemButton>
-				<ListItemButton component={Link} to="/createOrder">
-					<ListItemText primary="Create Order" />
-				</ListItemButton>
+				{/* <ListItemButton component={Link} to="/createOrder"> */}
+				{/* 	<ListItemText primary="Create Order" /> */}
+				{/* </ListItemButton> */}
 				<SignOut />
 			</List>
 		</div>

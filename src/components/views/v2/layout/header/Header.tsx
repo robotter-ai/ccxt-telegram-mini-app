@@ -6,25 +6,7 @@ import { Menu } from '@mui/icons-material';
 import { Constant } from 'model/enum/constant.ts';
 import { connect } from 'react-redux';
 import { dispatch } from 'model/state/redux/store';
-
-const getTitle = () => {
-	switch (location.pathname) {
-	case Constant.signInPath.value:
-		return Constant.signInPath.title;
-	case Constant.marketsPath.value:
-		return Constant.marketsPath.title;
-	case Constant.marketPath.value:
-		return Constant.marketPath.title;
-	case Constant.ordersPath.value:
-		return Constant.ordersPath.title;
-	case Constant.createOrderPath.value:
-		return Constant.createOrderPath.title;
-	case Constant.balancesPath.value:
-		return Constant.balancesPath.title;
-	default:
-		return Constant.homePath.title;
-	}
-};
+import { getCurrentRouteTitle } from 'components/views/v2/utils/utils';
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -77,7 +59,7 @@ export const HeaderStructure = (props: any) => {
 						transform: 'translateX(-50%)'
 					}}
 				>
-					{getTitle()}
+					{getCurrentRouteTitle()}
 				</Typography>
 				<IconButton
 					size="large"

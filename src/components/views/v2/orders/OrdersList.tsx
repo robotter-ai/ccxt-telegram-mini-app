@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Button, { ButtonType } from "components/views/v2/orders/Button";
+import Button, { ButtonType } from "components/general/Button";
 import { Order } from "components/views/v2/orders/Order";
 import OrderCard from 'components/views/v2/orders/OrderCard';
 

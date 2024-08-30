@@ -25,6 +25,9 @@ export const MaterialUITheme = createTheme({
 			main: '#1fce79',
 		},
 	},
+	// typography: {
+	// 	fontFamily: 'Monteserrat',
+	// },
 	components: {
 		MuiAppBar: {
 			styleOverrides: {
@@ -41,5 +44,15 @@ export const MaterialUITheme = createTheme({
 				},
 			},
 		},
+		MuiSelect: {
+			styleOverrides: {
+				root: {
+					backgroundColor: '#191919',
+					borderRadius: '1.25rem',
+					padding: '0.5rem 1.5rem',
+					color: '#FFFFFF',
+				},
+			}
+		}
 	},
 });

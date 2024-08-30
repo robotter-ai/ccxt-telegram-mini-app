@@ -4,7 +4,7 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import {apiGetFetchOHLCV, apiGetFetchTicker} from 'model/service/api';
+import { apiPostRun } from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
@@ -12,6 +12,7 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {CreateOrder} from "components/views/v2/order/CreateOrder.tsx";
 
 interface MarketProps extends BaseProps {
 	market: {
@@ -30,7 +31,7 @@ const mapStateToProps = (state: MarketState | any) => ({
 });
 
 const Container = styled(Box)({
-	padding: '10px',
+	padding: '16px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',
@@ -82,6 +83,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
 			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 		}
+		window.removeEventListener('resize', this.handleChartResize);
 	}
 
 	render() {
@@ -93,9 +95,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 				<ChartContainer id="chart" ref={this.chartReference} />
 
-				<Title>
-					Place an Order
-				</Title>
+				{/*<Orders market={this.props.market.id}/>*/}
+				<CreateOrder />
 			</Container>
 		);
 	}
@@ -106,12 +107,43 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				throw Error('The chart reference has not been found.');
 			}
 
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_ohlcv',
+					parameters: {
+						symbol: this.props.market.id,
+						timeframe: '1s',
+					},
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				if (response.data?.title) {
+					const message = response.data.title;
+
+					this.setState({ error: message });
+					toast.error(message);
+
+					return;
+				} else {
+					throw new Error(response.text);
+				}
+			}
+
+			const payload = response.data.result;
+			const lines = this.transformCandlesInLines(payload);
+
+			const precision = this.props.market.precision || 10;
+
 			this.chart = createChart(this.chartReference.current, {
 				autoSize: true,
 				layout: {
 					background: { color: 'transparent' },
 					textColor: MaterialUITheme.palette.text.primary,
-					fontSize: 11,
+					fontSize: precision > 2 ? 10 : 11,
 				},
 				grid: {
 					vertLines: {
@@ -139,40 +171,12 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 						bottom: 0.1,
 					},
 				},
-				handleScale: {
-					axisPressedMouseMove: {
-						time: true,
-						price: false,
-					},
-				},
+				handleScale: false,
+				handleScroll: false,
 			});
 
-			const response = await apiGetFetchOHLCV(
-				{
-						symbol: this.props.market.id,
-						timeframe: '1s',
-				},
-				this.props.handleUnAuthorized
-			);
 
-			if (response.status !== 200) {
-				if (response.data?.title) {
-					const message = response.data.title;
-
-					this.setState({ error: message });
-					toast.error(message);
-
-					return;
-				} else {
-					throw new Error(response.text);
-				}
-			}
-
-			window.addEventListener('resize', this.handleChartResize);
-
-			const payload = response.data.result;
-			const lines = this.transformCandlesInLines(payload);
-
+			const minMove = 10 ** -precision;
 			this.chartSeries = this.chart.addLineSeries({
 				color: MaterialUITheme.palette.success.main,
 				lineWidth: 2,
@@ -185,16 +189,17 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				lastPriceAnimation: 1,
 				priceFormat: {
 					type: 'price',
-					precision: this.props.market.precision,
-					minMove: 0.0000000001,
+					precision, // check with danilo the precision of the market
+					minMove,
 				},
 			});
+
+			window.addEventListener('resize', this.handleChartResize);
 
 			this.chartSeries.setData(lines);
 			this.chart.timeScale().fitContent();
 			this.chart.timeScale().scrollToRealTime();
 
-			window.removeEventListener('resize', this.handleChartResize);
 			dispatch('api.updateTemplateData', payload);
 		} catch (exception) {
 			if (axios.isAxiosError(exception)) {
@@ -215,9 +220,14 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiGetFetchTicker(
+				const response = await apiPostRun(
 					{
+						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+						method: 'fetch_ticker',
+						parameters: {
 							symbol: this.props.market.id,
+						},
 					},
 					this.props.handleUnAuthorized
 				);
@@ -266,7 +276,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		);
 	}
 
-	transformCandlesInLines(candles: any[]): LineData[] {
+	transformCandlesInLines(candles: number[]): LineData[] {
 		if (!candles || !Array.isArray(candles)) return [];
 
 		return candles.map((candle: any) => ({
