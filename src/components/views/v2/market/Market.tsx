@@ -12,6 +12,7 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {CreateOrder} from "components/views/v2/order/CreateOrder.tsx";
 
 interface MarketProps extends BaseProps {
 	market: {
@@ -94,9 +95,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 				<ChartContainer id="chart" ref={this.chartReference} />
 
-				<Title>
-					Place an Order
-				</Title>
+				{/*<Orders market={this.props.market.id}/>*/}
+				<CreateOrder />
 			</Container>
 		);
 	}
