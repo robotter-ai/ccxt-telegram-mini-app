@@ -24,7 +24,8 @@ const map = new Map({
 		market: {
 			id: null,
 			candles: []
-		}
+		},
+		rewards: {},
 	},
 	telegram: {
 		user: null

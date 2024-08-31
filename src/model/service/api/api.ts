@@ -496,6 +496,134 @@ export const apiPostWithdraw = async (data?: any, handleUnAuthorized?: () => voi
 	}, handleUnAuthorized);
 };
 
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPrivateUsersLootBoxes = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_private_get_users_loot_boxes',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPublicPointsLoyaltyLeaderboard = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_public_get_points_loyalty_leaderboard',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPrivateUsersInvites = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_private_get_users_invites',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPublicPointsReferralLeaderboard = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_public_get_points_referral_leaderboard',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPrivateUsersDailyLoyalty = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_private_get_users_daily_loyalty',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPrivateUsersUserTier = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_private_get_users_user_tier',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPrivateUsersInfo = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_private_get_users_info',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetIridiumPublicPointsBlocksLeaderboard = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_iridium_public_get_points_blocks_leaderboard',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
 // @ts-ignore
 // noinspection JSUnusedGlobalSymbols
 export const apiPostDevelopmentExample = async (data?: any, handleUnAuthorized?: () => void) => {

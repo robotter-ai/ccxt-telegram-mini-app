@@ -4,13 +4,21 @@ import axios from 'axios';
 import { Box, styled } from '@mui/material';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
-import { apiPostRun } from 'model/service/api';
+import {
+	apiGetIridiumPrivateUsersDailyLoyalty,
+	apiGetIridiumPrivateUsersInvites,
+	apiGetIridiumPrivateUsersLootBoxes,
+	apiGetIridiumPrivateUsersUserTier,
+	apiGetIridiumPublicPointsBlocksLeaderboard,
+	apiGetIridiumPublicPointsLoyaltyLeaderboard,
+	apiGetIridiumPublicPointsReferralLeaderboard,
+} from 'model/service/api';
 import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
 interface Props extends BaseProps {
 	data: any,
-	updateTemplateData: (data: any) => void,
+	updateRewards: (data: any) => void,
 }
 
 interface State extends BaseState {
@@ -21,14 +29,14 @@ interface State extends BaseState {
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State | any, props: Props | any) => ({
-	data: state.api.template.data,
+	data: state.api.rewards,
 });
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 const mapDispatchToProps = (reduxDispatch: any) => ({
-	updateTemplateData(data: any) {
-		dispatch('api.updateTemplateData', data);
+	updateRewards(data: any) {
+		dispatch('api.updateRewards', data);
 	},
 });
 
@@ -72,33 +80,6 @@ class Structure extends Base<Props, State> {
 
 	async initialize() {
 		try {
-			const response = await apiPostRun(
-				{
-					method: 'fetch_tickers',
-					parameters: {
-						symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-					},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				if (response.data?.title) {
-					const message = response.data.title;
-
-					this.setState({ error: message });
-					toast.error(message);
-
-					return;
-				} else {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(response.text);
-				}
-			}
-
-			const payload = response.data.result;
-
-			this.props.updateTemplateData(payload);
 		} catch (exception: any) {
 			console.error(exception);
 
@@ -120,33 +101,69 @@ class Structure extends Base<Props, State> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
-					{
-						method: 'fetch_tickers',
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
+				const responses = await Promise.all([
+					apiGetIridiumPrivateUsersLootBoxes(
+						{
 						},
-					},
-					this.props.handleUnAuthorized
-				);
+						this.props.handleUnAuthorized
+					),
+					apiGetIridiumPublicPointsLoyaltyLeaderboard(
+						{
+						},
+						this.props.handleUnAuthorized
+					),
+					apiGetIridiumPrivateUsersInvites(
+						{
+						},
+						this.props.handleUnAuthorized
+					),
+					apiGetIridiumPublicPointsReferralLeaderboard(
+						{
+						},
+						this.props.handleUnAuthorized
+					),
+					apiGetIridiumPrivateUsersDailyLoyalty(
+						{
+						},
+						this.props.handleUnAuthorized
+					),
+					apiGetIridiumPrivateUsersUserTier(
+						{
+						},
+						this.props.handleUnAuthorized
+					),
+					// apiGetIridiumPrivateUsersInfo(
+					// 	{
+					// 	},
+					// 	this.props.handleUnAuthorized
+					// ),
+					apiGetIridiumPublicPointsBlocksLeaderboard(
+						{
+						},
+						this.props.handleUnAuthorized
+					),
+				]);
 
-				if (response.status !== 200) {
-					if (response.data?.title) {
-						const message = response.data.title;
+				responses.forEach((response) => {
+					if (response.status !== 200) {
+						if (response.data?.title) {
+							const message = response.data.title;
 
-						this.setState({ error: message });
-						toast.error(message);
+							this.setState({ error: message });
+							toast.error(message);
 
-						return;
-					} else {
-						// noinspection ExceptionCaughtLocallyJS
-						throw new Error(response.text);
+							return;
+						} else {
+							// noinspection ExceptionCaughtLocallyJS
+							throw new Error(response.text);
+						}
 					}
-				}
 
-				const payload = response.data.result;
+					let payload: any = {};
+					payload[`${response.data.title.replace(/.*?(public|private)_(get|post|put|delete|patch)_/,'')}`] = response.data.result.result || response.data.result;
 
-				this.props.updateTemplateData(payload);
+					this.props.updateRewards(payload);
+				});
 			} catch (exception) {
 				console.error(exception);
 

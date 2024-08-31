@@ -45,6 +45,12 @@ export class Constant extends BaseEnum {
 
 	static currentRoutePath = Constant.v2Path;
 
+	static defaultTimeout = new Constant('Default Timeout', 'Default timeout.', 60);
+	static defaultMaxNumberOfRetries = new Constant('Default Max Number of Retries', 'Default max number of retries.', 3);
+	static defaultDelayDelayBetweenRetries = new Constant('Default Delay Between Retries', 'Default delay between retries.', 5);
+	static defaultBatchSize = new Constant('Default Batch Size', 'Default batch size.', 100);
+	static defaultDelayBetweenBatches = new Constant('Default Delay Between Batches', 'Default delay between batches.', 5);
+
 	title: string;
 
 	description: string;
