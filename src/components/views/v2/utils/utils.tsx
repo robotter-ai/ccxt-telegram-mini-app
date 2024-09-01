@@ -1,4 +1,4 @@
-import { Constant } from 'model/enum/constant.ts';
+import { Constant } from 'model/enum/constant';
 
 export const getCurrentRoute = () => {
 	switch (location.pathname.replace(Constant.currentRoutePath.value, '')) {
