@@ -1,4 +1,4 @@
-import { StringDate, StringNumber } from 'components/views/v2/utils/types.ts';
+import { StringDate, StringNumber } from 'components/views/v2/utils/types';
 
 export interface Market {
 	id: string;

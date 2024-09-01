@@ -10,15 +10,21 @@ import {apiPostRun} from 'model/service/api';
 import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
 import {Base, BaseProps, BaseState} from 'components/base/Base';
 import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
-import DropDownSelector from "components/general/DropdownSelector.tsx";
+import DropDownSelector from "components/general/DropdownSelector";
 import {ChangeEvent} from "react";
-import TextInput from "components/general/TextInput.tsx";
-import Button, {ButtonType} from "components/general/Button.tsx";
-import ButtonGroupToggle from "components/general/ButtonGroupToggle.tsx";
-import {Market} from "api/types/markets.ts";
-import {formatPrice} from "components/views/v2/utils/utils.tsx";
+import Button, {ButtonType} from "components/general/Button";
+import ButtonGroupToggle from "components/general/ButtonGroupToggle";
+import {Market} from "api/types/markets";
+import {formatPrice} from "components/views/v2/utils/utils";
+import NumberInput from "components/general/NumberInput";
+import Decimal from "decimal.js";
+import {OrderSide, OrderType} from "api/types/orders";
+
+const OrderSideLabelMapper = {[OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell'};
+const OrderTypeLabelMapper = {[OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit'};
 
 interface Props extends BaseProps {
+	marketId?: string;
 	markets: Market[];
 	data: any;
 }
@@ -26,11 +32,13 @@ interface Props extends BaseProps {
 interface State extends BaseState {
 	isLoading: boolean;
 	error?: string;
-	orderSide: 'Buy' | 'Sell';
-	selectedMarket: string;
-	selectedOrderType: string;
-	amount: string;
-	marketPrice: number;
+	selectedMarket?: string;
+	marketPrice?: number;
+	orderSide: OrderSide;
+	orderType: OrderType;
+	amount: number;
+	price?: number;
+	isSubmitting?: boolean;
 }
 
 // @ts-ignore
@@ -69,11 +77,13 @@ class Structure extends Base<Props, State> {
 		this.state = {
 			isLoading: true,
 			error: undefined,
-			orderSide: 'Buy',
-			selectedMarket: '',
-			selectedOrderType: '',
-			amount: '',
+			selectedMarket: undefined,
 			marketPrice: 0,
+			orderSide: OrderSide.BUY,
+			orderType: OrderType.MARKET,
+			amount: 0,
+			price: 0,
+			isSubmitting: false,
 		} as Readonly<State>;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
@@ -82,6 +92,7 @@ class Structure extends Base<Props, State> {
 		this.handleMarketChange = this.handleMarketChange.bind(this);
 		this.handleOrderTypeChange = this.handleOrderTypeChange.bind(this);
 		this.handleAmountChange = this.handleAmountChange.bind(this);
+		this.handlePriceChange = this.handlePriceChange.bind(this);
 	}
 
 	async componentDidMount() {
@@ -101,11 +112,21 @@ class Structure extends Base<Props, State> {
 	};
 
 	handleOrderTypeChange(event: SelectChangeEvent) {
-		this.setState({selectedOrderType: event.target.value});
+		this.setState({orderType: event.target.value as OrderType});
 	};
 
 	handleAmountChange(event: ChangeEvent<HTMLInputElement>) {
-		this.setState({amount: event.target.value});
+		if (this.props.marketId) {
+			this.getTotalPrice(this.props.marketId);
+		}
+
+		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
+		this.setState({ amount: isValidAmount ? parseFloat(event.target.value) : 0 });
+	}
+
+	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
+		const isValidPrice = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
+		this.setState({ price: isValidPrice ? parseFloat(event.target.value) : 0 });
 	}
 
 	async getTotalPrice(marketId: string) {
@@ -115,9 +136,7 @@ class Structure extends Base<Props, State> {
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'fetch_ticker',
-					parameters: {
-						symbol: marketId,
-					},
+					parameters: { symbol: marketId },
 				},
 				this.props.handleUnAuthorized
 			);
@@ -154,12 +173,18 @@ class Structure extends Base<Props, State> {
 	};
 
 	render() {
-		const {isLoading, error, selectedMarket, selectedOrderType, amount} = this.state;
+		const {isLoading, error, selectedMarket, amount, price, orderType} = this.state;
 		const {markets} = this.props;
 
-		const toggleButtons = [
-			{label: 'Buy', onClick: () => this.setState({orderSide: 'Buy'})},
-			{label: 'Sell', onClick: () => this.setState({orderSide: 'Sell'})},
+		const orderSideButtons = [
+			{label: OrderSideLabelMapper[OrderSide.BUY], onClick: () => this.setState({orderSide: OrderSide.BUY})},
+			{label: OrderSideLabelMapper[OrderSide.SELL], onClick: () => this.setState({orderSide: OrderSide.SELL})},
+		];
+
+
+		const orderTypeButtons = [
+			{label: OrderTypeLabelMapper[OrderType.MARKET], onClick: () => this.setState({orderType: OrderType.MARKET})},
+			{label: OrderTypeLabelMapper[OrderType.LIMIT], onClick: () => this.setState({orderType: OrderType.LIMIT})},
 		];
 
 		const marketOptions = markets.map((market) => ({
@@ -167,36 +192,89 @@ class Structure extends Base<Props, State> {
 			label: `${market.base}/${market.quote}`,
 		}))
 
-		const orderTypeOptions = [
-			{value: 'market', label: 'Market'},
-			{value: 'limit', label: 'Limit'},
-		];
+		const getTotal = (orderType: OrderType) => {
+			switch (orderType) {
+				case OrderType.LIMIT:
+					return formatPrice(Decimal.mul(new Decimal(amount), new Decimal(price ?? 0)).toNumber());
+				default:
+					return formatPrice(Decimal.mul(new Decimal(amount), new Decimal(this.state.marketPrice ?? 0)).toNumber());
+			}
+		};
+
+		const handleCreateOrder = async () => {
+			this.setState({isSubmitting: true});
+
+			const {selectedMarket, orderSide, orderType, amount, price} = this.state;
+
+			const market = this.props.marketId ? markets.find((m) => m.symbol.toUpperCase() === this.props.marketId)?.symbol : selectedMarket;
+
+			try {
+				if (!market) {
+					toast.error('Selected market is not valid.');
+					return;
+				}
+
+				const response = await apiPostRun(
+					{
+						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+						method: 'create_order',
+						parameters: {
+							symbol: market,
+							side: orderSide,
+							type: orderType,
+							amount: amount,
+							price: orderType === OrderType.MARKET ? null : price,
+						},
+					},
+					this.props.handleUnAuthorized
+				);
+
+				if (response.status !== 200) {
+					throw new Error('Network response was not OK');
+				}
+
+				toast.success('Order created successfully!');
+
+				this.props.navigate('/orders');
+			} catch (error) {
+				console.error('Failed to create order:', error);
+				toast.error('Failed to create order.');
+			}
+			finally {
+				this.setState({isSubmitting: false});
+			}
+		};
+
 
 		return (
 			<Style>
 				{isLoading ? <Spinner/> : null}
 				{error ? <div>Error: {error}</div> : null}
-				<ButtonGroupToggle buttons={toggleButtons} defaultButton={0}/>
-				<DropDownSelector
-					label={'Market'}
-					options={marketOptions}
-					value={selectedMarket}
-					onChange={this.handleMarketChange}
-				/>
-				<DropDownSelector
-					label={'Order type'}
-					options={orderTypeOptions}
-					value={selectedOrderType}
-					onChange={this.handleOrderTypeChange}
-				/>
-				<TextInput label={'Amount'} value={amount} onChange={this.handleAmountChange}/>
+				{!this.props.marketId &&
+					<DropDownSelector
+						label={'Market'}
+						options={marketOptions}
+						value={selectedMarket ?? ''}
+						onChange={this.handleMarketChange}
+					/>}
+				<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0}/>
+				<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0}/>
+				<NumberInput label={'Amount'} value={amount} precision={4} onChange={this.handleAmountChange}/>
+				{orderType === OrderType.LIMIT && <NumberInput label={'Price'} value={price ?? 0} onChange={this.handlePriceChange}/>}
 				<TotalContainer>
 					<span>Total</span>
-					<span>{formatPrice(Number(amount) * this.state.marketPrice)}</span>
+					<span>{getTotal(orderType)}</span>
 				</TotalContainer>
-				<Button value={this.state.orderSide} type={ButtonType.Full} onClick={() => {
-					console.log('clicaram pra vender')
-				}}/>
+				<Button
+					value={this.state.isSubmitting ? 'Submitting...' : OrderSideLabelMapper[this.state.orderSide]}
+					type={ButtonType.Full}
+					disabled={this.state.isSubmitting}
+					onClick={async (e) => {
+						e?.preventDefault();
+						e?.stopPropagation();
+						await handleCreateOrder();
+					}}/>
 			</Style>
 		);
 	}
