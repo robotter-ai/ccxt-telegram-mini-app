@@ -1,17 +1,10 @@
-import { useSelector } from 'react-redux';
-import { formatPrice } from "components/views/v2/utils/utils.tsx";
+import {useSelector} from 'react-redux';
+import {formatPrice} from "components/views/v2/utils/utils";
+import {Order, OrderSide} from 'api/types/orders';
 
-export type Order = {
-	id: string;
-	market: string;
-	amount: string;
-	price: number;
-	datetime: string;
-	side: "buy" | "sell";
-	status: number | null;
-}
+const OrderSideLabelMapper = {[OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell'};
 
-function Order(props: { order: Order, canceledOrdersRef: Set<string>, fetchData: () => Promise<void>, bgColor?: string }) {
+function Order(props: { order: Order, bgColor?: string }) {
 	const getOrderMarket = (market: string) => {
 		const markets = useSelector((state: any) => state.api.markets);
 		const marketData = markets.find((m: any) => m.symbol === market);
@@ -21,9 +14,7 @@ function Order(props: { order: Order, canceledOrdersRef: Set<string>, fetchData:
 		}
 	}
 
-
-
-	const formatDate = (datetime: string): string => {
+	const formatDate = (datetime: string | number): string => {
 		const date = new Date(datetime);
 
 		const year = date.getFullYear();
@@ -46,8 +37,8 @@ function Order(props: { order: Order, canceledOrdersRef: Set<string>, fetchData:
 			</div>
 			<div className="flex flex-col items-center justify-center text-right">
 				<p className="text-xl font-normal text-white">{formatPrice(props.order.price)}</p>
-				<span className={`flex items-center justify-center rounded-[20px] text-[13px] font-semibold h-5 w-14 py-0 px-1 ${props.order.side === 'buy' ? "bg-[#3A9F20]" : "bg-[#E53935]"}`}>
-					{props.order.side}
+				<span className={`flex items-center justify-center rounded-[20px] text-[13px] font-semibold h-5 w-14 py-0 px-1 ${props.order.side === OrderSide.BUY ? "bg-[#3A9F20]" : "bg-[#E53935]"}`}>
+					{OrderSideLabelMapper[props.order.side]}
 				</span>
 			</div>
 		</div>

@@ -1,12 +1,13 @@
-import { useState } from "react";
-import Button, { ButtonType } from "components/general/Button.tsx";
-import { Order } from "components/views/v2/orders/Order.tsx";
-import OrderCard from 'components/views/v2/orders/OrderCard.tsx';
+import {useState} from "react";
+import Button, {ButtonType} from "components/general/Button";
+import OrderCard from 'components/views/v2/orders/OrderCard';
+import {Order} from "api/types/orders";
 
 type OrderListProps = {
 	orders: Order[];
 	cancelAllOpenOrders: (orders: Order[]) => Promise<void>;
 	canceledOrdersRef: Set<string>;
+	handleCancelOrder: (order: Order) => Promise<void>;
 	fetchData: () => Promise<void>;
 }
 
@@ -15,7 +16,7 @@ function OrdersList(props: OrderListProps) {
 
 	const openModal = () => setIsModalOpen(true);
 	const closeModal = () => setIsModalOpen(false);
-	const confirmCancelOrder = async() => {
+	const confirmCancelOrder = async () => {
 		await props.cancelAllOpenOrders(props.orders)
 		closeModal();
 	};
@@ -27,12 +28,17 @@ function OrdersList(props: OrderListProps) {
 				<div className="font-normal text-[#A2ACB0]">Price(USDC)</div>
 			</div>
 			<div>
-				{(!props.orders || props.orders.length === 0) ?  <div className="flex justify-center items-center h-40">You have no orders...</div> :
+				{(!props.orders || props.orders.length === 0) ?
+					<div className="flex justify-center items-center h-40">You have no orders...</div> :
 					<div>
 						<div>
 							{props.orders.map(order => (
-								<OrderCard key={order.id} order={order} canceledOrdersRef={props.canceledOrdersRef}
-													 fetchData={props.fetchData}/>
+								<OrderCard
+									key={order.id}
+									order={order}
+									canceledOrdersRef={props.canceledOrdersRef}
+									handleCancelOrder={props.handleCancelOrder}
+								/>
 							))}
 						</div>
 						<div className="py-4 flex justify-center items-center">

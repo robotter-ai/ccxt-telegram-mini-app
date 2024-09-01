@@ -1,61 +1,21 @@
 import {useState} from 'react';
-import {apiPostRun} from "model/service/api";
-import {toast} from "react-toastify";
-import {useHandleUnauthorized} from "model/hooks/useHandleUnauthorized.ts";
-import Order, {Order as IOrder} from "components/views/v2/orders/Order.tsx";
-import Button, {ButtonType} from "components/general/Button.tsx";
+import Order from "components/views/v2/orders/Order";
+import {Order as IOrder} from 'api/types/orders';
+import Button, {ButtonType} from "components/general/Button";
 
-const handleUnAuthorized = useHandleUnauthorized();
-
-function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, fetchData: () => Promise<void> }) {
+function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, handleCancelOrder: (order: Order) => Promise<void> }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const handleCancelOrder = async (order: IOrder) => {
-		console.log(order);
-		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'cancel_order',
-					parameters: {
-						id: order.id,
-						symbol: order.market,
-					},
-				},
-				handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				throw new Error('Network response was not OK');
-			}
-
-			props.canceledOrdersRef.add(order.id);
-
-			toast.success(`Order ${order.id} canceled successfully!`);
-
-			await props.fetchData();
-		} catch (error) {
-			console.error('Failed to cancel order:', error);
-			toast.error(`Failed to cancel order ${order.id}.`);
-			throw error;
-		}
-	}
 
 	const openModal = () => setIsModalOpen(true);
 	const closeModal = () => setIsModalOpen(false);
 	const confirmCancelOrder = () => {
-		handleCancelOrder(props.order);
+		props.handleCancelOrder(props.order);
 		closeModal();
 	};
 
 	return (
 		<div className="py-4 border-t border-white flex flex-col">
-			<Order
-				order={props.order}
-				canceledOrdersRef={props.canceledOrdersRef}
-				fetchData={props.fetchData}
-			/>
+			<Order order={props.order}/>
 			<div className="flex">
 				<div className="text-left">
 					<Button icon={"⤬"} value={"Cancel"} type={ButtonType.Bordered} onClick={openModal} />
@@ -66,12 +26,7 @@ function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, fetch
 						<div className="p-2 bg-black w-full h-2/5 rounded-t-lg border-t border-white">
 							<p className="p-3 font-bold text-2xl text-center w-full">Cancel order?</p>
 							<div className="-m-2">
-								<Order
-									bgColor={"bg-gray-600"}
-									order={props.order}
-									canceledOrdersRef={props.canceledOrdersRef}
-									fetchData={props.fetchData}
-								/>
+								<Order order={props.order} bgColor={"bg-gray-600"}/>
 							</div>
 							<div className="mt-4 flex flex-row justify-between w-full">
 								<Button value={"Yes, cancel"} type={ButtonType.Bordered} onClick={confirmCancelOrder} />

@@ -10,10 +10,10 @@ import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
 import {Base, BaseProps, BaseState} from 'components/base/Base';
 import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
 import OrdersList from './OrdersList';
-import {Order} from "components/views/v2/orders/Order.tsx";
+import {Order} from "api/types/orders";
 
 interface Props extends BaseProps {
-	openOrders: any;
+	openOrders: Order[];
 	market: string;
 	data: any,
 }
@@ -55,6 +55,10 @@ class Structure extends Base<Props, State> {
 
 		this.properties.setIn('recurrent.30s.intervalId', undefined);
 		this.properties.setIn('recurrent.30s.delay', 30 * 1000);
+
+		this.cancelOpenOrder = this.cancelOpenOrder.bind(this);
+		this.cancelOpenOrders = this.cancelOpenOrders.bind(this);
+		this.cancelAllOpenOrders = this.cancelAllOpenOrders.bind(this);
 	}
 
 	async componentDidMount() {
@@ -94,47 +98,7 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
-	private async fetchOpenOrders() {
-		return await apiPostRun(
-			{
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_open_orders',
-				parameters: {},
-			},
-			this.props.handleUnAuthorized
-		);
-	}
-
-	private handleFetchResponse(response: any) {
-		if (response.status !== 200) {
-			throw new Error('Network response was not OK');
-		}
-
-		const payload = response.data;
-
-		if (!Array.isArray(payload.result)) {
-			throw new Error('Unexpected API response format');
-		}
-
-		const output = payload.result
-			.filter((order: any) => !this.canceledOrdersRef.has(order.id))
-			.map((order: any) => ({
-				checkbox: false,
-				id: order.id,
-				market: order.symbol,
-				status: order.status,
-				side: order.side,
-				amount: order.amount,
-				price: order.price,
-				datetime: order.timestamp,
-				actions: null,
-			}));
-
-		dispatch('api.updateOpenOrders', output);
-	}
-
-	async apiCancelOrder(order: any, handleUnAuthorized: () => void) {
+	async apiCancelOrder(order: Order) {
 		const response = await apiPostRun(
 			{
 				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
@@ -145,7 +109,7 @@ class Structure extends Base<Props, State> {
 					symbol: order.market,
 				},
 			},
-			handleUnAuthorized
+			this.props.handleUnAuthorized
 		);
 
 		if (response.status !== 200) {
@@ -159,13 +123,11 @@ class Structure extends Base<Props, State> {
 		if (!order || !order.id) return;
 
 		try {
-			await this.apiCancelOrder(order, this.props.handleUnAuthorized);
-
+			await this.apiCancelOrder(order);
 			this.canceledOrdersRef.add(order.id);
+			await this.fetchData();
 
 			toast.success(`Order ${order.id} canceled successfully!`);
-
-			await this.fetchData();
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
 			toast.error(`Failed to cancel order ${order.id}.`);
@@ -221,10 +183,51 @@ class Structure extends Base<Props, State> {
 					orders={this.props.market ? this.props.openOrders.filter((order: Order) => order.market === this.props.market) : this.props.openOrders}
 					canceledOrdersRef={this.canceledOrdersRef}
 					cancelAllOpenOrders={this.cancelAllOpenOrders}
+					handleCancelOrder={this.cancelOpenOrder}
 					fetchData={this.fetchData}
 				/>
 			</Style>
 		);
+	}
+
+	private async fetchOpenOrders() {
+		return await apiPostRun(
+			{
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'fetch_open_orders',
+				parameters: {},
+			},
+			this.props.handleUnAuthorized
+		);
+	}
+
+	private handleFetchResponse(response: any) {
+		if (response.status !== 200) {
+			throw new Error('Network response was not OK');
+		}
+
+		const payload = response.data;
+
+		if (!Array.isArray(payload.result)) {
+			throw new Error('Unexpected API response format');
+		}
+
+		const output = payload.result
+			.filter((order: any) => !this.canceledOrdersRef.has(order.id))
+			.map((order: any) => ({
+				checkbox: false,
+				id: order.id,
+				market: order.symbol,
+				status: order.status,
+				side: order.side,
+				amount: order.amount,
+				price: order.price,
+				datetime: order.timestamp,
+				actions: null,
+			}));
+
+		dispatch('api.updateOpenOrders', output);
 	}
 
 }
