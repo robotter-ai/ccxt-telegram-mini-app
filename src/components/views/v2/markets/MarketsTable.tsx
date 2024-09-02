@@ -2,6 +2,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { Constant } from 'model/enum/constant';
 import * as React from 'react';
 import { useNavigate } from 'react-router';
+import { formatPrice } from '../utils/utils';
 
 interface Data {
 	id: number;
@@ -23,10 +24,6 @@ interface EnhancedTableToolbarProps {
 	onFilterTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-function formatCryptoValue(price: number | string, precision: number | string) {
-	return Number(price) > 0 ? Number(price).toFixed(Number(precision)) : 0;
-}
-
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	return (
 		<>
@@ -45,7 +42,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 // will not be used now
-// @ts-ignore
 function SegmentControl() {
 	const [activeTab, setActiveTab] = React.useState("all");
 
@@ -78,8 +74,8 @@ function SegmentControl() {
 
 function ListMarkets({ markets }: { markets: Data[] }) {
 	const navigate = useNavigate();
-	const handleClick = (id: number | string = '', precision: number | string) => {
-		const url  = `${Constant.marketPath.value}?marketId=${id}&marketPrecision=${precision}`;
+	const handleClick = (market: Data) => {
+		const url  = `${Constant.marketPath.value}?marketId=${market.id}`;
 		navigate(url);
 	};
 
@@ -100,7 +96,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 							<tr
 								className="h-16 shadow-[0_0.5px_0_0_rgba(255,255,255,0.2)] flex items-center"
 								key={`${row.symbol}-${row.base}-${row.quote}`}
-								onClick={() => handleClick(row.id, row.precision)}
+								onClick={() => handleClick(row)}
 							>
 								<td className="w-1/2 text-left flex items-center">
 									{/* will not be used now */}
@@ -115,7 +111,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 								</td>
 								<td className="w-1/2 text-right flex items-center justify-end">
 									<div className="flex flex-col items-end">
-										{formatCryptoValue(row.price, row.precision)}
+										{formatPrice(row.price, row.precision)}
 										<span className={`text-[13px] font-semibold ${row.percentage >= 0 ? "text-[#3A9F20]" : "text-[#E53935]"}`}>
 											{row.percentage.toFixed(2)}%
 										</span>
