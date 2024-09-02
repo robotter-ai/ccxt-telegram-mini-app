@@ -3,6 +3,7 @@ import {Button, ButtonGroup, styled} from '@mui/material';
 
 interface ButtonConfig {
 	label: string;
+	activeColor?: string;
 	onClick: () => void;
 }
 
@@ -16,16 +17,15 @@ const StyledButtonGroup = styled(ButtonGroup)(({theme}) => ({
 	padding: '0.125rem',
 	borderRadius: '1.25rem',
 	width: '100%',
-	marginTop: '1.25rem',
 }));
 
-const StyledButton = styled(Button)(({theme}) => ({
+const StyledButton = styled(Button)<{ activeColor?: string }>(({theme, activeColor}) => ({
 	flex: 1,
 	padding: '0.5rem 1.5rem',
 	borderRadius: '1.25rem',
 	textTransform: 'none',
 	'&.Mui-selected': {
-		backgroundColor: theme.palette.primary.main,
+		backgroundColor: activeColor ?? theme.palette.primary.main,
 		color: theme.palette.secondary.main,
 		fontWeight: 'bold',
 	},
@@ -34,7 +34,7 @@ const StyledButton = styled(Button)(({theme}) => ({
 	},
 }));
 
-const ButtonGroupToggle: React.FC<ButtonGroupToggleProps> = ({ buttons, defaultButton }) => {
+const ButtonGroupToggle: React.FC<ButtonGroupToggleProps> = ({buttons, defaultButton}) => {
 	const [activeTab, setActiveTab] = useState<number>(defaultButton);
 
 	return (
@@ -42,6 +42,7 @@ const ButtonGroupToggle: React.FC<ButtonGroupToggleProps> = ({ buttons, defaultB
 			{buttons.map((button, index) => (
 				<StyledButton
 					key={index}
+					activeColor={button.activeColor}
 					className={activeTab === index ? 'Mui-selected' : ''}
 					onClick={() => {
 						setActiveTab(index);

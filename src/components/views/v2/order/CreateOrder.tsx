@@ -19,6 +19,7 @@ import {formatPrice} from "components/views/v2/utils/utils";
 import NumberInput from "components/general/NumberInput";
 import Decimal from "decimal.js";
 import {OrderSide, OrderType} from "api/types/orders";
+import {MaterialUITheme} from "model/theme/MaterialUI";
 
 const OrderSideLabelMapper = {[OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell'};
 const OrderTypeLabelMapper = {[OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit'};
@@ -58,12 +59,11 @@ const Style = styled(Box)(({theme}) => ({
 	gap: theme.spacing(3),
 }));
 
-const TotalContainer = styled(Box)(({theme}) => ({
+const TotalContainer = styled(Box)(({}) => ({
 	display: 'flex',
 	justifyContent: 'space-between',
 	alignItems: 'center',
 	padding: '0.5rem 1.5rem',
-	marginTop: theme.spacing(2),
 	fontWeight: 'bold',
 }));
 
@@ -121,12 +121,12 @@ class Structure extends Base<Props, State> {
 		}
 
 		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ amount: isValidAmount ? parseFloat(event.target.value) : 0 });
+		this.setState({amount: isValidAmount ? parseFloat(event.target.value) : 0});
 	}
 
 	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
 		const isValidPrice = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ price: isValidPrice ? parseFloat(event.target.value) : 0 });
+		this.setState({price: isValidPrice ? parseFloat(event.target.value) : 0});
 	}
 
 	async getTotalPrice(marketId: string) {
@@ -136,7 +136,7 @@ class Structure extends Base<Props, State> {
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
 					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
 					method: 'fetch_ticker',
-					parameters: { symbol: marketId },
+					parameters: {symbol: marketId},
 				},
 				this.props.handleUnAuthorized
 			);
@@ -177,8 +177,8 @@ class Structure extends Base<Props, State> {
 		const {markets} = this.props;
 
 		const orderSideButtons = [
-			{label: OrderSideLabelMapper[OrderSide.BUY], onClick: () => this.setState({orderSide: OrderSide.BUY})},
-			{label: OrderSideLabelMapper[OrderSide.SELL], onClick: () => this.setState({orderSide: OrderSide.SELL})},
+			{label: OrderSideLabelMapper[OrderSide.BUY], onClick: () => this.setState({orderSide: OrderSide.BUY}), activeColor: MaterialUITheme.palette.success.main},
+			{label: OrderSideLabelMapper[OrderSide.SELL], onClick: () => this.setState({orderSide: OrderSide.SELL}), activeColor: MaterialUITheme.palette.error.main},
 		];
 
 
@@ -240,12 +240,10 @@ class Structure extends Base<Props, State> {
 			} catch (error) {
 				console.error('Failed to create order:', error);
 				toast.error('Failed to create order.');
-			}
-			finally {
+			} finally {
 				this.setState({isSubmitting: false});
 			}
 		};
-
 
 		return (
 			<Style>
@@ -261,7 +259,8 @@ class Structure extends Base<Props, State> {
 				<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0}/>
 				<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0}/>
 				<NumberInput label={'Amount'} value={amount} precision={4} onChange={this.handleAmountChange}/>
-				{orderType === OrderType.LIMIT && <NumberInput label={'Price'} value={price ?? 0} onChange={this.handlePriceChange}/>}
+				{orderType === OrderType.LIMIT &&
+					<NumberInput label={'Price'} value={price ?? 0} onChange={this.handlePriceChange}/>}
 				<TotalContainer>
 					<span>Total</span>
 					<span>{getTotal(orderType)}</span>
