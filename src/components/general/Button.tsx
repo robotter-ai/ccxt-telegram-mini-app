@@ -22,29 +22,45 @@ const StyledBox = styled(Box)(({}) => ({
 	width: '100%',
 }));
 
-const StyledButton = styled(MuiButton)<{fullwidth: boolean}>(({ theme, fullwidth }) => ({
-	width: fullwidth ? '100%' : 'auto',
-	padding: '8px 24px',
-	borderRadius: '20px',
+const StyledButton = styled(MuiButton)<{ isfullwidth: boolean }>(({isfullwidth}) => ({
+	width: isfullwidth ? '100%' : 'auto',
+	fontSize: '16px',
+	fontWeight: '400',
+	fontFamily: '"Work Sans", sans-serif',
+	padding: '12px',
+	borderRadius: '40px',
 	textTransform: 'none',
-	'& .full': {
-		backgroundColor: theme.palette.primary.main,
-		color: theme.palette.background.default,
-		fontWeight: 'bold',
+	'&.full': {
+		backgroundColor: '#FFFFFF',
+		color: '#000000',
 	},
-	'& .bordered': {
-		backgroundColor: theme.palette.background.default,
-		color: theme.palette.text.primary,
-		fontWeight: 'bold',
-		border: `1px solid`,
+	'&.bordered': {
+		backgroundColor: '#000000',
+		color: '#FFFFFF',
+		border: '1px solid',
 	},
+	'&.Mui-disabled': {
+		backgroundColor: '#E0E0E0',
+		color: '#A0A0A0',
+		borderColor: '#A0A0A0',
+	},
+	'&.full.Mui-disabled': {
+		backgroundColor: '#1F1F1F',
+		color: '#ADADAD',
+		borderColor: '#ADADAD',
+	},
+	'&.bordered.Mui-disabled': {
+		backgroundColor: '#000000',
+		color: '#A0A0A0',
+		borderColor: '#A0A0A0',
+	}
 }));
 
 const Button: React.FC<ButtonProps> = ({ value, type, icon, disabled, fullWidth, onClick }) => {
 	return (
 		<StyledBox>
 			<StyledButton
-				fullwidth={fullWidth ?? true}
+				isfullwidth={fullWidth ?? true}
 				className={type}
 				onClick={onClick}
 				disabled={disabled}
