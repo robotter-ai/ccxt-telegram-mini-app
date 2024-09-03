@@ -1,16 +1,20 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiPostRun} from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import signOutIcon from 'public/images/signout.svg';
+// import signOutIcon from 'public/images/signout.svg';
 import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
+
 interface BalanceProps extends BaseProps {}
+
+
+
 
 interface BalanceState extends BaseState {
 	isLoading: boolean;
@@ -88,7 +92,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 			const allTickers = tickersResponse.data.result;
 
-			const relevantTickers = Object.entries(balanceData.total).reduce((acc, [symbol, amount]) => {
+			const relevantTickers = Object.entries(balanceData.total).reduce((acc, [symbol]) => {
 				const tickerKey = Object.keys(allTickers).find(key => key.includes(`t${symbol.slice(1)}tUSDC`));
 				if (tickerKey) {
 					acc[symbol] = allTickers[tickerKey];
@@ -133,7 +137,6 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				// If the asset is TUSDC, use the fixed price of $1 and multiply by the user's balance
 				const price = asset === 'TUSDC' ? 1 : (tickers[asset]?.last || 0);
 				return acc + price * amount;
 			}, 0)
@@ -142,46 +145,60 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 		return (
 			<div className="flex flex-col h-full">
 				<div className="flex-grow overflow-hidden">
-					<div className="mb-4 text-center">
-						<div className="mt-10 text-sm text-gray-400">Total Balance (USDC)</div>
-						<div className="mb-10 text-2xl font-bold text-white">{totalBalanceUSDC.toFixed(2)}</div>
+					<div className="mb-4 ml-4 text-left">
+						<div style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="text-left text-xs font-extralight text-neutral-400">
+							My Balance
+						</div>
+						<div style={{ fontFamily: '"Cinzel", sans-serif' }} className="mb-10 text-2xl text-white">
+							{`$${totalBalanceUSDC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+						</div>
 					</div>
 					<div className="h-full overflow-y-auto">
 						<table className="w-full bg-black text-white">
 							<thead className="sticky top-0 bg-black">
-							<tr>
-								<th className="px-4 py-2 text-left text-[#FE8A00]" colSpan={2}>
-									Balances
-								</th>
-								<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">
-									<span className="text-xs whitespace-nowrap">Price (USDC), 24h Chg</span>
-								</th>
-							</tr>
+								<tr>
+									<th style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="px-4 py-2 text-left text-xs font-extralight text-neutral-400" colSpan={2}>
+										My holdings
+									</th>
+									{/*<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">*/}
+									{/*	<span className="text-xs whitespace-nowrap">Price (USDC), 24h Chg</span>*/}
+									{/*</th>*/}
+								</tr>
 							</thead>
 							<tbody>
 							{balanceData &&
 								Object.entries(balanceData.total).map(([asset, amount]) => {
 									const iconClass = `cube-icons-${asset.slice(1).toLowerCase()}`;
+									const name = tickers[asset]?.name || asset;
 									const price = asset === 'TUSDC' ? 1 : tickers[asset]?.last || 0;
 									const percentage = asset === 'TUSDC' ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
 
 									return (
 										<tr key={asset} className="border-b border-gray-600">
 											<td className="px-4 py-2 w-1/12">
-												<i className={iconClass} style={{ fontSize: '24px' }}></i>
+												<i className={iconClass} style={{fontSize: '24px'}}></i>
 											</td>
 											<td className="px-4 py-2 w-7/12">
-												<div className="flex flex-col">
-													<span className="text-lg leading-none">{amount}</span>
+												<div className="flex flex-col ml-1 ">
+													<span className="text-lg leading-none">{name}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
+												</div>
+											</td>
+											<td className="px-4 py-2 w-7/12">
+												<div className="flex flex-col text-right">
+													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
+													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
+															{percentage}
+													</span>
 												</div>
 											</td>
 											<td className="px-4 py-2 w-4/12 text-right">
 												<div className="flex flex-col items-end">
-													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
-													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
-																	{percentage}
-															</span>
+													<span className="text-lg leading-none">{`$${amount.toFixed(2)}`}</span>
+													<div className="flex items-center">
+														<span className="text-xs text-gray-400 mr-2">{`${amount.toFixed(2)}`}</span>
+														<span className="text-xs text-gray-400">{name}</span>
+													</div>
 												</div>
 											</td>
 										</tr>
@@ -191,12 +208,12 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 						</table>
 					</div>
 				</div>
-				<div className="mt-6 flex flex-col items-center">
-					<img src={signOutIcon} alt="Logout Icon" className="w-6 h-6 mb-2" />
-					<button onClick={this.handleSignOut} className="text-[#FE8A00] hover:underline focus:outline-none">
-						Sign Out
-					</button>
-				</div>
+				{/*<div className="mt-6 flex flex-col items-center">*/}
+				{/*	<img src={signOutIcon} alt="Logout Icon" className="w-6 h-6 mb-2"/>*/}
+				{/*	<button onClick={this.handleSignOut} className="text-[#FE8A00] hover:underline focus:outline-none">*/}
+				{/*		Sign Out*/}
+				{/*	</button>*/}
+				{/*</div>*/}
 			</div>
 		);
 	}
