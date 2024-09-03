@@ -146,18 +146,18 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 			<div className="flex flex-col h-full">
 				<div className="flex-grow overflow-hidden">
 					<div className="mb-4 ml-4 text-left">
-						<div style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="text-left text-xs font-extralight text-neutral-400">
-							My Balance
+						<div style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
+							My balance
 						</div>
-						<div style={{ fontFamily: '"Cinzel", sans-serif' }} className="mb-10 text-2xl text-white">
-							{`$${totalBalanceUSDC.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+						<div style={{ fontFamily: '"PP Editorial New Light", sans-serif' }} className="mt-4 mb-10 text-3xl text-white">
+							{`$${totalBalanceUSDC.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
 						</div>
 					</div>
 					<div className="h-full overflow-y-auto">
 						<table className="w-full bg-black text-white">
 							<thead className="sticky top-0 bg-black">
 								<tr>
-									<th style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="px-4 py-2 text-left text-xs font-extralight text-neutral-400" colSpan={2}>
+									<th style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
 										My holdings
 									</th>
 									{/*<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">*/}
@@ -174,7 +174,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 									const percentage = asset === 'TUSDC' ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
 
 									return (
-										<tr key={asset} className="border-b border-gray-600">
+										<tr key={asset} className="border-b border-gray-600 border-none">
 											<td className="px-4 py-2 w-1/12">
 												<i className={iconClass} style={{fontSize: '24px'}}></i>
 											</td>
