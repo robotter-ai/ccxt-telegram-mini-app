@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
@@ -179,8 +179,8 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 												<div className="flex flex-col items-end">
 													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
 													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
-                                                    {percentage}
-                                                </span>
+																	{percentage}
+															</span>
 												</div>
 											</td>
 										</tr>
