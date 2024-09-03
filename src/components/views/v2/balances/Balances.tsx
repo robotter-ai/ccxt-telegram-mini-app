@@ -161,7 +161,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 							<tbody>
 							{balanceData &&
 								Object.entries(balanceData.total).map(([asset, amount]) => {
-									const iconClass = `cube-icons-${asset.slice(1).toLowerCase()}`;
+									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-1`;
 									const price = asset === 'TUSDC' ? 1 : tickers[asset]?.last || 0;
 									const percentage = asset === 'TUSDC' ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
 

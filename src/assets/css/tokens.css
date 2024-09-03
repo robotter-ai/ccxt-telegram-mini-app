@@ -1,0 +1,4997 @@
+:root {
+	--theme-name: "light";
+	--max-sab: 0px;
+	--sat: env(safe-area-inset-top);
+	--sar: env(safe-area-inset-right);
+	--sab: env(safe-area-inset-bottom);
+	--sal: env(safe-area-inset-left);
+	--doc-height: 100%;
+	--max-width: 1100px;
+	--border-radius: 12px;
+	--font-mono: plex-mono,ui-monospace;
+	/*--font-marketing: "Inter" --foreground-rgb:0,0,0;*/
+	--background-start-rgb: 214,219,220;
+	--background-end-rgb: 255,255,255;
+	--primary-glow: conic-gradient(from 180deg at 50% 50%,#16abff33 0deg,#0885ff33 55deg,#54d6ff33 120deg,#0071ff33 160deg,transparent 360deg);
+	--secondary-glow: radial-gradient(#fff,hsla(0,0%,100%,0));
+	--tile-start-rgb: 239,245,249;
+	--tile-end-rgb: 228,232,233;
+	--tile-border: conic-gradient(#00000080,#00000040,#00000030,#00000020,#00000010,#00000010,#00000080);
+	--callout-rgb: 238,240,241;
+	--callout-border-rgb: 172,175,176;
+	--card-rgb: 180,185,188;
+	--card-border-rgb: 131,134,135;
+	--background-horiz-gradient: linear-gradient(90deg,#fff,#b4b4b4);
+	--background-highlight: hsla(0,0%,50%,.2);
+	--background-header: hsla(0,0%,100%,.6);
+	--background-color-1: #fff;
+	--background-color-2: #f3f3f3;
+	--background-color-3: #e7e7e7;
+	--background-color-4: #dbdbdb;
+	--background-color-5: #cfcfcf;
+	--color-success: #32a467;
+	--color-warning: orange;
+	--color-error: #e76767;
+	--color-buy: #0d9900;
+	--color-sell: #dc2626;
+	--color-primary: #000;
+	--color-primary-text: #fff;
+	--color-black-white: #000;
+	--color-white-black: #fff;
+	--color-border: #0000001b;
+	--color-grid-line: #eee;
+	--color-accent-alt: #4094e8;
+	--color-accent: #ff8a00;
+	--color-accent-text: #000;
+	--color-input-request: #508bdeaa;
+	--color-stage: #fafafa;
+	--color-stage-2: #f6f6f6;
+	--color-ask-alt: #f6c4c4;
+	--color-bid-alt: #bce2b7;
+	--color-bid-bar: rgba(13,153,0,.5);
+	--color-ask-bar: rgba(220,38,38,.5);
+	--color-transparent-mask: hsla(0,0%,100%,0);
+	--text-color-highlight: #000;
+	--text-color: #1e1e1e;
+	--text-color-dim: #0000007a;
+	--text-color-disabled: #00000040
+}
+
+.text-token-1 {
+	--tw-text-opacity: 1;
+	color: rgb(246 156 61/var(--tw-text-opacity))
+}
+
+.text-token-1\/0 {
+	color: rgba(246, 156, 61, 0)
+}
+
+.text-token-1\/10 {
+	color: rgba(246, 156, 61, .1)
+}
+
+.text-token-1\/100 {
+	color: #f69c3d
+}
+
+.text-token-1\/15 {
+	color: rgba(246, 156, 61, .15)
+}
+
+.text-token-1\/20 {
+	color: rgba(246, 156, 61, .2)
+}
+
+.text-token-1\/25 {
+	color: rgba(246, 156, 61, .25)
+}
+
+.text-token-1\/30 {
+	color: rgba(246, 156, 61, .3)
+}
+
+.text-token-1\/35 {
+	color: rgba(246, 156, 61, .35)
+}
+
+.text-token-1\/40 {
+	color: rgba(246, 156, 61, .4)
+}
+
+.text-token-1\/45 {
+	color: rgba(246, 156, 61, .45)
+}
+
+.text-token-1\/5 {
+	color: rgba(246, 156, 61, .05)
+}
+
+.text-token-1\/50 {
+	color: rgba(246, 156, 61, .5)
+}
+
+.text-token-1\/55 {
+	color: rgba(246, 156, 61, .55)
+}
+
+.text-token-1\/60 {
+	color: rgba(246, 156, 61, .6)
+}
+
+.text-token-1\/65 {
+	color: rgba(246, 156, 61, .65)
+}
+
+.text-token-1\/70 {
+	color: rgba(246, 156, 61, .7)
+}
+
+.text-token-1\/75 {
+	color: rgba(246, 156, 61, .75)
+}
+
+.text-token-1\/80 {
+	color: rgba(246, 156, 61, .8)
+}
+
+.text-token-1\/85 {
+	color: rgba(246, 156, 61, .85)
+}
+
+.text-token-1\/90 {
+	color: rgba(246, 156, 61, .9)
+}
+
+.text-token-1\/95 {
+	color: rgba(246, 156, 61, .95)
+}
+
+.text-token-10 {
+	--tw-text-opacity: 1;
+	color: rgb(56 97 251/var(--tw-text-opacity))
+}
+
+.text-token-10\/0 {
+	color: rgba(56, 97, 251, 0)
+}
+
+.text-token-10\/10 {
+	color: rgba(56, 97, 251, .1)
+}
+
+.text-token-10\/100 {
+	color: #3861fb
+}
+
+.text-token-10\/15 {
+	color: rgba(56, 97, 251, .15)
+}
+
+.text-token-10\/20 {
+	color: rgba(56, 97, 251, .2)
+}
+
+.text-token-10\/25 {
+	color: rgba(56, 97, 251, .25)
+}
+
+.text-token-10\/30 {
+	color: rgba(56, 97, 251, .3)
+}
+
+.text-token-10\/35 {
+	color: rgba(56, 97, 251, .35)
+}
+
+.text-token-10\/40 {
+	color: rgba(56, 97, 251, .4)
+}
+
+.text-token-10\/45 {
+	color: rgba(56, 97, 251, .45)
+}
+
+.text-token-10\/5 {
+	color: rgba(56, 97, 251, .05)
+}
+
+.text-token-10\/50 {
+	color: rgba(56, 97, 251, .5)
+}
+
+.text-token-10\/55 {
+	color: rgba(56, 97, 251, .55)
+}
+
+.text-token-10\/60 {
+	color: rgba(56, 97, 251, .6)
+}
+
+.text-token-10\/65 {
+	color: rgba(56, 97, 251, .65)
+}
+
+.text-token-10\/70 {
+	color: rgba(56, 97, 251, .7)
+}
+
+.text-token-10\/75 {
+	color: rgba(56, 97, 251, .75)
+}
+
+.text-token-10\/80 {
+	color: rgba(56, 97, 251, .8)
+}
+
+.text-token-10\/85 {
+	color: rgba(56, 97, 251, .85)
+}
+
+.text-token-10\/90 {
+	color: rgba(56, 97, 251, .9)
+}
+
+.text-token-10\/95 {
+	color: rgba(56, 97, 251, .95)
+}
+
+.text-token-11 {
+	--tw-text-opacity: 1;
+	color: rgb(230 217 254/var(--tw-text-opacity))
+}
+
+.text-token-11\/0 {
+	color: rgba(230, 217, 254, 0)
+}
+
+.text-token-11\/10 {
+	color: rgba(230, 217, 254, .1)
+}
+
+.text-token-11\/100 {
+	color: #e6d9fe
+}
+
+.text-token-11\/15 {
+	color: rgba(230, 217, 254, .15)
+}
+
+.text-token-11\/20 {
+	color: rgba(230, 217, 254, .2)
+}
+
+.text-token-11\/25 {
+	color: rgba(230, 217, 254, .25)
+}
+
+.text-token-11\/30 {
+	color: rgba(230, 217, 254, .3)
+}
+
+.text-token-11\/35 {
+	color: rgba(230, 217, 254, .35)
+}
+
+.text-token-11\/40 {
+	color: rgba(230, 217, 254, .4)
+}
+
+.text-token-11\/45 {
+	color: rgba(230, 217, 254, .45)
+}
+
+.text-token-11\/5 {
+	color: rgba(230, 217, 254, .05)
+}
+
+.text-token-11\/50 {
+	color: rgba(230, 217, 254, .5)
+}
+
+.text-token-11\/55 {
+	color: rgba(230, 217, 254, .55)
+}
+
+.text-token-11\/60 {
+	color: rgba(230, 217, 254, .6)
+}
+
+.text-token-11\/65 {
+	color: rgba(230, 217, 254, .65)
+}
+
+.text-token-11\/70 {
+	color: rgba(230, 217, 254, .7)
+}
+
+.text-token-11\/75 {
+	color: rgba(230, 217, 254, .75)
+}
+
+.text-token-11\/80 {
+	color: rgba(230, 217, 254, .8)
+}
+
+.text-token-11\/85 {
+	color: rgba(230, 217, 254, .85)
+}
+
+.text-token-11\/90 {
+	color: rgba(230, 217, 254, .9)
+}
+
+.text-token-11\/95 {
+	color: rgba(230, 217, 254, .95)
+}
+
+.text-token-12 {
+	--tw-text-opacity: 1;
+	color: rgb(220 188 104/var(--tw-text-opacity))
+}
+
+.text-token-12\/0 {
+	color: hsla(43, 62%, 64%, 0)
+}
+
+.text-token-12\/10 {
+	color: hsla(43, 62%, 64%, .1)
+}
+
+.text-token-12\/100 {
+	color: #dcbc68
+}
+
+.text-token-12\/15 {
+	color: hsla(43, 62%, 64%, .15)
+}
+
+.text-token-12\/20 {
+	color: hsla(43, 62%, 64%, .2)
+}
+
+.text-token-12\/25 {
+	color: hsla(43, 62%, 64%, .25)
+}
+
+.text-token-12\/30 {
+	color: hsla(43, 62%, 64%, .3)
+}
+
+.text-token-12\/35 {
+	color: hsla(43, 62%, 64%, .35)
+}
+
+.text-token-12\/40 {
+	color: hsla(43, 62%, 64%, .4)
+}
+
+.text-token-12\/45 {
+	color: hsla(43, 62%, 64%, .45)
+}
+
+.text-token-12\/5 {
+	color: hsla(43, 62%, 64%, .05)
+}
+
+.text-token-12\/50 {
+	color: hsla(43, 62%, 64%, .5)
+}
+
+.text-token-12\/55 {
+	color: hsla(43, 62%, 64%, .55)
+}
+
+.text-token-12\/60 {
+	color: hsla(43, 62%, 64%, .6)
+}
+
+.text-token-12\/65 {
+	color: hsla(43, 62%, 64%, .65)
+}
+
+.text-token-12\/70 {
+	color: hsla(43, 62%, 64%, .7)
+}
+
+.text-token-12\/75 {
+	color: hsla(43, 62%, 64%, .75)
+}
+
+.text-token-12\/80 {
+	color: hsla(43, 62%, 64%, .8)
+}
+
+.text-token-12\/85 {
+	color: hsla(43, 62%, 64%, .85)
+}
+
+.text-token-12\/90 {
+	color: hsla(43, 62%, 64%, .9)
+}
+
+.text-token-12\/95 {
+	color: hsla(43, 62%, 64%, .95)
+}
+
+.text-token-13 {
+	--tw-text-opacity: 1;
+	color: rgb(0 51 153/var(--tw-text-opacity))
+}
+
+.text-token-13\/0 {
+	color: rgba(0, 51, 153, 0)
+}
+
+.text-token-13\/10 {
+	color: rgba(0, 51, 153, .1)
+}
+
+.text-token-13\/100 {
+	color: #039
+}
+
+.text-token-13\/15 {
+	color: rgba(0, 51, 153, .15)
+}
+
+.text-token-13\/20 {
+	color: rgba(0, 51, 153, .2)
+}
+
+.text-token-13\/25 {
+	color: rgba(0, 51, 153, .25)
+}
+
+.text-token-13\/30 {
+	color: rgba(0, 51, 153, .3)
+}
+
+.text-token-13\/35 {
+	color: rgba(0, 51, 153, .35)
+}
+
+.text-token-13\/40 {
+	color: rgba(0, 51, 153, .4)
+}
+
+.text-token-13\/45 {
+	color: rgba(0, 51, 153, .45)
+}
+
+.text-token-13\/5 {
+	color: rgba(0, 51, 153, .05)
+}
+
+.text-token-13\/50 {
+	color: rgba(0, 51, 153, .5)
+}
+
+.text-token-13\/55 {
+	color: rgba(0, 51, 153, .55)
+}
+
+.text-token-13\/60 {
+	color: rgba(0, 51, 153, .6)
+}
+
+.text-token-13\/65 {
+	color: rgba(0, 51, 153, .65)
+}
+
+.text-token-13\/70 {
+	color: rgba(0, 51, 153, .7)
+}
+
+.text-token-13\/75 {
+	color: rgba(0, 51, 153, .75)
+}
+
+.text-token-13\/80 {
+	color: rgba(0, 51, 153, .8)
+}
+
+.text-token-13\/85 {
+	color: rgba(0, 51, 153, .85)
+}
+
+.text-token-13\/90 {
+	color: rgba(0, 51, 153, .9)
+}
+
+.text-token-13\/95 {
+	color: rgba(0, 51, 153, .95)
+}
+
+.text-token-14 {
+	--tw-text-opacity: 1;
+	color: rgb(77 117 228/var(--tw-text-opacity))
+}
+
+.text-token-14\/0 {
+	color: rgba(77, 117, 228, 0)
+}
+
+.text-token-14\/10 {
+	color: rgba(77, 117, 228, .1)
+}
+
+.text-token-14\/100 {
+	color: #4d75e4
+}
+
+.text-token-14\/15 {
+	color: rgba(77, 117, 228, .15)
+}
+
+.text-token-14\/20 {
+	color: rgba(77, 117, 228, .2)
+}
+
+.text-token-14\/25 {
+	color: rgba(77, 117, 228, .25)
+}
+
+.text-token-14\/30 {
+	color: rgba(77, 117, 228, .3)
+}
+
+.text-token-14\/35 {
+	color: rgba(77, 117, 228, .35)
+}
+
+.text-token-14\/40 {
+	color: rgba(77, 117, 228, .4)
+}
+
+.text-token-14\/45 {
+	color: rgba(77, 117, 228, .45)
+}
+
+.text-token-14\/5 {
+	color: rgba(77, 117, 228, .05)
+}
+
+.text-token-14\/50 {
+	color: rgba(77, 117, 228, .5)
+}
+
+.text-token-14\/55 {
+	color: rgba(77, 117, 228, .55)
+}
+
+.text-token-14\/60 {
+	color: rgba(77, 117, 228, .6)
+}
+
+.text-token-14\/65 {
+	color: rgba(77, 117, 228, .65)
+}
+
+.text-token-14\/70 {
+	color: rgba(77, 117, 228, .7)
+}
+
+.text-token-14\/75 {
+	color: rgba(77, 117, 228, .75)
+}
+
+.text-token-14\/80 {
+	color: rgba(77, 117, 228, .8)
+}
+
+.text-token-14\/85 {
+	color: rgba(77, 117, 228, .85)
+}
+
+.text-token-14\/90 {
+	color: rgba(77, 117, 228, .9)
+}
+
+.text-token-14\/95 {
+	color: rgba(77, 117, 228, .95)
+}
+
+.text-token-15 {
+	--tw-text-opacity: 1;
+	color: rgb(26 165 255/var(--tw-text-opacity))
+}
+
+.text-token-15\/0 {
+	color: rgba(26, 165, 255, 0)
+}
+
+.text-token-15\/10 {
+	color: rgba(26, 165, 255, .1)
+}
+
+.text-token-15\/100 {
+	color: #1aa5ff
+}
+
+.text-token-15\/15 {
+	color: rgba(26, 165, 255, .15)
+}
+
+.text-token-15\/20 {
+	color: rgba(26, 165, 255, .2)
+}
+
+.text-token-15\/25 {
+	color: rgba(26, 165, 255, .25)
+}
+
+.text-token-15\/30 {
+	color: rgba(26, 165, 255, .3)
+}
+
+.text-token-15\/35 {
+	color: rgba(26, 165, 255, .35)
+}
+
+.text-token-15\/40 {
+	color: rgba(26, 165, 255, .4)
+}
+
+.text-token-15\/45 {
+	color: rgba(26, 165, 255, .45)
+}
+
+.text-token-15\/5 {
+	color: rgba(26, 165, 255, .05)
+}
+
+.text-token-15\/50 {
+	color: rgba(26, 165, 255, .5)
+}
+
+.text-token-15\/55 {
+	color: rgba(26, 165, 255, .55)
+}
+
+.text-token-15\/60 {
+	color: rgba(26, 165, 255, .6)
+}
+
+.text-token-15\/65 {
+	color: rgba(26, 165, 255, .65)
+}
+
+.text-token-15\/70 {
+	color: rgba(26, 165, 255, .7)
+}
+
+.text-token-15\/75 {
+	color: rgba(26, 165, 255, .75)
+}
+
+.text-token-15\/80 {
+	color: rgba(26, 165, 255, .8)
+}
+
+.text-token-15\/85 {
+	color: rgba(26, 165, 255, .85)
+}
+
+.text-token-15\/90 {
+	color: rgba(26, 165, 255, .9)
+}
+
+.text-token-15\/95 {
+	color: rgba(26, 165, 255, .95)
+}
+
+.text-token-16 {
+	color: var(--color-black-white)
+}
+
+.text-token-17 {
+	--tw-text-opacity: 1;
+	color: rgb(48 141 138/var(--tw-text-opacity))
+}
+
+.text-token-17\/0 {
+	color: rgba(48, 141, 138, 0)
+}
+
+.text-token-17\/10 {
+	color: rgba(48, 141, 138, .1)
+}
+
+.text-token-17\/100 {
+	color: #308d8a
+}
+
+.text-token-17\/15 {
+	color: rgba(48, 141, 138, .15)
+}
+
+.text-token-17\/20 {
+	color: rgba(48, 141, 138, .2)
+}
+
+.text-token-17\/25 {
+	color: rgba(48, 141, 138, .25)
+}
+
+.text-token-17\/30 {
+	color: rgba(48, 141, 138, .3)
+}
+
+.text-token-17\/35 {
+	color: rgba(48, 141, 138, .35)
+}
+
+.text-token-17\/40 {
+	color: rgba(48, 141, 138, .4)
+}
+
+.text-token-17\/45 {
+	color: rgba(48, 141, 138, .45)
+}
+
+.text-token-17\/5 {
+	color: rgba(48, 141, 138, .05)
+}
+
+.text-token-17\/50 {
+	color: rgba(48, 141, 138, .5)
+}
+
+.text-token-17\/55 {
+	color: rgba(48, 141, 138, .55)
+}
+
+.text-token-17\/60 {
+	color: rgba(48, 141, 138, .6)
+}
+
+.text-token-17\/65 {
+	color: rgba(48, 141, 138, .65)
+}
+
+.text-token-17\/70 {
+	color: rgba(48, 141, 138, .7)
+}
+
+.text-token-17\/75 {
+	color: rgba(48, 141, 138, .75)
+}
+
+.text-token-17\/80 {
+	color: rgba(48, 141, 138, .8)
+}
+
+.text-token-17\/85 {
+	color: rgba(48, 141, 138, .85)
+}
+
+.text-token-17\/90 {
+	color: rgba(48, 141, 138, .9)
+}
+
+.text-token-17\/95 {
+	color: rgba(48, 141, 138, .95)
+}
+
+.text-token-18 {
+	--tw-text-opacity: 1;
+	color: rgb(131 208 144/var(--tw-text-opacity))
+}
+
+.text-token-18\/0 {
+	color: rgba(131, 208, 144, 0)
+}
+
+.text-token-18\/10 {
+	color: rgba(131, 208, 144, .1)
+}
+
+.text-token-18\/100 {
+	color: #83d090
+}
+
+.text-token-18\/15 {
+	color: rgba(131, 208, 144, .15)
+}
+
+.text-token-18\/20 {
+	color: rgba(131, 208, 144, .2)
+}
+
+.text-token-18\/25 {
+	color: rgba(131, 208, 144, .25)
+}
+
+.text-token-18\/30 {
+	color: rgba(131, 208, 144, .3)
+}
+
+.text-token-18\/35 {
+	color: rgba(131, 208, 144, .35)
+}
+
+.text-token-18\/40 {
+	color: rgba(131, 208, 144, .4)
+}
+
+.text-token-18\/45 {
+	color: rgba(131, 208, 144, .45)
+}
+
+.text-token-18\/5 {
+	color: rgba(131, 208, 144, .05)
+}
+
+.text-token-18\/50 {
+	color: rgba(131, 208, 144, .5)
+}
+
+.text-token-18\/55 {
+	color: rgba(131, 208, 144, .55)
+}
+
+.text-token-18\/60 {
+	color: rgba(131, 208, 144, .6)
+}
+
+.text-token-18\/65 {
+	color: rgba(131, 208, 144, .65)
+}
+
+.text-token-18\/70 {
+	color: rgba(131, 208, 144, .7)
+}
+
+.text-token-18\/75 {
+	color: rgba(131, 208, 144, .75)
+}
+
+.text-token-18\/80 {
+	color: rgba(131, 208, 144, .8)
+}
+
+.text-token-18\/85 {
+	color: rgba(131, 208, 144, .85)
+}
+
+.text-token-18\/90 {
+	color: rgba(131, 208, 144, .9)
+}
+
+.text-token-18\/95 {
+	color: rgba(131, 208, 144, .95)
+}
+
+.text-token-19 {
+	--tw-text-opacity: 1;
+	color: rgb(131 208 144/var(--tw-text-opacity))
+}
+
+.text-token-19\/0 {
+	color: rgba(131, 208, 144, 0)
+}
+
+.text-token-19\/10 {
+	color: rgba(131, 208, 144, .1)
+}
+
+.text-token-19\/100 {
+	color: #83d090
+}
+
+.text-token-19\/15 {
+	color: rgba(131, 208, 144, .15)
+}
+
+.text-token-19\/20 {
+	color: rgba(131, 208, 144, .2)
+}
+
+.text-token-19\/25 {
+	color: rgba(131, 208, 144, .25)
+}
+
+.text-token-19\/30 {
+	color: rgba(131, 208, 144, .3)
+}
+
+.text-token-19\/35 {
+	color: rgba(131, 208, 144, .35)
+}
+
+.text-token-19\/40 {
+	color: rgba(131, 208, 144, .4)
+}
+
+.text-token-19\/45 {
+	color: rgba(131, 208, 144, .45)
+}
+
+.text-token-19\/5 {
+	color: rgba(131, 208, 144, .05)
+}
+
+.text-token-19\/50 {
+	color: rgba(131, 208, 144, .5)
+}
+
+.text-token-19\/55 {
+	color: rgba(131, 208, 144, .55)
+}
+
+.text-token-19\/60 {
+	color: rgba(131, 208, 144, .6)
+}
+
+.text-token-19\/65 {
+	color: rgba(131, 208, 144, .65)
+}
+
+.text-token-19\/70 {
+	color: rgba(131, 208, 144, .7)
+}
+
+.text-token-19\/75 {
+	color: rgba(131, 208, 144, .75)
+}
+
+.text-token-19\/80 {
+	color: rgba(131, 208, 144, .8)
+}
+
+.text-token-19\/85 {
+	color: rgba(131, 208, 144, .85)
+}
+
+.text-token-19\/90 {
+	color: rgba(131, 208, 144, .9)
+}
+
+.text-token-19\/95 {
+	color: rgba(131, 208, 144, .95)
+}
+
+.text-token-2 {
+	--tw-text-opacity: 1;
+	color: rgb(91 94 203/var(--tw-text-opacity))
+}
+
+.text-token-2\/0 {
+	color: rgba(91, 94, 203, 0)
+}
+
+.text-token-2\/10 {
+	color: rgba(91, 94, 203, .1)
+}
+
+.text-token-2\/100 {
+	color: #5b5ecb
+}
+
+.text-token-2\/15 {
+	color: rgba(91, 94, 203, .15)
+}
+
+.text-token-2\/20 {
+	color: rgba(91, 94, 203, .2)
+}
+
+.text-token-2\/25 {
+	color: rgba(91, 94, 203, .25)
+}
+
+.text-token-2\/30 {
+	color: rgba(91, 94, 203, .3)
+}
+
+.text-token-2\/35 {
+	color: rgba(91, 94, 203, .35)
+}
+
+.text-token-2\/40 {
+	color: rgba(91, 94, 203, .4)
+}
+
+.text-token-2\/45 {
+	color: rgba(91, 94, 203, .45)
+}
+
+.text-token-2\/5 {
+	color: rgba(91, 94, 203, .05)
+}
+
+.text-token-2\/50 {
+	color: rgba(91, 94, 203, .5)
+}
+
+.text-token-2\/55 {
+	color: rgba(91, 94, 203, .55)
+}
+
+.text-token-2\/60 {
+	color: rgba(91, 94, 203, .6)
+}
+
+.text-token-2\/65 {
+	color: rgba(91, 94, 203, .65)
+}
+
+.text-token-2\/70 {
+	color: rgba(91, 94, 203, .7)
+}
+
+.text-token-2\/75 {
+	color: rgba(91, 94, 203, .75)
+}
+
+.text-token-2\/80 {
+	color: rgba(91, 94, 203, .8)
+}
+
+.text-token-2\/85 {
+	color: rgba(91, 94, 203, .85)
+}
+
+.text-token-2\/90 {
+	color: rgba(91, 94, 203, .9)
+}
+
+.text-token-2\/95 {
+	color: rgba(91, 94, 203, .95)
+}
+
+.text-token-20 {
+	--tw-text-opacity: 1;
+	color: rgb(223 66 171/var(--tw-text-opacity))
+}
+
+.text-token-20\/0 {
+	color: rgba(223, 66, 171, 0)
+}
+
+.text-token-20\/10 {
+	color: rgba(223, 66, 171, .1)
+}
+
+.text-token-20\/100 {
+	color: #df42ab
+}
+
+.text-token-20\/15 {
+	color: rgba(223, 66, 171, .15)
+}
+
+.text-token-20\/20 {
+	color: rgba(223, 66, 171, .2)
+}
+
+.text-token-20\/25 {
+	color: rgba(223, 66, 171, .25)
+}
+
+.text-token-20\/30 {
+	color: rgba(223, 66, 171, .3)
+}
+
+.text-token-20\/35 {
+	color: rgba(223, 66, 171, .35)
+}
+
+.text-token-20\/40 {
+	color: rgba(223, 66, 171, .4)
+}
+
+.text-token-20\/45 {
+	color: rgba(223, 66, 171, .45)
+}
+
+.text-token-20\/5 {
+	color: rgba(223, 66, 171, .05)
+}
+
+.text-token-20\/50 {
+	color: rgba(223, 66, 171, .5)
+}
+
+.text-token-20\/55 {
+	color: rgba(223, 66, 171, .55)
+}
+
+.text-token-20\/60 {
+	color: rgba(223, 66, 171, .6)
+}
+
+.text-token-20\/65 {
+	color: rgba(223, 66, 171, .65)
+}
+
+.text-token-20\/70 {
+	color: rgba(223, 66, 171, .7)
+}
+
+.text-token-20\/75 {
+	color: rgba(223, 66, 171, .75)
+}
+
+.text-token-20\/80 {
+	color: rgba(223, 66, 171, .8)
+}
+
+.text-token-20\/85 {
+	color: rgba(223, 66, 171, .85)
+}
+
+.text-token-20\/90 {
+	color: rgba(223, 66, 171, .9)
+}
+
+.text-token-20\/95 {
+	color: rgba(223, 66, 171, .95)
+}
+
+.text-token-21 {
+	--tw-text-opacity: 1;
+	color: rgb(194 167 51/var(--tw-text-opacity))
+}
+
+.text-token-21\/0 {
+	color: rgba(194, 167, 51, 0)
+}
+
+.text-token-21\/10 {
+	color: rgba(194, 167, 51, .1)
+}
+
+.text-token-21\/100 {
+	color: #c2a733
+}
+
+.text-token-21\/15 {
+	color: rgba(194, 167, 51, .15)
+}
+
+.text-token-21\/20 {
+	color: rgba(194, 167, 51, .2)
+}
+
+.text-token-21\/25 {
+	color: rgba(194, 167, 51, .25)
+}
+
+.text-token-21\/30 {
+	color: rgba(194, 167, 51, .3)
+}
+
+.text-token-21\/35 {
+	color: rgba(194, 167, 51, .35)
+}
+
+.text-token-21\/40 {
+	color: rgba(194, 167, 51, .4)
+}
+
+.text-token-21\/45 {
+	color: rgba(194, 167, 51, .45)
+}
+
+.text-token-21\/5 {
+	color: rgba(194, 167, 51, .05)
+}
+
+.text-token-21\/50 {
+	color: rgba(194, 167, 51, .5)
+}
+
+.text-token-21\/55 {
+	color: rgba(194, 167, 51, .55)
+}
+
+.text-token-21\/60 {
+	color: rgba(194, 167, 51, .6)
+}
+
+.text-token-21\/65 {
+	color: rgba(194, 167, 51, .65)
+}
+
+.text-token-21\/70 {
+	color: rgba(194, 167, 51, .7)
+}
+
+.text-token-21\/75 {
+	color: rgba(194, 167, 51, .75)
+}
+
+.text-token-21\/80 {
+	color: rgba(194, 167, 51, .8)
+}
+
+.text-token-21\/85 {
+	color: rgba(194, 167, 51, .85)
+}
+
+.text-token-21\/90 {
+	color: rgba(194, 167, 51, .9)
+}
+
+.text-token-21\/95 {
+	color: rgba(194, 167, 51, .95)
+}
+
+.text-token-22 {
+	--tw-text-opacity: 1;
+	color: rgb(39 238 118/var(--tw-text-opacity))
+}
+
+.text-token-22\/0 {
+	color: rgba(39, 238, 118, 0)
+}
+
+.text-token-22\/10 {
+	color: rgba(39, 238, 118, .1)
+}
+
+.text-token-22\/100 {
+	color: #27ee76
+}
+
+.text-token-22\/15 {
+	color: rgba(39, 238, 118, .15)
+}
+
+.text-token-22\/20 {
+	color: rgba(39, 238, 118, .2)
+}
+
+.text-token-22\/25 {
+	color: rgba(39, 238, 118, .25)
+}
+
+.text-token-22\/30 {
+	color: rgba(39, 238, 118, .3)
+}
+
+.text-token-22\/35 {
+	color: rgba(39, 238, 118, .35)
+}
+
+.text-token-22\/40 {
+	color: rgba(39, 238, 118, .4)
+}
+
+.text-token-22\/45 {
+	color: rgba(39, 238, 118, .45)
+}
+
+.text-token-22\/5 {
+	color: rgba(39, 238, 118, .05)
+}
+
+.text-token-22\/50 {
+	color: rgba(39, 238, 118, .5)
+}
+
+.text-token-22\/55 {
+	color: rgba(39, 238, 118, .55)
+}
+
+.text-token-22\/60 {
+	color: rgba(39, 238, 118, .6)
+}
+
+.text-token-22\/65 {
+	color: rgba(39, 238, 118, .65)
+}
+
+.text-token-22\/70 {
+	color: rgba(39, 238, 118, .7)
+}
+
+.text-token-22\/75 {
+	color: rgba(39, 238, 118, .75)
+}
+
+.text-token-22\/80 {
+	color: rgba(39, 238, 118, .8)
+}
+
+.text-token-22\/85 {
+	color: rgba(39, 238, 118, .85)
+}
+
+.text-token-22\/90 {
+	color: rgba(39, 238, 118, .9)
+}
+
+.text-token-22\/95 {
+	color: rgba(39, 238, 118, .95)
+}
+
+.text-token-23 {
+	--tw-text-opacity: 1;
+	color: rgb(255 209 92/var(--tw-text-opacity))
+}
+
+.text-token-23\/0 {
+	color: rgba(255, 209, 92, 0)
+}
+
+.text-token-23\/10 {
+	color: rgba(255, 209, 92, .1)
+}
+
+.text-token-23\/100 {
+	color: #ffd15c
+}
+
+.text-token-23\/15 {
+	color: rgba(255, 209, 92, .15)
+}
+
+.text-token-23\/20 {
+	color: rgba(255, 209, 92, .2)
+}
+
+.text-token-23\/25 {
+	color: rgba(255, 209, 92, .25)
+}
+
+.text-token-23\/30 {
+	color: rgba(255, 209, 92, .3)
+}
+
+.text-token-23\/35 {
+	color: rgba(255, 209, 92, .35)
+}
+
+.text-token-23\/40 {
+	color: rgba(255, 209, 92, .4)
+}
+
+.text-token-23\/45 {
+	color: rgba(255, 209, 92, .45)
+}
+
+.text-token-23\/5 {
+	color: rgba(255, 209, 92, .05)
+}
+
+.text-token-23\/50 {
+	color: rgba(255, 209, 92, .5)
+}
+
+.text-token-23\/55 {
+	color: rgba(255, 209, 92, .55)
+}
+
+.text-token-23\/60 {
+	color: rgba(255, 209, 92, .6)
+}
+
+.text-token-23\/65 {
+	color: rgba(255, 209, 92, .65)
+}
+
+.text-token-23\/70 {
+	color: rgba(255, 209, 92, .7)
+}
+
+.text-token-23\/75 {
+	color: rgba(255, 209, 92, .75)
+}
+
+.text-token-23\/80 {
+	color: rgba(255, 209, 92, .8)
+}
+
+.text-token-23\/85 {
+	color: rgba(255, 209, 92, .85)
+}
+
+.text-token-23\/90 {
+	color: rgba(255, 209, 92, .9)
+}
+
+.text-token-23\/95 {
+	color: rgba(255, 209, 92, .95)
+}
+
+.text-token-24 {
+	--tw-text-opacity: 1;
+	color: rgb(194 0 251/var(--tw-text-opacity))
+}
+
+.text-token-24\/0 {
+	color: rgba(194, 0, 251, 0)
+}
+
+.text-token-24\/10 {
+	color: rgba(194, 0, 251, .1)
+}
+
+.text-token-24\/100 {
+	color: #c200fb
+}
+
+.text-token-24\/15 {
+	color: rgba(194, 0, 251, .15)
+}
+
+.text-token-24\/20 {
+	color: rgba(194, 0, 251, .2)
+}
+
+.text-token-24\/25 {
+	color: rgba(194, 0, 251, .25)
+}
+
+.text-token-24\/30 {
+	color: rgba(194, 0, 251, .3)
+}
+
+.text-token-24\/35 {
+	color: rgba(194, 0, 251, .35)
+}
+
+.text-token-24\/40 {
+	color: rgba(194, 0, 251, .4)
+}
+
+.text-token-24\/45 {
+	color: rgba(194, 0, 251, .45)
+}
+
+.text-token-24\/5 {
+	color: rgba(194, 0, 251, .05)
+}
+
+.text-token-24\/50 {
+	color: rgba(194, 0, 251, .5)
+}
+
+.text-token-24\/55 {
+	color: rgba(194, 0, 251, .55)
+}
+
+.text-token-24\/60 {
+	color: rgba(194, 0, 251, .6)
+}
+
+.text-token-24\/65 {
+	color: rgba(194, 0, 251, .65)
+}
+
+.text-token-24\/70 {
+	color: rgba(194, 0, 251, .7)
+}
+
+.text-token-24\/75 {
+	color: rgba(194, 0, 251, .75)
+}
+
+.text-token-24\/80 {
+	color: rgba(194, 0, 251, .8)
+}
+
+.text-token-24\/85 {
+	color: rgba(194, 0, 251, .85)
+}
+
+.text-token-24\/90 {
+	color: rgba(194, 0, 251, .9)
+}
+
+.text-token-24\/95 {
+	color: rgba(194, 0, 251, .95)
+}
+
+.text-token-25 {
+	--tw-text-opacity: 1;
+	color: rgb(8 224 163/var(--tw-text-opacity))
+}
+
+.text-token-25\/0 {
+	color: rgba(8, 224, 163, 0)
+}
+
+.text-token-25\/10 {
+	color: rgba(8, 224, 163, .1)
+}
+
+.text-token-25\/100 {
+	color: #08e0a3
+}
+
+.text-token-25\/15 {
+	color: rgba(8, 224, 163, .15)
+}
+
+.text-token-25\/20 {
+	color: rgba(8, 224, 163, .2)
+}
+
+.text-token-25\/25 {
+	color: rgba(8, 224, 163, .25)
+}
+
+.text-token-25\/30 {
+	color: rgba(8, 224, 163, .3)
+}
+
+.text-token-25\/35 {
+	color: rgba(8, 224, 163, .35)
+}
+
+.text-token-25\/40 {
+	color: rgba(8, 224, 163, .4)
+}
+
+.text-token-25\/45 {
+	color: rgba(8, 224, 163, .45)
+}
+
+.text-token-25\/5 {
+	color: rgba(8, 224, 163, .05)
+}
+
+.text-token-25\/50 {
+	color: rgba(8, 224, 163, .5)
+}
+
+.text-token-25\/55 {
+	color: rgba(8, 224, 163, .55)
+}
+
+.text-token-25\/60 {
+	color: rgba(8, 224, 163, .6)
+}
+
+.text-token-25\/65 {
+	color: rgba(8, 224, 163, .65)
+}
+
+.text-token-25\/70 {
+	color: rgba(8, 224, 163, .7)
+}
+
+.text-token-25\/75 {
+	color: rgba(8, 224, 163, .75)
+}
+
+.text-token-25\/80 {
+	color: rgba(8, 224, 163, .8)
+}
+
+.text-token-25\/85 {
+	color: rgba(8, 224, 163, .85)
+}
+
+.text-token-25\/90 {
+	color: rgba(8, 224, 163, .9)
+}
+
+.text-token-25\/95 {
+	color: rgba(8, 224, 163, .95)
+}
+
+.text-token-26 {
+	--tw-text-opacity: 1;
+	color: rgb(174 112 103/var(--tw-text-opacity))
+}
+
+.text-token-26\/0 {
+	color: hsla(8, 30%, 54%, 0)
+}
+
+.text-token-26\/10 {
+	color: hsla(8, 30%, 54%, .1)
+}
+
+.text-token-26\/100 {
+	color: #ae7067
+}
+
+.text-token-26\/15 {
+	color: hsla(8, 30%, 54%, .15)
+}
+
+.text-token-26\/20 {
+	color: hsla(8, 30%, 54%, .2)
+}
+
+.text-token-26\/25 {
+	color: hsla(8, 30%, 54%, .25)
+}
+
+.text-token-26\/30 {
+	color: hsla(8, 30%, 54%, .3)
+}
+
+.text-token-26\/35 {
+	color: hsla(8, 30%, 54%, .35)
+}
+
+.text-token-26\/40 {
+	color: hsla(8, 30%, 54%, .4)
+}
+
+.text-token-26\/45 {
+	color: hsla(8, 30%, 54%, .45)
+}
+
+.text-token-26\/5 {
+	color: hsla(8, 30%, 54%, .05)
+}
+
+.text-token-26\/50 {
+	color: hsla(8, 30%, 54%, .5)
+}
+
+.text-token-26\/55 {
+	color: hsla(8, 30%, 54%, .55)
+}
+
+.text-token-26\/60 {
+	color: hsla(8, 30%, 54%, .6)
+}
+
+.text-token-26\/65 {
+	color: hsla(8, 30%, 54%, .65)
+}
+
+.text-token-26\/70 {
+	color: hsla(8, 30%, 54%, .7)
+}
+
+.text-token-26\/75 {
+	color: hsla(8, 30%, 54%, .75)
+}
+
+.text-token-26\/80 {
+	color: hsla(8, 30%, 54%, .8)
+}
+
+.text-token-26\/85 {
+	color: hsla(8, 30%, 54%, .85)
+}
+
+.text-token-26\/90 {
+	color: hsla(8, 30%, 54%, .9)
+}
+
+.text-token-26\/95 {
+	color: hsla(8, 30%, 54%, .95)
+}
+
+.text-token-27 {
+	--tw-text-opacity: 1;
+	color: rgb(95 60 216/var(--tw-text-opacity))
+}
+
+.text-token-27\/0 {
+	color: rgba(95, 60, 216, 0)
+}
+
+.text-token-27\/10 {
+	color: rgba(95, 60, 216, .1)
+}
+
+.text-token-27\/100 {
+	color: #5f3cd8
+}
+
+.text-token-27\/15 {
+	color: rgba(95, 60, 216, .15)
+}
+
+.text-token-27\/20 {
+	color: rgba(95, 60, 216, .2)
+}
+
+.text-token-27\/25 {
+	color: rgba(95, 60, 216, .25)
+}
+
+.text-token-27\/30 {
+	color: rgba(95, 60, 216, .3)
+}
+
+.text-token-27\/35 {
+	color: rgba(95, 60, 216, .35)
+}
+
+.text-token-27\/40 {
+	color: rgba(95, 60, 216, .4)
+}
+
+.text-token-27\/45 {
+	color: rgba(95, 60, 216, .45)
+}
+
+.text-token-27\/5 {
+	color: rgba(95, 60, 216, .05)
+}
+
+.text-token-27\/50 {
+	color: rgba(95, 60, 216, .5)
+}
+
+.text-token-27\/55 {
+	color: rgba(95, 60, 216, .55)
+}
+
+.text-token-27\/60 {
+	color: rgba(95, 60, 216, .6)
+}
+
+.text-token-27\/65 {
+	color: rgba(95, 60, 216, .65)
+}
+
+.text-token-27\/70 {
+	color: rgba(95, 60, 216, .7)
+}
+
+.text-token-27\/75 {
+	color: rgba(95, 60, 216, .75)
+}
+
+.text-token-27\/80 {
+	color: rgba(95, 60, 216, .8)
+}
+
+.text-token-27\/85 {
+	color: rgba(95, 60, 216, .85)
+}
+
+.text-token-27\/90 {
+	color: rgba(95, 60, 216, .9)
+}
+
+.text-token-27\/95 {
+	color: rgba(95, 60, 216, .95)
+}
+
+.text-token-28 {
+	--tw-text-opacity: 1;
+	color: rgb(176 0 0/var(--tw-text-opacity))
+}
+
+.text-token-28\/0 {
+	color: rgba(176, 0, 0, 0)
+}
+
+.text-token-28\/10 {
+	color: rgba(176, 0, 0, .1)
+}
+
+.text-token-28\/100 {
+	color: #b00000
+}
+
+.text-token-28\/15 {
+	color: rgba(176, 0, 0, .15)
+}
+
+.text-token-28\/20 {
+	color: rgba(176, 0, 0, .2)
+}
+
+.text-token-28\/25 {
+	color: rgba(176, 0, 0, .25)
+}
+
+.text-token-28\/30 {
+	color: rgba(176, 0, 0, .3)
+}
+
+.text-token-28\/35 {
+	color: rgba(176, 0, 0, .35)
+}
+
+.text-token-28\/40 {
+	color: rgba(176, 0, 0, .4)
+}
+
+.text-token-28\/45 {
+	color: rgba(176, 0, 0, .45)
+}
+
+.text-token-28\/5 {
+	color: rgba(176, 0, 0, .05)
+}
+
+.text-token-28\/50 {
+	color: rgba(176, 0, 0, .5)
+}
+
+.text-token-28\/55 {
+	color: rgba(176, 0, 0, .55)
+}
+
+.text-token-28\/60 {
+	color: rgba(176, 0, 0, .6)
+}
+
+.text-token-28\/65 {
+	color: rgba(176, 0, 0, .65)
+}
+
+.text-token-28\/70 {
+	color: rgba(176, 0, 0, .7)
+}
+
+.text-token-28\/75 {
+	color: rgba(176, 0, 0, .75)
+}
+
+.text-token-28\/80 {
+	color: rgba(176, 0, 0, .8)
+}
+
+.text-token-28\/85 {
+	color: rgba(176, 0, 0, .85)
+}
+
+.text-token-28\/90 {
+	color: rgba(176, 0, 0, .9)
+}
+
+.text-token-28\/95 {
+	color: rgba(176, 0, 0, .95)
+}
+
+.text-token-29 {
+	--tw-text-opacity: 1;
+	color: rgb(240 188 60/var(--tw-text-opacity))
+}
+
+.text-token-29\/0 {
+	color: rgba(240, 188, 60, 0)
+}
+
+.text-token-29\/10 {
+	color: rgba(240, 188, 60, .1)
+}
+
+.text-token-29\/100 {
+	color: #f0bc3c
+}
+
+.text-token-29\/15 {
+	color: rgba(240, 188, 60, .15)
+}
+
+.text-token-29\/20 {
+	color: rgba(240, 188, 60, .2)
+}
+
+.text-token-29\/25 {
+	color: rgba(240, 188, 60, .25)
+}
+
+.text-token-29\/30 {
+	color: rgba(240, 188, 60, .3)
+}
+
+.text-token-29\/35 {
+	color: rgba(240, 188, 60, .35)
+}
+
+.text-token-29\/40 {
+	color: rgba(240, 188, 60, .4)
+}
+
+.text-token-29\/45 {
+	color: rgba(240, 188, 60, .45)
+}
+
+.text-token-29\/5 {
+	color: rgba(240, 188, 60, .05)
+}
+
+.text-token-29\/50 {
+	color: rgba(240, 188, 60, .5)
+}
+
+.text-token-29\/55 {
+	color: rgba(240, 188, 60, .55)
+}
+
+.text-token-29\/60 {
+	color: rgba(240, 188, 60, .6)
+}
+
+.text-token-29\/65 {
+	color: rgba(240, 188, 60, .65)
+}
+
+.text-token-29\/70 {
+	color: rgba(240, 188, 60, .7)
+}
+
+.text-token-29\/75 {
+	color: rgba(240, 188, 60, .75)
+}
+
+.text-token-29\/80 {
+	color: rgba(240, 188, 60, .8)
+}
+
+.text-token-29\/85 {
+	color: rgba(240, 188, 60, .85)
+}
+
+.text-token-29\/90 {
+	color: rgba(240, 188, 60, .9)
+}
+
+.text-token-29\/95 {
+	color: rgba(240, 188, 60, .95)
+}
+
+.text-token-3 {
+	--tw-text-opacity: 1;
+	color: rgb(39 117 202/var(--tw-text-opacity))
+}
+
+.text-token-3\/0 {
+	color: rgba(39, 117, 202, 0)
+}
+
+.text-token-3\/10 {
+	color: rgba(39, 117, 202, .1)
+}
+
+.text-token-3\/100 {
+	color: #2775ca
+}
+
+.text-token-3\/15 {
+	color: rgba(39, 117, 202, .15)
+}
+
+.text-token-3\/20 {
+	color: rgba(39, 117, 202, .2)
+}
+
+.text-token-3\/25 {
+	color: rgba(39, 117, 202, .25)
+}
+
+.text-token-3\/30 {
+	color: rgba(39, 117, 202, .3)
+}
+
+.text-token-3\/35 {
+	color: rgba(39, 117, 202, .35)
+}
+
+.text-token-3\/40 {
+	color: rgba(39, 117, 202, .4)
+}
+
+.text-token-3\/45 {
+	color: rgba(39, 117, 202, .45)
+}
+
+.text-token-3\/5 {
+	color: rgba(39, 117, 202, .05)
+}
+
+.text-token-3\/50 {
+	color: rgba(39, 117, 202, .5)
+}
+
+.text-token-3\/55 {
+	color: rgba(39, 117, 202, .55)
+}
+
+.text-token-3\/60 {
+	color: rgba(39, 117, 202, .6)
+}
+
+.text-token-3\/65 {
+	color: rgba(39, 117, 202, .65)
+}
+
+.text-token-3\/70 {
+	color: rgba(39, 117, 202, .7)
+}
+
+.text-token-3\/75 {
+	color: rgba(39, 117, 202, .75)
+}
+
+.text-token-3\/80 {
+	color: rgba(39, 117, 202, .8)
+}
+
+.text-token-3\/85 {
+	color: rgba(39, 117, 202, .85)
+}
+
+.text-token-3\/90 {
+	color: rgba(39, 117, 202, .9)
+}
+
+.text-token-3\/95 {
+	color: rgba(39, 117, 202, .95)
+}
+
+.text-token-30 {
+	--tw-text-opacity: 1;
+	color: rgb(5 235 224/var(--tw-text-opacity))
+}
+
+.text-token-30\/0 {
+	color: rgba(5, 235, 224, 0)
+}
+
+.text-token-30\/10 {
+	color: rgba(5, 235, 224, .1)
+}
+
+.text-token-30\/100 {
+	color: #05ebe0
+}
+
+.text-token-30\/15 {
+	color: rgba(5, 235, 224, .15)
+}
+
+.text-token-30\/20 {
+	color: rgba(5, 235, 224, .2)
+}
+
+.text-token-30\/25 {
+	color: rgba(5, 235, 224, .25)
+}
+
+.text-token-30\/30 {
+	color: rgba(5, 235, 224, .3)
+}
+
+.text-token-30\/35 {
+	color: rgba(5, 235, 224, .35)
+}
+
+.text-token-30\/40 {
+	color: rgba(5, 235, 224, .4)
+}
+
+.text-token-30\/45 {
+	color: rgba(5, 235, 224, .45)
+}
+
+.text-token-30\/5 {
+	color: rgba(5, 235, 224, .05)
+}
+
+.text-token-30\/50 {
+	color: rgba(5, 235, 224, .5)
+}
+
+.text-token-30\/55 {
+	color: rgba(5, 235, 224, .55)
+}
+
+.text-token-30\/60 {
+	color: rgba(5, 235, 224, .6)
+}
+
+.text-token-30\/65 {
+	color: rgba(5, 235, 224, .65)
+}
+
+.text-token-30\/70 {
+	color: rgba(5, 235, 224, .7)
+}
+
+.text-token-30\/75 {
+	color: rgba(5, 235, 224, .75)
+}
+
+.text-token-30\/80 {
+	color: rgba(5, 235, 224, .8)
+}
+
+.text-token-30\/85 {
+	color: rgba(5, 235, 224, .85)
+}
+
+.text-token-30\/90 {
+	color: rgba(5, 235, 224, .9)
+}
+
+.text-token-30\/95 {
+	color: rgba(5, 235, 224, .95)
+}
+
+.text-token-31 {
+	--tw-text-opacity: 1;
+	color: rgb(1 189 215/var(--tw-text-opacity))
+}
+
+.text-token-31\/0 {
+	color: rgba(1, 189, 215, 0)
+}
+
+.text-token-31\/10 {
+	color: rgba(1, 189, 215, .1)
+}
+
+.text-token-31\/100 {
+	color: #01bdd7
+}
+
+.text-token-31\/15 {
+	color: rgba(1, 189, 215, .15)
+}
+
+.text-token-31\/20 {
+	color: rgba(1, 189, 215, .2)
+}
+
+.text-token-31\/25 {
+	color: rgba(1, 189, 215, .25)
+}
+
+.text-token-31\/30 {
+	color: rgba(1, 189, 215, .3)
+}
+
+.text-token-31\/35 {
+	color: rgba(1, 189, 215, .35)
+}
+
+.text-token-31\/40 {
+	color: rgba(1, 189, 215, .4)
+}
+
+.text-token-31\/45 {
+	color: rgba(1, 189, 215, .45)
+}
+
+.text-token-31\/5 {
+	color: rgba(1, 189, 215, .05)
+}
+
+.text-token-31\/50 {
+	color: rgba(1, 189, 215, .5)
+}
+
+.text-token-31\/55 {
+	color: rgba(1, 189, 215, .55)
+}
+
+.text-token-31\/60 {
+	color: rgba(1, 189, 215, .6)
+}
+
+.text-token-31\/65 {
+	color: rgba(1, 189, 215, .65)
+}
+
+.text-token-31\/70 {
+	color: rgba(1, 189, 215, .7)
+}
+
+.text-token-31\/75 {
+	color: rgba(1, 189, 215, .75)
+}
+
+.text-token-31\/80 {
+	color: rgba(1, 189, 215, .8)
+}
+
+.text-token-31\/85 {
+	color: rgba(1, 189, 215, .85)
+}
+
+.text-token-31\/90 {
+	color: rgba(1, 189, 215, .9)
+}
+
+.text-token-31\/95 {
+	color: rgba(1, 189, 215, .95)
+}
+
+.text-token-32 {
+	--tw-text-opacity: 1;
+	color: rgb(255 0 31/var(--tw-text-opacity))
+}
+
+.text-token-32\/0 {
+	color: rgba(255, 0, 31, 0)
+}
+
+.text-token-32\/10 {
+	color: rgba(255, 0, 31, .1)
+}
+
+.text-token-32\/100 {
+	color: #ff001f
+}
+
+.text-token-32\/15 {
+	color: rgba(255, 0, 31, .15)
+}
+
+.text-token-32\/20 {
+	color: rgba(255, 0, 31, .2)
+}
+
+.text-token-32\/25 {
+	color: rgba(255, 0, 31, .25)
+}
+
+.text-token-32\/30 {
+	color: rgba(255, 0, 31, .3)
+}
+
+.text-token-32\/35 {
+	color: rgba(255, 0, 31, .35)
+}
+
+.text-token-32\/40 {
+	color: rgba(255, 0, 31, .4)
+}
+
+.text-token-32\/45 {
+	color: rgba(255, 0, 31, .45)
+}
+
+.text-token-32\/5 {
+	color: rgba(255, 0, 31, .05)
+}
+
+.text-token-32\/50 {
+	color: rgba(255, 0, 31, .5)
+}
+
+.text-token-32\/55 {
+	color: rgba(255, 0, 31, .55)
+}
+
+.text-token-32\/60 {
+	color: rgba(255, 0, 31, .6)
+}
+
+.text-token-32\/65 {
+	color: rgba(255, 0, 31, .65)
+}
+
+.text-token-32\/70 {
+	color: rgba(255, 0, 31, .7)
+}
+
+.text-token-32\/75 {
+	color: rgba(255, 0, 31, .75)
+}
+
+.text-token-32\/80 {
+	color: rgba(255, 0, 31, .8)
+}
+
+.text-token-32\/85 {
+	color: rgba(255, 0, 31, .85)
+}
+
+.text-token-32\/90 {
+	color: rgba(255, 0, 31, .9)
+}
+
+.text-token-32\/95 {
+	color: rgba(255, 0, 31, .95)
+}
+
+.text-token-33 {
+	--tw-text-opacity: 1;
+	color: rgb(185 225 125/var(--tw-text-opacity))
+}
+
+.text-token-33\/0 {
+	color: hsla(84, 63%, 69%, 0)
+}
+
+.text-token-33\/10 {
+	color: hsla(84, 63%, 69%, .1)
+}
+
+.text-token-33\/100 {
+	color: #b9e17d
+}
+
+.text-token-33\/15 {
+	color: hsla(84, 63%, 69%, .15)
+}
+
+.text-token-33\/20 {
+	color: hsla(84, 63%, 69%, .2)
+}
+
+.text-token-33\/25 {
+	color: hsla(84, 63%, 69%, .25)
+}
+
+.text-token-33\/30 {
+	color: hsla(84, 63%, 69%, .3)
+}
+
+.text-token-33\/35 {
+	color: hsla(84, 63%, 69%, .35)
+}
+
+.text-token-33\/40 {
+	color: hsla(84, 63%, 69%, .4)
+}
+
+.text-token-33\/45 {
+	color: hsla(84, 63%, 69%, .45)
+}
+
+.text-token-33\/5 {
+	color: hsla(84, 63%, 69%, .05)
+}
+
+.text-token-33\/50 {
+	color: hsla(84, 63%, 69%, .5)
+}
+
+.text-token-33\/55 {
+	color: hsla(84, 63%, 69%, .55)
+}
+
+.text-token-33\/60 {
+	color: hsla(84, 63%, 69%, .6)
+}
+
+.text-token-33\/65 {
+	color: hsla(84, 63%, 69%, .65)
+}
+
+.text-token-33\/70 {
+	color: hsla(84, 63%, 69%, .7)
+}
+
+.text-token-33\/75 {
+	color: hsla(84, 63%, 69%, .75)
+}
+
+.text-token-33\/80 {
+	color: hsla(84, 63%, 69%, .8)
+}
+
+.text-token-33\/85 {
+	color: hsla(84, 63%, 69%, .85)
+}
+
+.text-token-33\/90 {
+	color: hsla(84, 63%, 69%, .9)
+}
+
+.text-token-33\/95 {
+	color: hsla(84, 63%, 69%, .95)
+}
+
+.text-token-34 {
+	color: var(--color-black-white)
+}
+
+.text-token-35 {
+	--tw-text-opacity: 1;
+	color: rgb(233 104 202/var(--tw-text-opacity))
+}
+
+.text-token-35\/0 {
+	color: rgba(233, 104, 202, 0)
+}
+
+.text-token-35\/10 {
+	color: rgba(233, 104, 202, .1)
+}
+
+.text-token-35\/100 {
+	color: #e968ca
+}
+
+.text-token-35\/15 {
+	color: rgba(233, 104, 202, .15)
+}
+
+.text-token-35\/20 {
+	color: rgba(233, 104, 202, .2)
+}
+
+.text-token-35\/25 {
+	color: rgba(233, 104, 202, .25)
+}
+
+.text-token-35\/30 {
+	color: rgba(233, 104, 202, .3)
+}
+
+.text-token-35\/35 {
+	color: rgba(233, 104, 202, .35)
+}
+
+.text-token-35\/40 {
+	color: rgba(233, 104, 202, .4)
+}
+
+.text-token-35\/45 {
+	color: rgba(233, 104, 202, .45)
+}
+
+.text-token-35\/5 {
+	color: rgba(233, 104, 202, .05)
+}
+
+.text-token-35\/50 {
+	color: rgba(233, 104, 202, .5)
+}
+
+.text-token-35\/55 {
+	color: rgba(233, 104, 202, .55)
+}
+
+.text-token-35\/60 {
+	color: rgba(233, 104, 202, .6)
+}
+
+.text-token-35\/65 {
+	color: rgba(233, 104, 202, .65)
+}
+
+.text-token-35\/70 {
+	color: rgba(233, 104, 202, .7)
+}
+
+.text-token-35\/75 {
+	color: rgba(233, 104, 202, .75)
+}
+
+.text-token-35\/80 {
+	color: rgba(233, 104, 202, .8)
+}
+
+.text-token-35\/85 {
+	color: rgba(233, 104, 202, .85)
+}
+
+.text-token-35\/90 {
+	color: rgba(233, 104, 202, .9)
+}
+
+.text-token-35\/95 {
+	color: rgba(233, 104, 202, .95)
+}
+
+.text-token-36 {
+	--tw-text-opacity: 1;
+	color: rgb(6 241 205/var(--tw-text-opacity))
+}
+
+.text-token-36\/0 {
+	color: rgba(6, 241, 205, 0)
+}
+
+.text-token-36\/10 {
+	color: rgba(6, 241, 205, .1)
+}
+
+.text-token-36\/100 {
+	color: #06f1cd
+}
+
+.text-token-36\/15 {
+	color: rgba(6, 241, 205, .15)
+}
+
+.text-token-36\/20 {
+	color: rgba(6, 241, 205, .2)
+}
+
+.text-token-36\/25 {
+	color: rgba(6, 241, 205, .25)
+}
+
+.text-token-36\/30 {
+	color: rgba(6, 241, 205, .3)
+}
+
+.text-token-36\/35 {
+	color: rgba(6, 241, 205, .35)
+}
+
+.text-token-36\/40 {
+	color: rgba(6, 241, 205, .4)
+}
+
+.text-token-36\/45 {
+	color: rgba(6, 241, 205, .45)
+}
+
+.text-token-36\/5 {
+	color: rgba(6, 241, 205, .05)
+}
+
+.text-token-36\/50 {
+	color: rgba(6, 241, 205, .5)
+}
+
+.text-token-36\/55 {
+	color: rgba(6, 241, 205, .55)
+}
+
+.text-token-36\/60 {
+	color: rgba(6, 241, 205, .6)
+}
+
+.text-token-36\/65 {
+	color: rgba(6, 241, 205, .65)
+}
+
+.text-token-36\/70 {
+	color: rgba(6, 241, 205, .7)
+}
+
+.text-token-36\/75 {
+	color: rgba(6, 241, 205, .75)
+}
+
+.text-token-36\/80 {
+	color: rgba(6, 241, 205, .8)
+}
+
+.text-token-36\/85 {
+	color: rgba(6, 241, 205, .85)
+}
+
+.text-token-36\/90 {
+	color: rgba(6, 241, 205, .9)
+}
+
+.text-token-36\/95 {
+	color: rgba(6, 241, 205, .95)
+}
+
+.text-token-37 {
+	--tw-text-opacity: 1;
+	color: rgb(109 66 244/var(--tw-text-opacity))
+}
+
+.text-token-37\/0 {
+	color: rgba(109, 66, 244, 0)
+}
+
+.text-token-37\/10 {
+	color: rgba(109, 66, 244, .1)
+}
+
+.text-token-37\/100 {
+	color: #6d42f4
+}
+
+.text-token-37\/15 {
+	color: rgba(109, 66, 244, .15)
+}
+
+.text-token-37\/20 {
+	color: rgba(109, 66, 244, .2)
+}
+
+.text-token-37\/25 {
+	color: rgba(109, 66, 244, .25)
+}
+
+.text-token-37\/30 {
+	color: rgba(109, 66, 244, .3)
+}
+
+.text-token-37\/35 {
+	color: rgba(109, 66, 244, .35)
+}
+
+.text-token-37\/40 {
+	color: rgba(109, 66, 244, .4)
+}
+
+.text-token-37\/45 {
+	color: rgba(109, 66, 244, .45)
+}
+
+.text-token-37\/5 {
+	color: rgba(109, 66, 244, .05)
+}
+
+.text-token-37\/50 {
+	color: rgba(109, 66, 244, .5)
+}
+
+.text-token-37\/55 {
+	color: rgba(109, 66, 244, .55)
+}
+
+.text-token-37\/60 {
+	color: rgba(109, 66, 244, .6)
+}
+
+.text-token-37\/65 {
+	color: rgba(109, 66, 244, .65)
+}
+
+.text-token-37\/70 {
+	color: rgba(109, 66, 244, .7)
+}
+
+.text-token-37\/75 {
+	color: rgba(109, 66, 244, .75)
+}
+
+.text-token-37\/80 {
+	color: rgba(109, 66, 244, .8)
+}
+
+.text-token-37\/85 {
+	color: rgba(109, 66, 244, .85)
+}
+
+.text-token-37\/90 {
+	color: rgba(109, 66, 244, .9)
+}
+
+.text-token-37\/95 {
+	color: rgba(109, 66, 244, .95)
+}
+
+.text-token-38 {
+	--tw-text-opacity: 1;
+	color: rgb(201 160 81/var(--tw-text-opacity))
+}
+
+.text-token-38\/0 {
+	color: rgba(201, 160, 81, 0)
+}
+
+.text-token-38\/10 {
+	color: rgba(201, 160, 81, .1)
+}
+
+.text-token-38\/100 {
+	color: #c9a051
+}
+
+.text-token-38\/15 {
+	color: rgba(201, 160, 81, .15)
+}
+
+.text-token-38\/20 {
+	color: rgba(201, 160, 81, .2)
+}
+
+.text-token-38\/25 {
+	color: rgba(201, 160, 81, .25)
+}
+
+.text-token-38\/30 {
+	color: rgba(201, 160, 81, .3)
+}
+
+.text-token-38\/35 {
+	color: rgba(201, 160, 81, .35)
+}
+
+.text-token-38\/40 {
+	color: rgba(201, 160, 81, .4)
+}
+
+.text-token-38\/45 {
+	color: rgba(201, 160, 81, .45)
+}
+
+.text-token-38\/5 {
+	color: rgba(201, 160, 81, .05)
+}
+
+.text-token-38\/50 {
+	color: rgba(201, 160, 81, .5)
+}
+
+.text-token-38\/55 {
+	color: rgba(201, 160, 81, .55)
+}
+
+.text-token-38\/60 {
+	color: rgba(201, 160, 81, .6)
+}
+
+.text-token-38\/65 {
+	color: rgba(201, 160, 81, .65)
+}
+
+.text-token-38\/70 {
+	color: rgba(201, 160, 81, .7)
+}
+
+.text-token-38\/75 {
+	color: rgba(201, 160, 81, .75)
+}
+
+.text-token-38\/80 {
+	color: rgba(201, 160, 81, .8)
+}
+
+.text-token-38\/85 {
+	color: rgba(201, 160, 81, .85)
+}
+
+.text-token-38\/90 {
+	color: rgba(201, 160, 81, .9)
+}
+
+.text-token-38\/95 {
+	color: rgba(201, 160, 81, .95)
+}
+
+.text-token-39 {
+	--tw-text-opacity: 1;
+	color: rgb(232 248 81/var(--tw-text-opacity))
+}
+
+.text-token-39\/0 {
+	color: rgba(232, 248, 81, 0)
+}
+
+.text-token-39\/10 {
+	color: rgba(232, 248, 81, .1)
+}
+
+.text-token-39\/100 {
+	color: #e8f851
+}
+
+.text-token-39\/15 {
+	color: rgba(232, 248, 81, .15)
+}
+
+.text-token-39\/20 {
+	color: rgba(232, 248, 81, .2)
+}
+
+.text-token-39\/25 {
+	color: rgba(232, 248, 81, .25)
+}
+
+.text-token-39\/30 {
+	color: rgba(232, 248, 81, .3)
+}
+
+.text-token-39\/35 {
+	color: rgba(232, 248, 81, .35)
+}
+
+.text-token-39\/40 {
+	color: rgba(232, 248, 81, .4)
+}
+
+.text-token-39\/45 {
+	color: rgba(232, 248, 81, .45)
+}
+
+.text-token-39\/5 {
+	color: rgba(232, 248, 81, .05)
+}
+
+.text-token-39\/50 {
+	color: rgba(232, 248, 81, .5)
+}
+
+.text-token-39\/55 {
+	color: rgba(232, 248, 81, .55)
+}
+
+.text-token-39\/60 {
+	color: rgba(232, 248, 81, .6)
+}
+
+.text-token-39\/65 {
+	color: rgba(232, 248, 81, .65)
+}
+
+.text-token-39\/70 {
+	color: rgba(232, 248, 81, .7)
+}
+
+.text-token-39\/75 {
+	color: rgba(232, 248, 81, .75)
+}
+
+.text-token-39\/80 {
+	color: rgba(232, 248, 81, .8)
+}
+
+.text-token-39\/85 {
+	color: rgba(232, 248, 81, .85)
+}
+
+.text-token-39\/90 {
+	color: rgba(232, 248, 81, .9)
+}
+
+.text-token-39\/95 {
+	color: rgba(232, 248, 81, .95)
+}
+
+.text-token-40 {
+	--tw-text-opacity: 1;
+	color: rgb(52 93 157/var(--tw-text-opacity))
+}
+
+.text-token-40\/0 {
+	color: rgba(52, 93, 157, 0)
+}
+
+.text-token-40\/10 {
+	color: rgba(52, 93, 157, .1)
+}
+
+.text-token-40\/100 {
+	color: #345d9d
+}
+
+.text-token-40\/15 {
+	color: rgba(52, 93, 157, .15)
+}
+
+.text-token-40\/20 {
+	color: rgba(52, 93, 157, .2)
+}
+
+.text-token-40\/25 {
+	color: rgba(52, 93, 157, .25)
+}
+
+.text-token-40\/30 {
+	color: rgba(52, 93, 157, .3)
+}
+
+.text-token-40\/35 {
+	color: rgba(52, 93, 157, .35)
+}
+
+.text-token-40\/40 {
+	color: rgba(52, 93, 157, .4)
+}
+
+.text-token-40\/45 {
+	color: rgba(52, 93, 157, .45)
+}
+
+.text-token-40\/5 {
+	color: rgba(52, 93, 157, .05)
+}
+
+.text-token-40\/50 {
+	color: rgba(52, 93, 157, .5)
+}
+
+.text-token-40\/55 {
+	color: rgba(52, 93, 157, .55)
+}
+
+.text-token-40\/60 {
+	color: rgba(52, 93, 157, .6)
+}
+
+.text-token-40\/65 {
+	color: rgba(52, 93, 157, .65)
+}
+
+.text-token-40\/70 {
+	color: rgba(52, 93, 157, .7)
+}
+
+.text-token-40\/75 {
+	color: rgba(52, 93, 157, .75)
+}
+
+.text-token-40\/80 {
+	color: rgba(52, 93, 157, .8)
+}
+
+.text-token-40\/85 {
+	color: rgba(52, 93, 157, .85)
+}
+
+.text-token-40\/90 {
+	color: rgba(52, 93, 157, .9)
+}
+
+.text-token-40\/95 {
+	color: rgba(52, 93, 157, .95)
+}
+
+.text-token-41 {
+	--tw-text-opacity: 1;
+	color: rgb(255 80 0/var(--tw-text-opacity))
+}
+
+.text-token-41\/0 {
+	color: rgba(255, 80, 0, 0)
+}
+
+.text-token-41\/10 {
+	color: rgba(255, 80, 0, .1)
+}
+
+.text-token-41\/100 {
+	color: #ff5000
+}
+
+.text-token-41\/15 {
+	color: rgba(255, 80, 0, .15)
+}
+
+.text-token-41\/20 {
+	color: rgba(255, 80, 0, .2)
+}
+
+.text-token-41\/25 {
+	color: rgba(255, 80, 0, .25)
+}
+
+.text-token-41\/30 {
+	color: rgba(255, 80, 0, .3)
+}
+
+.text-token-41\/35 {
+	color: rgba(255, 80, 0, .35)
+}
+
+.text-token-41\/40 {
+	color: rgba(255, 80, 0, .4)
+}
+
+.text-token-41\/45 {
+	color: rgba(255, 80, 0, .45)
+}
+
+.text-token-41\/5 {
+	color: rgba(255, 80, 0, .05)
+}
+
+.text-token-41\/50 {
+	color: rgba(255, 80, 0, .5)
+}
+
+.text-token-41\/55 {
+	color: rgba(255, 80, 0, .55)
+}
+
+.text-token-41\/60 {
+	color: rgba(255, 80, 0, .6)
+}
+
+.text-token-41\/65 {
+	color: rgba(255, 80, 0, .65)
+}
+
+.text-token-41\/70 {
+	color: rgba(255, 80, 0, .7)
+}
+
+.text-token-41\/75 {
+	color: rgba(255, 80, 0, .75)
+}
+
+.text-token-41\/80 {
+	color: rgba(255, 80, 0, .8)
+}
+
+.text-token-41\/85 {
+	color: rgba(255, 80, 0, .85)
+}
+
+.text-token-41\/90 {
+	color: rgba(255, 80, 0, .9)
+}
+
+.text-token-41\/95 {
+	color: rgba(255, 80, 0, .95)
+}
+
+.text-token-42 {
+	color: var(--color-black-white)
+}
+
+.text-token-43 {
+	--tw-text-opacity: 1;
+	color: rgb(0 255 200/var(--tw-text-opacity))
+}
+
+.text-token-43\/0 {
+	color: rgba(0, 255, 200, 0)
+}
+
+.text-token-43\/10 {
+	color: rgba(0, 255, 200, .1)
+}
+
+.text-token-43\/100 {
+	color: #00ffc8
+}
+
+.text-token-43\/15 {
+	color: rgba(0, 255, 200, .15)
+}
+
+.text-token-43\/20 {
+	color: rgba(0, 255, 200, .2)
+}
+
+.text-token-43\/25 {
+	color: rgba(0, 255, 200, .25)
+}
+
+.text-token-43\/30 {
+	color: rgba(0, 255, 200, .3)
+}
+
+.text-token-43\/35 {
+	color: rgba(0, 255, 200, .35)
+}
+
+.text-token-43\/40 {
+	color: rgba(0, 255, 200, .4)
+}
+
+.text-token-43\/45 {
+	color: rgba(0, 255, 200, .45)
+}
+
+.text-token-43\/5 {
+	color: rgba(0, 255, 200, .05)
+}
+
+.text-token-43\/50 {
+	color: rgba(0, 255, 200, .5)
+}
+
+.text-token-43\/55 {
+	color: rgba(0, 255, 200, .55)
+}
+
+.text-token-43\/60 {
+	color: rgba(0, 255, 200, .6)
+}
+
+.text-token-43\/65 {
+	color: rgba(0, 255, 200, .65)
+}
+
+.text-token-43\/70 {
+	color: rgba(0, 255, 200, .7)
+}
+
+.text-token-43\/75 {
+	color: rgba(0, 255, 200, .75)
+}
+
+.text-token-43\/80 {
+	color: rgba(0, 255, 200, .8)
+}
+
+.text-token-43\/85 {
+	color: rgba(0, 255, 200, .85)
+}
+
+.text-token-43\/90 {
+	color: rgba(0, 255, 200, .9)
+}
+
+.text-token-43\/95 {
+	color: rgba(0, 255, 200, .95)
+}
+
+.text-token-46 {
+	--tw-text-opacity: 1;
+	color: rgb(247 192 7/var(--tw-text-opacity))
+}
+
+.text-token-46\/0 {
+	color: rgba(247, 192, 7, 0)
+}
+
+.text-token-46\/10 {
+	color: rgba(247, 192, 7, .1)
+}
+
+.text-token-46\/100 {
+	color: #f7c007
+}
+
+.text-token-46\/15 {
+	color: rgba(247, 192, 7, .15)
+}
+
+.text-token-46\/20 {
+	color: rgba(247, 192, 7, .2)
+}
+
+.text-token-46\/25 {
+	color: rgba(247, 192, 7, .25)
+}
+
+.text-token-46\/30 {
+	color: rgba(247, 192, 7, .3)
+}
+
+.text-token-46\/35 {
+	color: rgba(247, 192, 7, .35)
+}
+
+.text-token-46\/40 {
+	color: rgba(247, 192, 7, .4)
+}
+
+.text-token-46\/45 {
+	color: rgba(247, 192, 7, .45)
+}
+
+.text-token-46\/5 {
+	color: rgba(247, 192, 7, .05)
+}
+
+.text-token-46\/50 {
+	color: rgba(247, 192, 7, .5)
+}
+
+.text-token-46\/55 {
+	color: rgba(247, 192, 7, .55)
+}
+
+.text-token-46\/60 {
+	color: rgba(247, 192, 7, .6)
+}
+
+.text-token-46\/65 {
+	color: rgba(247, 192, 7, .65)
+}
+
+.text-token-46\/70 {
+	color: rgba(247, 192, 7, .7)
+}
+
+.text-token-46\/75 {
+	color: rgba(247, 192, 7, .75)
+}
+
+.text-token-46\/80 {
+	color: rgba(247, 192, 7, .8)
+}
+
+.text-token-46\/85 {
+	color: rgba(247, 192, 7, .85)
+}
+
+.text-token-46\/90 {
+	color: rgba(247, 192, 7, .9)
+}
+
+.text-token-46\/95 {
+	color: rgba(247, 192, 7, .95)
+}
+
+.text-token-47 {
+	color: var(--color-black-white)
+}
+
+.text-token-49 {
+	color: var(--color-black-white)
+}
+
+.text-token-5 {
+	--tw-text-opacity: 1;
+	color: rgb(153 69 255/var(--tw-text-opacity))
+}
+
+.text-token-5\/0 {
+	color: rgba(153, 69, 255, 0)
+}
+
+.text-token-5\/10 {
+	color: rgba(153, 69, 255, .1)
+}
+
+.text-token-5\/100 {
+	color: #9945ff
+}
+
+.text-token-5\/15 {
+	color: rgba(153, 69, 255, .15)
+}
+
+.text-token-5\/20 {
+	color: rgba(153, 69, 255, .2)
+}
+
+.text-token-5\/25 {
+	color: rgba(153, 69, 255, .25)
+}
+
+.text-token-5\/30 {
+	color: rgba(153, 69, 255, .3)
+}
+
+.text-token-5\/35 {
+	color: rgba(153, 69, 255, .35)
+}
+
+.text-token-5\/40 {
+	color: rgba(153, 69, 255, .4)
+}
+
+.text-token-5\/45 {
+	color: rgba(153, 69, 255, .45)
+}
+
+.text-token-5\/5 {
+	color: rgba(153, 69, 255, .05)
+}
+
+.text-token-5\/50 {
+	color: rgba(153, 69, 255, .5)
+}
+
+.text-token-5\/55 {
+	color: rgba(153, 69, 255, .55)
+}
+
+.text-token-5\/60 {
+	color: rgba(153, 69, 255, .6)
+}
+
+.text-token-5\/65 {
+	color: rgba(153, 69, 255, .65)
+}
+
+.text-token-5\/70 {
+	color: rgba(153, 69, 255, .7)
+}
+
+.text-token-5\/75 {
+	color: rgba(153, 69, 255, .75)
+}
+
+.text-token-5\/80 {
+	color: rgba(153, 69, 255, .8)
+}
+
+.text-token-5\/85 {
+	color: rgba(153, 69, 255, .85)
+}
+
+.text-token-5\/90 {
+	color: rgba(153, 69, 255, .9)
+}
+
+.text-token-5\/95 {
+	color: rgba(153, 69, 255, .95)
+}
+
+.text-token-50, .text-token-51 {
+	color: var(--color-black-white)
+}
+
+.text-token-52 {
+	--tw-text-opacity: 1;
+	color: rgb(17 250 152/var(--tw-text-opacity))
+}
+
+.text-token-52\/0 {
+	color: rgba(17, 250, 152, 0)
+}
+
+.text-token-52\/10 {
+	color: rgba(17, 250, 152, .1)
+}
+
+.text-token-52\/100 {
+	color: #11fa98
+}
+
+.text-token-52\/15 {
+	color: rgba(17, 250, 152, .15)
+}
+
+.text-token-52\/20 {
+	color: rgba(17, 250, 152, .2)
+}
+
+.text-token-52\/25 {
+	color: rgba(17, 250, 152, .25)
+}
+
+.text-token-52\/30 {
+	color: rgba(17, 250, 152, .3)
+}
+
+.text-token-52\/35 {
+	color: rgba(17, 250, 152, .35)
+}
+
+.text-token-52\/40 {
+	color: rgba(17, 250, 152, .4)
+}
+
+.text-token-52\/45 {
+	color: rgba(17, 250, 152, .45)
+}
+
+.text-token-52\/5 {
+	color: rgba(17, 250, 152, .05)
+}
+
+.text-token-52\/50 {
+	color: rgba(17, 250, 152, .5)
+}
+
+.text-token-52\/55 {
+	color: rgba(17, 250, 152, .55)
+}
+
+.text-token-52\/60 {
+	color: rgba(17, 250, 152, .6)
+}
+
+.text-token-52\/65 {
+	color: rgba(17, 250, 152, .65)
+}
+
+.text-token-52\/70 {
+	color: rgba(17, 250, 152, .7)
+}
+
+.text-token-52\/75 {
+	color: rgba(17, 250, 152, .75)
+}
+
+.text-token-52\/80 {
+	color: rgba(17, 250, 152, .8)
+}
+
+.text-token-52\/85 {
+	color: rgba(17, 250, 152, .85)
+}
+
+.text-token-52\/90 {
+	color: rgba(17, 250, 152, .9)
+}
+
+.text-token-52\/95 {
+	color: rgba(17, 250, 152, .95)
+}
+
+.text-token-53, .text-token-54, .text-token-55, .text-token-56, .text-token-57, .text-token-58, .text-token-59 {
+	color: var(--color-black-white)
+}
+
+.text-token-6 {
+	--tw-text-opacity: 1;
+	color: rgb(83 174 148/var(--tw-text-opacity))
+}
+
+.text-token-6\/0 {
+	color: rgba(83, 174, 148, 0)
+}
+
+.text-token-6\/10 {
+	color: rgba(83, 174, 148, .1)
+}
+
+.text-token-6\/100 {
+	color: #53ae94
+}
+
+.text-token-6\/15 {
+	color: rgba(83, 174, 148, .15)
+}
+
+.text-token-6\/20 {
+	color: rgba(83, 174, 148, .2)
+}
+
+.text-token-6\/25 {
+	color: rgba(83, 174, 148, .25)
+}
+
+.text-token-6\/30 {
+	color: rgba(83, 174, 148, .3)
+}
+
+.text-token-6\/35 {
+	color: rgba(83, 174, 148, .35)
+}
+
+.text-token-6\/40 {
+	color: rgba(83, 174, 148, .4)
+}
+
+.text-token-6\/45 {
+	color: rgba(83, 174, 148, .45)
+}
+
+.text-token-6\/5 {
+	color: rgba(83, 174, 148, .05)
+}
+
+.text-token-6\/50 {
+	color: rgba(83, 174, 148, .5)
+}
+
+.text-token-6\/55 {
+	color: rgba(83, 174, 148, .55)
+}
+
+.text-token-6\/60 {
+	color: rgba(83, 174, 148, .6)
+}
+
+.text-token-6\/65 {
+	color: rgba(83, 174, 148, .65)
+}
+
+.text-token-6\/70 {
+	color: rgba(83, 174, 148, .7)
+}
+
+.text-token-6\/75 {
+	color: rgba(83, 174, 148, .75)
+}
+
+.text-token-6\/80 {
+	color: rgba(83, 174, 148, .8)
+}
+
+.text-token-6\/85 {
+	color: rgba(83, 174, 148, .85)
+}
+
+.text-token-6\/90 {
+	color: rgba(83, 174, 148, .9)
+}
+
+.text-token-6\/95 {
+	color: rgba(83, 174, 148, .95)
+}
+
+.text-token-60, .text-token-61, .text-token-62, .text-token-63 {
+	color: var(--color-black-white)
+}
+
+.text-token-64 {
+	--tw-text-opacity: 1;
+	color: rgb(245 5 141/var(--tw-text-opacity))
+}
+
+.text-token-64\/0 {
+	color: rgba(245, 5, 141, 0)
+}
+
+.text-token-64\/10 {
+	color: rgba(245, 5, 141, .1)
+}
+
+.text-token-64\/100 {
+	color: #f5058d
+}
+
+.text-token-64\/15 {
+	color: rgba(245, 5, 141, .15)
+}
+
+.text-token-64\/20 {
+	color: rgba(245, 5, 141, .2)
+}
+
+.text-token-64\/25 {
+	color: rgba(245, 5, 141, .25)
+}
+
+.text-token-64\/30 {
+	color: rgba(245, 5, 141, .3)
+}
+
+.text-token-64\/35 {
+	color: rgba(245, 5, 141, .35)
+}
+
+.text-token-64\/40 {
+	color: rgba(245, 5, 141, .4)
+}
+
+.text-token-64\/45 {
+	color: rgba(245, 5, 141, .45)
+}
+
+.text-token-64\/5 {
+	color: rgba(245, 5, 141, .05)
+}
+
+.text-token-64\/50 {
+	color: rgba(245, 5, 141, .5)
+}
+
+.text-token-64\/55 {
+	color: rgba(245, 5, 141, .55)
+}
+
+.text-token-64\/60 {
+	color: rgba(245, 5, 141, .6)
+}
+
+.text-token-64\/65 {
+	color: rgba(245, 5, 141, .65)
+}
+
+.text-token-64\/70 {
+	color: rgba(245, 5, 141, .7)
+}
+
+.text-token-64\/75 {
+	color: rgba(245, 5, 141, .75)
+}
+
+.text-token-64\/80 {
+	color: rgba(245, 5, 141, .8)
+}
+
+.text-token-64\/85 {
+	color: rgba(245, 5, 141, .85)
+}
+
+.text-token-64\/90 {
+	color: rgba(245, 5, 141, .9)
+}
+
+.text-token-64\/95 {
+	color: rgba(245, 5, 141, .95)
+}
+
+.text-token-69 {
+	--tw-text-opacity: 1;
+	color: rgb(221 30 36/var(--tw-text-opacity))
+}
+
+.text-token-69\/0 {
+	color: rgba(221, 30, 36, 0)
+}
+
+.text-token-69\/10 {
+	color: rgba(221, 30, 36, .1)
+}
+
+.text-token-69\/100 {
+	color: #dd1e24
+}
+
+.text-token-69\/15 {
+	color: rgba(221, 30, 36, .15)
+}
+
+.text-token-69\/20 {
+	color: rgba(221, 30, 36, .2)
+}
+
+.text-token-69\/25 {
+	color: rgba(221, 30, 36, .25)
+}
+
+.text-token-69\/30 {
+	color: rgba(221, 30, 36, .3)
+}
+
+.text-token-69\/35 {
+	color: rgba(221, 30, 36, .35)
+}
+
+.text-token-69\/40 {
+	color: rgba(221, 30, 36, .4)
+}
+
+.text-token-69\/45 {
+	color: rgba(221, 30, 36, .45)
+}
+
+.text-token-69\/5 {
+	color: rgba(221, 30, 36, .05)
+}
+
+.text-token-69\/50 {
+	color: rgba(221, 30, 36, .5)
+}
+
+.text-token-69\/55 {
+	color: rgba(221, 30, 36, .55)
+}
+
+.text-token-69\/60 {
+	color: rgba(221, 30, 36, .6)
+}
+
+.text-token-69\/65 {
+	color: rgba(221, 30, 36, .65)
+}
+
+.text-token-69\/70 {
+	color: rgba(221, 30, 36, .7)
+}
+
+.text-token-69\/75 {
+	color: rgba(221, 30, 36, .75)
+}
+
+.text-token-69\/80 {
+	color: rgba(221, 30, 36, .8)
+}
+
+.text-token-69\/85 {
+	color: rgba(221, 30, 36, .85)
+}
+
+.text-token-69\/90 {
+	color: rgba(221, 30, 36, .9)
+}
+
+.text-token-69\/95 {
+	color: rgba(221, 30, 36, .95)
+}
+
+.text-token-7 {
+	--tw-text-opacity: 1;
+	color: rgb(39 117 202/var(--tw-text-opacity))
+}
+
+.text-token-7\/0 {
+	color: rgba(39, 117, 202, 0)
+}
+
+.text-token-7\/10 {
+	color: rgba(39, 117, 202, .1)
+}
+
+.text-token-7\/100 {
+	color: #2775ca
+}
+
+.text-token-7\/15 {
+	color: rgba(39, 117, 202, .15)
+}
+
+.text-token-7\/20 {
+	color: rgba(39, 117, 202, .2)
+}
+
+.text-token-7\/25 {
+	color: rgba(39, 117, 202, .25)
+}
+
+.text-token-7\/30 {
+	color: rgba(39, 117, 202, .3)
+}
+
+.text-token-7\/35 {
+	color: rgba(39, 117, 202, .35)
+}
+
+.text-token-7\/40 {
+	color: rgba(39, 117, 202, .4)
+}
+
+.text-token-7\/45 {
+	color: rgba(39, 117, 202, .45)
+}
+
+.text-token-7\/5 {
+	color: rgba(39, 117, 202, .05)
+}
+
+.text-token-7\/50 {
+	color: rgba(39, 117, 202, .5)
+}
+
+.text-token-7\/55 {
+	color: rgba(39, 117, 202, .55)
+}
+
+.text-token-7\/60 {
+	color: rgba(39, 117, 202, .6)
+}
+
+.text-token-7\/65 {
+	color: rgba(39, 117, 202, .65)
+}
+
+.text-token-7\/70 {
+	color: rgba(39, 117, 202, .7)
+}
+
+.text-token-7\/75 {
+	color: rgba(39, 117, 202, .75)
+}
+
+.text-token-7\/80 {
+	color: rgba(39, 117, 202, .8)
+}
+
+.text-token-7\/85 {
+	color: rgba(39, 117, 202, .85)
+}
+
+.text-token-7\/90 {
+	color: rgba(39, 117, 202, .9)
+}
+
+.text-token-7\/95 {
+	color: rgba(39, 117, 202, .95)
+}
+
+.text-token-70 {
+	--tw-text-opacity: 1;
+	color: rgb(197 132 240/var(--tw-text-opacity))
+}
+
+.text-token-70\/0 {
+	color: rgba(197, 132, 240, 0)
+}
+
+.text-token-70\/10 {
+	color: rgba(197, 132, 240, .1)
+}
+
+.text-token-70\/100 {
+	color: #c584f0
+}
+
+.text-token-70\/15 {
+	color: rgba(197, 132, 240, .15)
+}
+
+.text-token-70\/20 {
+	color: rgba(197, 132, 240, .2)
+}
+
+.text-token-70\/25 {
+	color: rgba(197, 132, 240, .25)
+}
+
+.text-token-70\/30 {
+	color: rgba(197, 132, 240, .3)
+}
+
+.text-token-70\/35 {
+	color: rgba(197, 132, 240, .35)
+}
+
+.text-token-70\/40 {
+	color: rgba(197, 132, 240, .4)
+}
+
+.text-token-70\/45 {
+	color: rgba(197, 132, 240, .45)
+}
+
+.text-token-70\/5 {
+	color: rgba(197, 132, 240, .05)
+}
+
+.text-token-70\/50 {
+	color: rgba(197, 132, 240, .5)
+}
+
+.text-token-70\/55 {
+	color: rgba(197, 132, 240, .55)
+}
+
+.text-token-70\/60 {
+	color: rgba(197, 132, 240, .6)
+}
+
+.text-token-70\/65 {
+	color: rgba(197, 132, 240, .65)
+}
+
+.text-token-70\/70 {
+	color: rgba(197, 132, 240, .7)
+}
+
+.text-token-70\/75 {
+	color: rgba(197, 132, 240, .75)
+}
+
+.text-token-70\/80 {
+	color: rgba(197, 132, 240, .8)
+}
+
+.text-token-70\/85 {
+	color: rgba(197, 132, 240, .85)
+}
+
+.text-token-70\/90 {
+	color: rgba(197, 132, 240, .9)
+}
+
+.text-token-70\/95 {
+	color: rgba(197, 132, 240, .95)
+}
+
+.text-token-71 {
+	--tw-text-opacity: 1;
+	color: rgb(33 179 179/var(--tw-text-opacity))
+}
+
+.text-token-71\/0 {
+	color: rgba(33, 179, 179, 0)
+}
+
+.text-token-71\/10 {
+	color: rgba(33, 179, 179, .1)
+}
+
+.text-token-71\/100 {
+	color: #21b3b3
+}
+
+.text-token-71\/15 {
+	color: rgba(33, 179, 179, .15)
+}
+
+.text-token-71\/20 {
+	color: rgba(33, 179, 179, .2)
+}
+
+.text-token-71\/25 {
+	color: rgba(33, 179, 179, .25)
+}
+
+.text-token-71\/30 {
+	color: rgba(33, 179, 179, .3)
+}
+
+.text-token-71\/35 {
+	color: rgba(33, 179, 179, .35)
+}
+
+.text-token-71\/40 {
+	color: rgba(33, 179, 179, .4)
+}
+
+.text-token-71\/45 {
+	color: rgba(33, 179, 179, .45)
+}
+
+.text-token-71\/5 {
+	color: rgba(33, 179, 179, .05)
+}
+
+.text-token-71\/50 {
+	color: rgba(33, 179, 179, .5)
+}
+
+.text-token-71\/55 {
+	color: rgba(33, 179, 179, .55)
+}
+
+.text-token-71\/60 {
+	color: rgba(33, 179, 179, .6)
+}
+
+.text-token-71\/65 {
+	color: rgba(33, 179, 179, .65)
+}
+
+.text-token-71\/70 {
+	color: rgba(33, 179, 179, .7)
+}
+
+.text-token-71\/75 {
+	color: rgba(33, 179, 179, .75)
+}
+
+.text-token-71\/80 {
+	color: rgba(33, 179, 179, .8)
+}
+
+.text-token-71\/85 {
+	color: rgba(33, 179, 179, .85)
+}
+
+.text-token-71\/90 {
+	color: rgba(33, 179, 179, .9)
+}
+
+.text-token-71\/95 {
+	color: rgba(33, 179, 179, .95)
+}
+
+.text-token-72 {
+	--tw-text-opacity: 1;
+	color: rgb(146 185 251/var(--tw-text-opacity))
+}
+
+.text-token-72\/0 {
+	color: rgba(146, 185, 251, 0)
+}
+
+.text-token-72\/10 {
+	color: rgba(146, 185, 251, .1)
+}
+
+.text-token-72\/100 {
+	color: #92b9fb
+}
+
+.text-token-72\/15 {
+	color: rgba(146, 185, 251, .15)
+}
+
+.text-token-72\/20 {
+	color: rgba(146, 185, 251, .2)
+}
+
+.text-token-72\/25 {
+	color: rgba(146, 185, 251, .25)
+}
+
+.text-token-72\/30 {
+	color: rgba(146, 185, 251, .3)
+}
+
+.text-token-72\/35 {
+	color: rgba(146, 185, 251, .35)
+}
+
+.text-token-72\/40 {
+	color: rgba(146, 185, 251, .4)
+}
+
+.text-token-72\/45 {
+	color: rgba(146, 185, 251, .45)
+}
+
+.text-token-72\/5 {
+	color: rgba(146, 185, 251, .05)
+}
+
+.text-token-72\/50 {
+	color: rgba(146, 185, 251, .5)
+}
+
+.text-token-72\/55 {
+	color: rgba(146, 185, 251, .55)
+}
+
+.text-token-72\/60 {
+	color: rgba(146, 185, 251, .6)
+}
+
+.text-token-72\/65 {
+	color: rgba(146, 185, 251, .65)
+}
+
+.text-token-72\/70 {
+	color: rgba(146, 185, 251, .7)
+}
+
+.text-token-72\/75 {
+	color: rgba(146, 185, 251, .75)
+}
+
+.text-token-72\/80 {
+	color: rgba(146, 185, 251, .8)
+}
+
+.text-token-72\/85 {
+	color: rgba(146, 185, 251, .85)
+}
+
+.text-token-72\/90 {
+	color: rgba(146, 185, 251, .9)
+}
+
+.text-token-72\/95 {
+	color: rgba(146, 185, 251, .95)
+}
+
+.text-token-73 {
+	--tw-text-opacity: 1;
+	color: rgb(254 72 5/var(--tw-text-opacity))
+}
+
+.text-token-73\/0 {
+	color: rgba(254, 72, 5, 0)
+}
+
+.text-token-73\/10 {
+	color: rgba(254, 72, 5, .1)
+}
+
+.text-token-73\/100 {
+	color: #fe4805
+}
+
+.text-token-73\/15 {
+	color: rgba(254, 72, 5, .15)
+}
+
+.text-token-73\/20 {
+	color: rgba(254, 72, 5, .2)
+}
+
+.text-token-73\/25 {
+	color: rgba(254, 72, 5, .25)
+}
+
+.text-token-73\/30 {
+	color: rgba(254, 72, 5, .3)
+}
+
+.text-token-73\/35 {
+	color: rgba(254, 72, 5, .35)
+}
+
+.text-token-73\/40 {
+	color: rgba(254, 72, 5, .4)
+}
+
+.text-token-73\/45 {
+	color: rgba(254, 72, 5, .45)
+}
+
+.text-token-73\/5 {
+	color: rgba(254, 72, 5, .05)
+}
+
+.text-token-73\/50 {
+	color: rgba(254, 72, 5, .5)
+}
+
+.text-token-73\/55 {
+	color: rgba(254, 72, 5, .55)
+}
+
+.text-token-73\/60 {
+	color: rgba(254, 72, 5, .6)
+}
+
+.text-token-73\/65 {
+	color: rgba(254, 72, 5, .65)
+}
+
+.text-token-73\/70 {
+	color: rgba(254, 72, 5, .7)
+}
+
+.text-token-73\/75 {
+	color: rgba(254, 72, 5, .75)
+}
+
+.text-token-73\/80 {
+	color: rgba(254, 72, 5, .8)
+}
+
+.text-token-73\/85 {
+	color: rgba(254, 72, 5, .85)
+}
+
+.text-token-73\/90 {
+	color: rgba(254, 72, 5, .9)
+}
+
+.text-token-73\/95 {
+	color: rgba(254, 72, 5, .95)
+}
+
+.text-token-74, .text-token-75, .text-token-76, .text-token-77 {
+	color: var(--color-black-white)
+}
+
+.text-token-78 {
+	--tw-text-opacity: 1;
+	color: rgb(173 38 253/var(--tw-text-opacity))
+}
+
+.text-token-78\/0 {
+	color: rgba(173, 38, 253, 0)
+}
+
+.text-token-78\/10 {
+	color: rgba(173, 38, 253, .1)
+}
+
+.text-token-78\/100 {
+	color: #ad26fd
+}
+
+.text-token-78\/15 {
+	color: rgba(173, 38, 253, .15)
+}
+
+.text-token-78\/20 {
+	color: rgba(173, 38, 253, .2)
+}
+
+.text-token-78\/25 {
+	color: rgba(173, 38, 253, .25)
+}
+
+.text-token-78\/30 {
+	color: rgba(173, 38, 253, .3)
+}
+
+.text-token-78\/35 {
+	color: rgba(173, 38, 253, .35)
+}
+
+.text-token-78\/40 {
+	color: rgba(173, 38, 253, .4)
+}
+
+.text-token-78\/45 {
+	color: rgba(173, 38, 253, .45)
+}
+
+.text-token-78\/5 {
+	color: rgba(173, 38, 253, .05)
+}
+
+.text-token-78\/50 {
+	color: rgba(173, 38, 253, .5)
+}
+
+.text-token-78\/55 {
+	color: rgba(173, 38, 253, .55)
+}
+
+.text-token-78\/60 {
+	color: rgba(173, 38, 253, .6)
+}
+
+.text-token-78\/65 {
+	color: rgba(173, 38, 253, .65)
+}
+
+.text-token-78\/70 {
+	color: rgba(173, 38, 253, .7)
+}
+
+.text-token-78\/75 {
+	color: rgba(173, 38, 253, .75)
+}
+
+.text-token-78\/80 {
+	color: rgba(173, 38, 253, .8)
+}
+
+.text-token-78\/85 {
+	color: rgba(173, 38, 253, .85)
+}
+
+.text-token-78\/90 {
+	color: rgba(173, 38, 253, .9)
+}
+
+.text-token-78\/95 {
+	color: rgba(173, 38, 253, .95)
+}
+
+.text-token-8 {
+	--tw-text-opacity: 1;
+	color: rgb(252 142 3/var(--tw-text-opacity))
+}
+
+.text-token-8\/0 {
+	color: rgba(252, 142, 3, 0)
+}
+
+.text-token-8\/10 {
+	color: rgba(252, 142, 3, .1)
+}
+
+.text-token-8\/100 {
+	color: #fc8e03
+}
+
+.text-token-8\/15 {
+	color: rgba(252, 142, 3, .15)
+}
+
+.text-token-8\/20 {
+	color: rgba(252, 142, 3, .2)
+}
+
+.text-token-8\/25 {
+	color: rgba(252, 142, 3, .25)
+}
+
+.text-token-8\/30 {
+	color: rgba(252, 142, 3, .3)
+}
+
+.text-token-8\/35 {
+	color: rgba(252, 142, 3, .35)
+}
+
+.text-token-8\/40 {
+	color: rgba(252, 142, 3, .4)
+}
+
+.text-token-8\/45 {
+	color: rgba(252, 142, 3, .45)
+}
+
+.text-token-8\/5 {
+	color: rgba(252, 142, 3, .05)
+}
+
+.text-token-8\/50 {
+	color: rgba(252, 142, 3, .5)
+}
+
+.text-token-8\/55 {
+	color: rgba(252, 142, 3, .55)
+}
+
+.text-token-8\/60 {
+	color: rgba(252, 142, 3, .6)
+}
+
+.text-token-8\/65 {
+	color: rgba(252, 142, 3, .65)
+}
+
+.text-token-8\/70 {
+	color: rgba(252, 142, 3, .7)
+}
+
+.text-token-8\/75 {
+	color: rgba(252, 142, 3, .75)
+}
+
+.text-token-8\/80 {
+	color: rgba(252, 142, 3, .8)
+}
+
+.text-token-8\/85 {
+	color: rgba(252, 142, 3, .85)
+}
+
+.text-token-8\/90 {
+	color: rgba(252, 142, 3, .9)
+}
+
+.text-token-8\/95 {
+	color: rgba(252, 142, 3, .95)
+}
+
+.text-token-83 {
+	--tw-text-opacity: 1;
+	color: rgb(97 114 243/var(--tw-text-opacity))
+}
+
+.text-token-83\/0 {
+	color: rgba(97, 114, 243, 0)
+}
+
+.text-token-83\/10 {
+	color: rgba(97, 114, 243, .1)
+}
+
+.text-token-83\/100 {
+	color: #6172f3
+}
+
+.text-token-83\/15 {
+	color: rgba(97, 114, 243, .15)
+}
+
+.text-token-83\/20 {
+	color: rgba(97, 114, 243, .2)
+}
+
+.text-token-83\/25 {
+	color: rgba(97, 114, 243, .25)
+}
+
+.text-token-83\/30 {
+	color: rgba(97, 114, 243, .3)
+}
+
+.text-token-83\/35 {
+	color: rgba(97, 114, 243, .35)
+}
+
+.text-token-83\/40 {
+	color: rgba(97, 114, 243, .4)
+}
+
+.text-token-83\/45 {
+	color: rgba(97, 114, 243, .45)
+}
+
+.text-token-83\/5 {
+	color: rgba(97, 114, 243, .05)
+}
+
+.text-token-83\/50 {
+	color: rgba(97, 114, 243, .5)
+}
+
+.text-token-83\/55 {
+	color: rgba(97, 114, 243, .55)
+}
+
+.text-token-83\/60 {
+	color: rgba(97, 114, 243, .6)
+}
+
+.text-token-83\/65 {
+	color: rgba(97, 114, 243, .65)
+}
+
+.text-token-83\/70 {
+	color: rgba(97, 114, 243, .7)
+}
+
+.text-token-83\/75 {
+	color: rgba(97, 114, 243, .75)
+}
+
+.text-token-83\/80 {
+	color: rgba(97, 114, 243, .8)
+}
+
+.text-token-83\/85 {
+	color: rgba(97, 114, 243, .85)
+}
+
+.text-token-83\/90 {
+	color: rgba(97, 114, 243, .9)
+}
+
+.text-token-83\/95 {
+	color: rgba(97, 114, 243, .95)
+}
+
+.text-token-84 {
+	--tw-text-opacity: 1;
+	color: rgb(201 190 156/var(--tw-text-opacity))
+}
+
+.text-token-84\/0 {
+	color: hsla(45, 29%, 70%, 0)
+}
+
+.text-token-84\/10 {
+	color: hsla(45, 29%, 70%, .1)
+}
+
+.text-token-84\/100 {
+	color: #c9be9c
+}
+
+.text-token-84\/15 {
+	color: hsla(45, 29%, 70%, .15)
+}
+
+.text-token-84\/20 {
+	color: hsla(45, 29%, 70%, .2)
+}
+
+.text-token-84\/25 {
+	color: hsla(45, 29%, 70%, .25)
+}
+
+.text-token-84\/30 {
+	color: hsla(45, 29%, 70%, .3)
+}
+
+.text-token-84\/35 {
+	color: hsla(45, 29%, 70%, .35)
+}
+
+.text-token-84\/40 {
+	color: hsla(45, 29%, 70%, .4)
+}
+
+.text-token-84\/45 {
+	color: hsla(45, 29%, 70%, .45)
+}
+
+.text-token-84\/5 {
+	color: hsla(45, 29%, 70%, .05)
+}
+
+.text-token-84\/50 {
+	color: hsla(45, 29%, 70%, .5)
+}
+
+.text-token-84\/55 {
+	color: hsla(45, 29%, 70%, .55)
+}
+
+.text-token-84\/60 {
+	color: hsla(45, 29%, 70%, .6)
+}
+
+.text-token-84\/65 {
+	color: hsla(45, 29%, 70%, .65)
+}
+
+.text-token-84\/70 {
+	color: hsla(45, 29%, 70%, .7)
+}
+
+.text-token-84\/75 {
+	color: hsla(45, 29%, 70%, .75)
+}
+
+.text-token-84\/80 {
+	color: hsla(45, 29%, 70%, .8)
+}
+
+.text-token-84\/85 {
+	color: hsla(45, 29%, 70%, .85)
+}
+
+.text-token-84\/90 {
+	color: hsla(45, 29%, 70%, .9)
+}
+
+.text-token-84\/95 {
+	color: hsla(45, 29%, 70%, .95)
+}
+
+.text-token-85 {
+	--tw-text-opacity: 1;
+	color: rgb(201 190 156/var(--tw-text-opacity))
+}
+
+.text-token-85\/0 {
+	color: hsla(45, 29%, 70%, 0)
+}
+
+.text-token-85\/10 {
+	color: hsla(45, 29%, 70%, .1)
+}
+
+.text-token-85\/100 {
+	color: #c9be9c
+}
+
+.text-token-85\/15 {
+	color: hsla(45, 29%, 70%, .15)
+}
+
+.text-token-85\/20 {
+	color: hsla(45, 29%, 70%, .2)
+}
+
+.text-token-85\/25 {
+	color: hsla(45, 29%, 70%, .25)
+}
+
+.text-token-85\/30 {
+	color: hsla(45, 29%, 70%, .3)
+}
+
+.text-token-85\/35 {
+	color: hsla(45, 29%, 70%, .35)
+}
+
+.text-token-85\/40 {
+	color: hsla(45, 29%, 70%, .4)
+}
+
+.text-token-85\/45 {
+	color: hsla(45, 29%, 70%, .45)
+}
+
+.text-token-85\/5 {
+	color: hsla(45, 29%, 70%, .05)
+}
+
+.text-token-85\/50 {
+	color: hsla(45, 29%, 70%, .5)
+}
+
+.text-token-85\/55 {
+	color: hsla(45, 29%, 70%, .55)
+}
+
+.text-token-85\/60 {
+	color: hsla(45, 29%, 70%, .6)
+}
+
+.text-token-85\/65 {
+	color: hsla(45, 29%, 70%, .65)
+}
+
+.text-token-85\/70 {
+	color: hsla(45, 29%, 70%, .7)
+}
+
+.text-token-85\/75 {
+	color: hsla(45, 29%, 70%, .75)
+}
+
+.text-token-85\/80 {
+	color: hsla(45, 29%, 70%, .8)
+}
+
+.text-token-85\/85 {
+	color: hsla(45, 29%, 70%, .85)
+}
+
+.text-token-85\/90 {
+	color: hsla(45, 29%, 70%, .9)
+}
+
+.text-token-85\/95 {
+	color: hsla(45, 29%, 70%, .95)
+}
+
+.text-token-86 {
+	--tw-text-opacity: 1;
+	color: rgb(255 215 2/var(--tw-text-opacity))
+}
+
+.text-token-86\/0 {
+	color: rgba(255, 215, 2, 0)
+}
+
+.text-token-86\/10 {
+	color: rgba(255, 215, 2, .1)
+}
+
+.text-token-86\/100 {
+	color: #ffd702
+}
+
+.text-token-86\/15 {
+	color: rgba(255, 215, 2, .15)
+}
+
+.text-token-86\/20 {
+	color: rgba(255, 215, 2, .2)
+}
+
+.text-token-86\/25 {
+	color: rgba(255, 215, 2, .25)
+}
+
+.text-token-86\/30 {
+	color: rgba(255, 215, 2, .3)
+}
+
+.text-token-86\/35 {
+	color: rgba(255, 215, 2, .35)
+}
+
+.text-token-86\/40 {
+	color: rgba(255, 215, 2, .4)
+}
+
+.text-token-86\/45 {
+	color: rgba(255, 215, 2, .45)
+}
+
+.text-token-86\/5 {
+	color: rgba(255, 215, 2, .05)
+}
+
+.text-token-86\/50 {
+	color: rgba(255, 215, 2, .5)
+}
+
+.text-token-86\/55 {
+	color: rgba(255, 215, 2, .55)
+}
+
+.text-token-86\/60 {
+	color: rgba(255, 215, 2, .6)
+}
+
+.text-token-86\/65 {
+	color: rgba(255, 215, 2, .65)
+}
+
+.text-token-86\/70 {
+	color: rgba(255, 215, 2, .7)
+}
+
+.text-token-86\/75 {
+	color: rgba(255, 215, 2, .75)
+}
+
+.text-token-86\/80 {
+	color: rgba(255, 215, 2, .8)
+}
+
+.text-token-86\/85 {
+	color: rgba(255, 215, 2, .85)
+}
+
+.text-token-86\/90 {
+	color: rgba(255, 215, 2, .9)
+}
+
+.text-token-86\/95 {
+	color: rgba(255, 215, 2, .95)
+}
+
+.text-token-89 {
+	--tw-text-opacity: 1;
+	color: rgb(246 110 20/var(--tw-text-opacity))
+}
+
+.text-token-89\/0 {
+	color: rgba(246, 110, 20, 0)
+}
+
+.text-token-89\/10 {
+	color: rgba(246, 110, 20, .1)
+}
+
+.text-token-89\/100 {
+	color: #f66e14
+}
+
+.text-token-89\/15 {
+	color: rgba(246, 110, 20, .15)
+}
+
+.text-token-89\/20 {
+	color: rgba(246, 110, 20, .2)
+}
+
+.text-token-89\/25 {
+	color: rgba(246, 110, 20, .25)
+}
+
+.text-token-89\/30 {
+	color: rgba(246, 110, 20, .3)
+}
+
+.text-token-89\/35 {
+	color: rgba(246, 110, 20, .35)
+}
+
+.text-token-89\/40 {
+	color: rgba(246, 110, 20, .4)
+}
+
+.text-token-89\/45 {
+	color: rgba(246, 110, 20, .45)
+}
+
+.text-token-89\/5 {
+	color: rgba(246, 110, 20, .05)
+}
+
+.text-token-89\/50 {
+	color: rgba(246, 110, 20, .5)
+}
+
+.text-token-89\/55 {
+	color: rgba(246, 110, 20, .55)
+}
+
+.text-token-89\/60 {
+	color: rgba(246, 110, 20, .6)
+}
+
+.text-token-89\/65 {
+	color: rgba(246, 110, 20, .65)
+}
+
+.text-token-89\/70 {
+	color: rgba(246, 110, 20, .7)
+}
+
+.text-token-89\/75 {
+	color: rgba(246, 110, 20, .75)
+}
+
+.text-token-89\/80 {
+	color: rgba(246, 110, 20, .8)
+}
+
+.text-token-89\/85 {
+	color: rgba(246, 110, 20, .85)
+}
+
+.text-token-89\/90 {
+	color: rgba(246, 110, 20, .9)
+}
+
+.text-token-89\/95 {
+	color: rgba(246, 110, 20, .95)
+}
+
+.text-token-9 {
+	--tw-text-opacity: 1;
+	color: rgb(207 17 16/var(--tw-text-opacity))
+}
+
+.text-token-9\/0 {
+	color: rgba(207, 17, 16, 0)
+}
+
+.text-token-9\/10 {
+	color: rgba(207, 17, 16, .1)
+}
+
+.text-token-9\/100 {
+	color: #cf1110
+}
+
+.text-token-9\/15 {
+	color: rgba(207, 17, 16, .15)
+}
+
+.text-token-9\/20 {
+	color: rgba(207, 17, 16, .2)
+}
+
+.text-token-9\/25 {
+	color: rgba(207, 17, 16, .25)
+}
+
+.text-token-9\/30 {
+	color: rgba(207, 17, 16, .3)
+}
+
+.text-token-9\/35 {
+	color: rgba(207, 17, 16, .35)
+}
+
+.text-token-9\/40 {
+	color: rgba(207, 17, 16, .4)
+}
+
+.text-token-9\/45 {
+	color: rgba(207, 17, 16, .45)
+}
+
+.text-token-9\/5 {
+	color: rgba(207, 17, 16, .05)
+}
+
+.text-token-9\/50 {
+	color: rgba(207, 17, 16, .5)
+}
+
+.text-token-9\/55 {
+	color: rgba(207, 17, 16, .55)
+}
+
+.text-token-9\/60 {
+	color: rgba(207, 17, 16, .6)
+}
+
+.text-token-9\/65 {
+	color: rgba(207, 17, 16, .65)
+}
+
+.text-token-9\/70 {
+	color: rgba(207, 17, 16, .7)
+}
+
+.text-token-9\/75 {
+	color: rgba(207, 17, 16, .75)
+}
+
+.text-token-9\/80 {
+	color: rgba(207, 17, 16, .8)
+}
+
+.text-token-9\/85 {
+	color: rgba(207, 17, 16, .85)
+}
+
+.text-token-9\/90 {
+	color: rgba(207, 17, 16, .9)
+}
+
+.text-token-9\/95 {
+	color: rgba(207, 17, 16, .95)
+}
+
+.text-token-90 {
+	--tw-text-opacity: 1;
+	color: rgb(236 28 36/var(--tw-text-opacity))
+}
+
+.text-token-90\/0 {
+	color: rgba(236, 28, 36, 0)
+}
+
+.text-token-90\/10 {
+	color: rgba(236, 28, 36, .1)
+}
+
+.text-token-90\/100 {
+	color: #ec1c24
+}
+
+.text-token-90\/15 {
+	color: rgba(236, 28, 36, .15)
+}
+
+.text-token-90\/20 {
+	color: rgba(236, 28, 36, .2)
+}
+
+.text-token-90\/25 {
+	color: rgba(236, 28, 36, .25)
+}
+
+.text-token-90\/30 {
+	color: rgba(236, 28, 36, .3)
+}
+
+.text-token-90\/35 {
+	color: rgba(236, 28, 36, .35)
+}
+
+.text-token-90\/40 {
+	color: rgba(236, 28, 36, .4)
+}
+
+.text-token-90\/45 {
+	color: rgba(236, 28, 36, .45)
+}
+
+.text-token-90\/5 {
+	color: rgba(236, 28, 36, .05)
+}
+
+.text-token-90\/50 {
+	color: rgba(236, 28, 36, .5)
+}
+
+.text-token-90\/55 {
+	color: rgba(236, 28, 36, .55)
+}
+
+.text-token-90\/60 {
+	color: rgba(236, 28, 36, .6)
+}
+
+.text-token-90\/65 {
+	color: rgba(236, 28, 36, .65)
+}
+
+.text-token-90\/70 {
+	color: rgba(236, 28, 36, .7)
+}
+
+.text-token-90\/75 {
+	color: rgba(236, 28, 36, .75)
+}
+
+.text-token-90\/80 {
+	color: rgba(236, 28, 36, .8)
+}
+
+.text-token-90\/85 {
+	color: rgba(236, 28, 36, .85)
+}
+
+.text-token-90\/90 {
+	color: rgba(236, 28, 36, .9)
+}
+
+.text-token-90\/95 {
+	color: rgba(236, 28, 36, .95)
+}
+
+.text-token-91 {
+	color: var(--color-black-white)
+}
+
+.text-token-92 {
+	--tw-text-opacity: 1;
+	color: rgb(0 113 243/var(--tw-text-opacity))
+}
+
+.text-token-92\/0 {
+	color: rgba(0, 113, 243, 0)
+}
+
+.text-token-92\/10 {
+	color: rgba(0, 113, 243, .1)
+}
+
+.text-token-92\/100 {
+	color: #0071f3
+}
+
+.text-token-92\/15 {
+	color: rgba(0, 113, 243, .15)
+}
+
+.text-token-92\/20 {
+	color: rgba(0, 113, 243, .2)
+}
+
+.text-token-92\/25 {
+	color: rgba(0, 113, 243, .25)
+}
+
+.text-token-92\/30 {
+	color: rgba(0, 113, 243, .3)
+}
+
+.text-token-92\/35 {
+	color: rgba(0, 113, 243, .35)
+}
+
+.text-token-92\/40 {
+	color: rgba(0, 113, 243, .4)
+}
+
+.text-token-92\/45 {
+	color: rgba(0, 113, 243, .45)
+}
+
+.text-token-92\/5 {
+	color: rgba(0, 113, 243, .05)
+}
+
+.text-token-92\/50 {
+	color: rgba(0, 113, 243, .5)
+}
+
+.text-token-92\/55 {
+	color: rgba(0, 113, 243, .55)
+}
+
+.text-token-92\/60 {
+	color: rgba(0, 113, 243, .6)
+}
+
+.text-token-92\/65 {
+	color: rgba(0, 113, 243, .65)
+}
+
+.text-token-92\/70 {
+	color: rgba(0, 113, 243, .7)
+}
+
+.text-token-92\/75 {
+	color: rgba(0, 113, 243, .75)
+}
+
+.text-token-92\/80 {
+	color: rgba(0, 113, 243, .8)
+}
+
+.text-token-92\/85 {
+	color: rgba(0, 113, 243, .85)
+}
+
+.text-token-92\/90 {
+	color: rgba(0, 113, 243, .9)
+}
+
+.text-token-92\/95 {
+	color: rgba(0, 113, 243, .95)
+}
+
+.text-token-93 {
+	color: var(--color-black-white)
+}
