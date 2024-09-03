@@ -1,9 +1,79 @@
 import {useState} from 'react';
-import Order from "components/views/v2/orders/Order";
-import {Order as IOrder} from 'api/types/orders';
+import OrderInfo from "components/views/v2/orders/OrderInfo";
+import {Order} from 'api/types/orders';
 import Button, {ButtonType} from "components/general/Button";
+import OrderPrice from "components/views/v2/orders/OrderPrice";
+import {styled, Box, Typography, Modal} from '@mui/material';
 
-function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, handleCancelOrder: (order: Order) => Promise<void> }) {
+const StyledOrderCard = styled(Box)({
+	padding: '12px 24px',
+	display: 'flex',
+	flexDirection: 'row',
+	justifyContent: 'space-between',
+	alignItems: 'center',
+});
+
+const StyledOrderInfoContainer = styled(Box)({
+	alignItems: 'left',
+	display: 'flex',
+	flexDirection: 'column',
+	justifyContent: 'space-between',
+	gap: '12px',
+});
+
+const StyledButtonContainer = styled(Box)({
+	display: 'inline-flex',
+	flexDirection: 'column',
+	justifyContent: 'space-between',
+	alignSelf: 'flex-start',
+	width: '128px',
+});
+
+const StyledModal = styled(Modal)(({theme}) => ({
+	display: 'flex',
+	alignItems: 'flex-end',
+	justifyContent: 'center',
+	backgroundColor: `${theme.palette.background.default} opacity(0.5)`,
+}));
+
+const StyledModalContent = styled(Box)(({theme}) => ({
+	backgroundColor: theme.palette.background.default,
+	width: '100%',
+	height: '360px',
+	borderTopLeftRadius: '16px',
+	borderTopRightRadius: '16px',
+}));
+
+const StyledModalTitle = styled(Typography)(({theme}) => ({
+	padding: '24px 0',
+	fontWeight: '400',
+	fontSize: '16px',
+	fontFamily: theme.fonts.primary,
+	textAlign: 'center',
+	width: '100%',
+}));
+
+const StyledModalOrderCard = styled(Box)(() => ({
+	padding: '16px 24px',
+	display: 'flex',
+	flexDirection: 'row',
+	justifyContent: 'space-between',
+	alignItems: 'center',
+}));
+
+const StyledModalButtonContainer = styled(Box)({
+	padding: '32px 24px',
+	display: 'flex',
+	flexDirection: 'row',
+	justifyContent: 'space-between',
+	width: '100%',
+	gap: '16px',
+});
+
+function OrderCard(props: {
+	order: Order,
+	handleCancelOrder: (order: Order) => Promise<void>
+}) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const openModal = () => setIsModalOpen(true);
@@ -14,29 +84,30 @@ function OrderCard(props: { order: IOrder, canceledOrdersRef: Set<string>, handl
 	};
 
 	return (
-		<div className="py-4 border-t border-white flex flex-col">
-			<Order order={props.order}/>
-			<div className="flex">
-				<div className="text-left">
-					<Button icon={"⤬"} value={"Cancel"} type={ButtonType.Bordered} onClick={openModal} />
-				</div>
-
-				{isModalOpen && (
-					<div className="fixed inset-0 flex items-end justify-center bg-black bg-opacity-50">
-						<div className="p-2 bg-black w-full h-2/5 rounded-t-lg border-t border-white">
-							<p className="p-3 font-bold text-2xl text-center w-full">Cancel order?</p>
-							<div className="-m-2">
-								<Order order={props.order} bgColor={"bg-gray-600"}/>
-							</div>
-							<div className="mt-4 flex flex-row justify-between w-full">
-								<Button value={"Yes, cancel"} type={ButtonType.Bordered} onClick={confirmCancelOrder} />
-								<Button value={"No, back"} type={ButtonType.Full} onClick={closeModal} />
-							</div>
-						</div>
-					</div>
-				)}
-			</div>
-		</div>
+		<StyledOrderCard>
+			<StyledOrderInfoContainer>
+				<OrderInfo order={props.order}/>
+				<StyledButtonContainer>
+					<Button icon={"⤬"} value={"Cancel"} type={ButtonType.Bordered} fullWidth={true} onClick={openModal}/>
+				</StyledButtonContainer>
+			</StyledOrderInfoContainer>
+			<OrderPrice order={props.order}/>
+			<StyledModal open={isModalOpen} onClose={closeModal}>
+				<StyledModalContent>
+					<StyledModalTitle>CANCEL ORDER?</StyledModalTitle>
+					<StyledModalOrderCard>
+						<StyledOrderInfoContainer>
+							<OrderInfo order={props.order}/>
+						</StyledOrderInfoContainer>
+						<OrderPrice order={props.order}/>
+					</StyledModalOrderCard>
+					<StyledModalButtonContainer>
+						<Button value={"Yes, cancel"} type={ButtonType.Bordered} onClick={confirmCancelOrder}/>
+						<Button value={"No, back"} type={ButtonType.Full} onClick={closeModal}/>
+					</StyledModalButtonContainer>
+				</StyledModalContent>
+			</StyledModal>
+		</StyledOrderCard>
 	);
 }
 
