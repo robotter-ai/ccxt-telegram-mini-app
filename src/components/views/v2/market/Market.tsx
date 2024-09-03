@@ -151,7 +151,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					</ChartDetailItem>
 				</ChartDetails>
 
-				<CreateOrder market={this.marketId} />
+				<CreateOrder marketId={this.marketId} />
 			</Container>
 		);
 	}

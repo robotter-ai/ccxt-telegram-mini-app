@@ -35,6 +35,7 @@ interface State extends BaseState {
 	error?: string;
 	selectedMarket?: string;
 	marketPrice?: number;
+	precision: number;
 	orderSide: OrderSide;
 	orderType: OrderType;
 	amount: number;
@@ -79,6 +80,7 @@ class Structure extends Base<Props, State> {
 			error: undefined,
 			selectedMarket: undefined,
 			marketPrice: 0,
+			precision: 4,
 			orderSide: OrderSide.BUY,
 			orderType: OrderType.MARKET,
 			amount: 0,
@@ -108,6 +110,11 @@ class Structure extends Base<Props, State> {
 
 	handleMarketChange(event: SelectChangeEvent) {
 		this.setState({selectedMarket: event.target.value});
+
+		const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
+		const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
+		this.setState({precision: precision ?? 4});
+
 		this.getTotalPrice(event.target.value);
 	};
 
@@ -173,12 +180,20 @@ class Structure extends Base<Props, State> {
 	};
 
 	render() {
-		const {isLoading, error, selectedMarket, amount, price, orderType} = this.state;
+		const {isLoading, error, selectedMarket, amount, price, orderType, precision} = this.state;
 		const {markets} = this.props;
 
 		const orderSideButtons = [
-			{label: OrderSideLabelMapper[OrderSide.BUY], onClick: () => this.setState({orderSide: OrderSide.BUY}), activeColor: MaterialUITheme.palette.success.main},
-			{label: OrderSideLabelMapper[OrderSide.SELL], onClick: () => this.setState({orderSide: OrderSide.SELL}), activeColor: MaterialUITheme.palette.error.main},
+			{
+				label: OrderSideLabelMapper[OrderSide.BUY],
+				onClick: () => this.setState({orderSide: OrderSide.BUY}),
+				activeColor: MaterialUITheme.palette.success.main
+			},
+			{
+				label: OrderSideLabelMapper[OrderSide.SELL],
+				onClick: () => this.setState({orderSide: OrderSide.SELL}),
+				activeColor: MaterialUITheme.palette.error.main
+			},
 		];
 
 
@@ -258,9 +273,9 @@ class Structure extends Base<Props, State> {
 					/>}
 				<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0}/>
 				<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0}/>
-				<NumberInput label={'Amount'} value={amount} precision={4} onChange={this.handleAmountChange}/>
+				<NumberInput label={'Amount'} value={amount} precision={precision} onChange={this.handleAmountChange}/>
 				{orderType === OrderType.LIMIT &&
-					<NumberInput label={'Price'} value={price ?? 0} onChange={this.handlePriceChange}/>}
+					<NumberInput label={'Price'} value={price ?? 0} precision={precision} onChange={this.handlePriceChange}/>}
 				<TotalContainer>
 					<span>Total</span>
 					<span>{getTotal(orderType)}</span>
@@ -279,6 +294,12 @@ class Structure extends Base<Props, State> {
 	}
 
 	async initialize() {
+		if (this.props.marketId) {
+			const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
+			const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
+			this.setState({precision: precision ?? 4});
+		}
+
 		try {
 			const response = await apiPostRun(
 				{
