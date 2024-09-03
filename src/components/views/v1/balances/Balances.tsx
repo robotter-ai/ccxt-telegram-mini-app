@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import {apiGetFetchBalance, apiGetFetchTicker } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -56,12 +56,8 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 	async initialize() {
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_balance',
-				},
+			const response = await apiGetFetchBalance(
+				{},
 				this.props.handleUnAuthorized
 			);
 
@@ -95,12 +91,9 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 	fetchTicker = async (symbol: string) => {
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchTicker(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ticker',
-					parameters: { symbol: `TSOL/tUSDC` },
+					symbol: symbol
 				},
 				this.props.handleUnAuthorized
 			);
@@ -151,20 +144,20 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 		return (
 			<div className="flex flex-col h-full">
 				<div className="flex-grow overflow-hidden">
-					<div className="mb-4 text-center">
-						<div className="mt-10 text-sm text-gray-400">Total Balance (USDC)</div>
-						<div className="mb-10 text-2xl font-bold text-white">{totalBalanceUSDC.toFixed(2)}</div>
+					<div className="mb-4 text-left">
+						<div className="mt-10 text-sm text-gray-400"> My Balance </div>
+						<div className="mb-10 text-2xl 	font-sans text-white">{totalBalanceUSDC.toFixed(2)}</div>
 					</div>
 					<div className="h-full overflow-y-auto">
 						<table className="w-full bg-[#393939] text-white">
 							<thead className="sticky top-0 bg-[#393939]">
 							<tr>
-								<th className="px-4 py-2 text-left text-[#FE8A00]" colSpan={2}>
-									Balances
+								<th className="px-4 py-2 text-left text-gray-600" colSpan={2}>
+									My holdings
 								</th>
-								<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">
-									<span className="text-xs whitespace-nowrap">Price (USDC), 24h Chg</span>
-								</th>
+								{/*<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">*/}
+								{/*	<span className="text-xs whitespace-nowrap">Price (USDC), 24h Chg</span>*/}
+								{/*</th>*/}
 							</tr>
 							</thead>
 							<tbody>
@@ -190,10 +183,10 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 															tickers[asset]?.percentage >= 0 ? 'text-green-500' : 'text-red-500'
 														}`}
 													>
-                                                            {tickers[asset]?.percentage !== undefined
-																															? `${tickers[asset].percentage.toFixed(2)}%`
-																															: 'N/A'}
-                                                        </span>
+														{tickers[asset]?.percentage !== undefined
+															? `${tickers[asset].percentage.toFixed(2)}%`
+															: 'N/A'}
+												</span>
 												</div>
 											</td>
 										</tr>
