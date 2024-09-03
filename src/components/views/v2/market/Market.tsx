@@ -2,8 +2,7 @@ import { Box, styled } from '@mui/material';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
-import { CreateOrder } from "components/views/v2/order/CreateOrder";
-import { createChart, IChartApi, UTCTimestamp } from 'lightweight-charts';
+import { ColorType, createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
@@ -14,6 +13,7 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { CreateOrder } from '../order/CreateOrder';
 import { formatPrice } from '../utils/utils';
 
 interface MarketProps extends BaseProps {
@@ -25,18 +25,12 @@ interface MarketState extends BaseState {
 	error?: string;
 }
 
-interface LineData {
-    time: UTCTimestamp;
-    value: number;
-    volume: number;
-}
-
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
 
 const Container = styled(Box)({
-	padding: '16px',
+	padding: '0 16px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',
@@ -45,15 +39,9 @@ const Container = styled(Box)({
 	gap: '10px',
 });
 
-const Title = styled(Box)({
-	fontWeight: '700',
-	textAlign: 'center',
-	color: MaterialUITheme.palette.text.primary,
-});
-
 const ChartContainer = styled(Box)({
 	width: '100%',
-	minHeight: '280px',
+	minHeight: '400px',
 });
 
 const ChartDetails = styled(Box)({
@@ -65,6 +53,7 @@ const ChartDetails = styled(Box)({
 const SubTitle = styled(Box)({
 	fontWeight: '300',
 	fontSize: '12px',
+	color: MaterialUITheme.palette.text.secondary,
 });
 
 const ChartDetailItem = styled(Box)({
@@ -84,8 +73,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	precision: number;
 	price: any;
 	volume: any;
-
-	threshold: number = 0.1; // arbitrary value
 
 	chart?: IChartApi;
 	chartSeries?: any;
@@ -130,10 +117,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			<Container>
 				{isLoading && <Spinner />}
 
-				<Title>
-					{this.market.id}
-				</Title>
-
 				<ChartContainer id="chart" ref={this.chartReference} />
 
 				<ChartDetails>
@@ -158,7 +141,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	async initialize() {
 		const payload = await this.fetchOhlcvData(this.marketId);
-		const lines = this.transformCandlesInLines(payload, this.threshold);
+		const lines = this.transformCandlesInLines(payload);
 
 		this.createMarketChart(this.precision, lines);
 		this.setState({ isLoading: false });
@@ -171,7 +154,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			if (this.chartSeries) {
 				const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
 
-				if (Math.abs(close - currentSeries.value) >= this.threshold) {
+				if (currentSeries.value !== close) {
 					this.chartSeries.update({
 						time: timestamp / 1000,
 						value: close,
@@ -290,9 +273,15 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 
 		this.chart = createChart(this.chartReference.current, {
+			watermark: {
+				color: 'rgba(0, 0, 0, 0)',
+			},
 			autoSize: true,
 			layout: {
-				background: { color: 'transparent' },
+				background: {
+					type: ColorType.Solid,
+					color: MaterialUITheme.palette.background.default,
+				},
 				textColor: MaterialUITheme.palette.text.primary,
 				fontSize: hasPrecision > 2 ? 10 : 11,
 			},
@@ -301,15 +290,14 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					visible: false,
 				},
 				horzLines: {
-					style: 4,
-					color: MaterialUITheme.palette.text.secondary,
+					visible: false,
 				},
 			},
 			timeScale: {
-				timeVisible: true,
-				secondsVisible: true,
 				borderVisible: true,
 				borderColor: MaterialUITheme.palette.text.secondary,
+				timeVisible: true,
+				secondsVisible: true,
 				fixLeftEdge: true,
 				fixRightEdge: true,
 			},
@@ -328,10 +316,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		this.chartSeries = this.chart.addLineSeries({
 			color: MaterialUITheme.palette.success.main,
-			lineWidth: 2,
+			lineWidth: 1,
 			lineStyle: 0,
 			priceLineWidth: 1,
-			priceLineStyle: 3,
+			priceLineStyle: 1,
 			priceLineVisible: true,
 			lastValueVisible: true,
 			priceLineColor: MaterialUITheme.palette.success.main,
@@ -339,7 +327,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			priceFormat: {
 				type: 'custom',
 				formatter: (price: number) => formatPrice(price, hasPrecision),
-				minMove: 0.1,
+				minMove: 0.1 ** hasPrecision,
 			},
 		});
 
@@ -351,32 +339,25 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		this.chart.timeScale().scrollToRealTime();
 	}
 
-	transformCandlesInLines(candles: number[], threshold: number): LineData[] {
+	transformCandlesInLines(candles: number[][]): LineData[] {
 		if (!candles || !Array.isArray(candles)) return [];
 
-		const formattedCandles = candles.reduce((acc: { data: any[], prev: number | null }, candle: any) => {
-			const currentCandle: any = {
+		const formattedCandles = candles.map((candle, index) => {
+			const isLastCandle = index === candles.length - 1;
+			return {
 				time: Number(candle[0]) as UTCTimestamp,
 				value: Number(candle[4]),
-				volume: Number(candle[5]),
+				...(isLastCandle && { volume: Number(candle[5]) }),
 			};
+		});
 
-			const lastCandle = acc.data[acc.data.length - 1];
-			if (!lastCandle || Math.abs(currentCandle.value - acc.prev!) >= threshold) {
-				acc.data.push(currentCandle);
-				acc.prev = currentCandle.value;
-			}
-
-			return acc;
-		}, { data: [], prev: null });
-
-		if (formattedCandles.data.length) {
-			const lastCandle = formattedCandles.data[formattedCandles.data.length - 1];
-			this.volume = lastCandle.volume;
+		if (formattedCandles.length) {
+			const lastCandle = formattedCandles[formattedCandles.length - 1];
+			this.volume = formatPrice(lastCandle.volume!, this.precision);
 			this.price = formatPrice(lastCandle.value, this.precision);
 		}
 
-		return formattedCandles.data;
+		return formattedCandles;
 	}
 
 	handleChartResize = () => {
