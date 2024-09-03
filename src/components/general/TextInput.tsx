@@ -1,5 +1,5 @@
+import { FormControl, InputAdornment, InputLabel, styled, TextField } from '@mui/material';
 import React, { useRef } from 'react';
-import { TextField, styled, FormControl, InputLabel } from '@mui/material';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
 	borderRadius: '14px',
@@ -29,10 +29,11 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 interface TextInputProps {
 	label: string;
 	value: string;
+	icon?: React.ReactNode;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const TextInput: React.FC<TextInputProps> = ({ label, value, onChange }) => {
+const TextInput: React.FC<TextInputProps> = ({ label, value, icon, onChange }) => {
 	const inputLabelRef = useRef<HTMLLabelElement>(null);
 
 	const handleFocus = () => {
@@ -56,6 +57,9 @@ const TextInput: React.FC<TextInputProps> = ({ label, value, onChange }) => {
 				onChange={onChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
+				InputProps={{
+					endAdornment: icon ? <InputAdornment position="end">{icon}</InputAdornment> : null,
+				}}
 			/>
 		</FormControl>
 	);
