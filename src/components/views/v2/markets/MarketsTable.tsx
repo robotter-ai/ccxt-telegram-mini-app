@@ -1,8 +1,52 @@
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import { Box, styled, TableBody, TableCell, TableRow, Typography, TypographyProps } from '@mui/material';
+import TextInput from 'components/general/TextInput';
 import { Constant } from 'model/enum/constant';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
 import * as React from 'react';
 import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
+
+const Container = styled(Box)({
+	marginTop: '20px',
+	padding: '0 16px',
+	width: '100%',
+	display: 'flex',
+	flexDirection: 'column',
+	alignItems: 'stretch',
+	gap: '16px',
+});
+
+const StyledTableRow = styled(TableRow)({
+	width: '100%',
+	height: '64px',
+	display: 'flex',
+	alignItems: 'center',
+	border: 'none',
+});
+
+const StyledTableCellLeft = styled(TableCell)({
+	width: '50%',
+	textAlign: 'left',
+	display: 'flex',
+	alignItems: 'center',
+	border: 'none',
+});
+
+const StyledTableCellRight = styled(TableCell)({
+	width: '50%',
+	textAlign: 'right',
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'flex-end',
+	border: 'none',
+});
+
+const PercentageText = styled(Typography)<{ percentage: number }>((props: TypographyProps & { percentage: number }) => ({
+	fontSize: '13px',
+	fontWeight: 'bold',
+	color: props.percentage >= 0 ? MaterialUITheme.palette.success.main : MaterialUITheme.palette.error.main,
+}));
 
 interface Data {
 	id: number;
@@ -26,103 +70,45 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	return (
-		<>
-			<div className="relative w-full md:w-auto">
-				<input
-					type="text"
-					placeholder="Search"
-					value={props.filterText}
-					onChange={props.onFilterTextChange}
-					className="md:mt-0 py-3 px-4 rounded-[14px] bg-transparent text-white border-[1.8px] border-white w-full pr-10"
-				/>
-				<SearchRoundedIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white w-6" />
-			</div>
-		</>
-	);
-}
-
-// will not be used now
-function SegmentControl() {
-	const [activeTab, setActiveTab] = React.useState("all");
-
-	return (
-		<div className="flex items-center bg-[#707579] p-[2px] rounded-[20px] w-full mt-5">
-			<button
-				className={`flex-1 px-6 py-2 rounded-full focus:outline-none ${activeTab === "all" ? "bg-[#FFB040] text-black font-semibold" : "text-white"
-					}`}
-				onClick={() => setActiveTab("all")}
-			>
-				All
-			</button>
-			<button
-				className={`flex-1 px-6 py-2 rounded-full focus:outline-none ${activeTab === "favorite" ? "bg-[#FFB040] text-black font-semibold" : "text-white"
-					}`}
-				onClick={() => setActiveTab("favorite")}
-			>
-				Favorite
-			</button>
-			<button
-				className={`flex-1 px-6 py-2 rounded-full focus:outline-none ${activeTab === "runes" ? "bg-[#FFB040] text-black font-semibold" : "text-white"
-					}`}
-				onClick={() => setActiveTab("runes")}
-			>
-				Runes
-			</button>
-		</div>
+		<TextInput
+			label='SEARCH'
+			value={props.filterText}
+			onChange={props.onFilterTextChange}
+			icon={<SearchRoundedIcon sx={{ fontSize: '24px' }} />}
+		/>
 	);
 }
 
 function ListMarkets({ markets }: { markets: Data[] }) {
 	const navigate = useNavigate();
 	const handleClick = (market: Data) => {
-		const url  = `${Constant.marketPath.value}?marketId=${market.id}`;
+		const url = `${Constant.marketPath.value}?marketId=${market.id}`;
 		navigate(url);
 	};
 
 	return (
-		<div className="overflow-x-auto mt-8 block">
-			<table className="table-fixed w-full">
-				<thead>
-					<tr>
-						<th className="text-white w-1/2 text-left">Market</th>
-						<th className="text-white text-[13px] font-normal w-1/2 text-right">Price(USDC), 24h Chg</th>
-					</tr>
-				</thead>
-			</table>
-			<div className="overflow-y-auto max-h-[65vh]">
-				<table className="table-fixed w-full">
-					<tbody>
-						{markets.map(row => (
-							<tr
-								className="h-16 shadow-[0_0.5px_0_0_rgba(255,255,255,0.2)] flex items-center"
-								key={`${row.symbol}-${row.base}-${row.quote}`}
-								onClick={() => handleClick(row)}
-							>
-								<td className="w-1/2 text-left flex items-center">
-									{/* will not be used now */}
-									{/* {
-										row.price && row.price > 0
-											? <StarRoundedIcon className="text-[#FE8A00] mr-1" />
-											: <StarBorderRoundedIcon className='text-[#FE8A00] mr-1' />
-									} */}
-									<span className="text-base">
-										{`${row.base} / ${row.quote}`}
-									</span>
-								</td>
-								<td className="w-1/2 text-right flex items-center justify-end">
-									<div className="flex flex-col items-end">
-										{formatPrice(row.price, row.precision)}
-										<span className={`text-[13px] font-semibold ${row.percentage >= 0 ? "text-[#3A9F20]" : "text-[#E53935]"}`}>
-											{row.percentage.toFixed(2)}%
-										</span>
-									</div>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<TableBody>
+			{markets.map(row => (
+				<StyledTableRow
+					key={`${row.symbol}-${row.base}-${row.quote}`}
+					onClick={() => handleClick(row)}
+				>
+					<StyledTableCellLeft>
+						<Typography variant="body1">
+							{`${row.base} / ${row.quote}`}
+						</Typography>
+					</StyledTableCellLeft>
+					<StyledTableCellRight>
+						<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+							{formatPrice(row.price, row.precision)}
+							<PercentageText percentage={row.percentage}>
+								{row.percentage > 0 ? `+${row.percentage.toFixed(2)}` : `${row.percentage.toFixed(2)}`}%
+							</PercentageText>
+						</div>
+					</StyledTableCellRight>
+				</StyledTableRow>
+			))}
+		</TableBody>
 	);
 }
 
@@ -138,12 +124,9 @@ export function MarketsTable({ rows }: Props) {
 	);
 
 	return (
-		<div className="w-full px-[22px] py-5 text-white">
+		<Container>
 			<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
-
-			{/* <SegmentControl /> */}
-
 			<ListMarkets markets={filteredRows} />
-		</div>
+		</Container>
 	);
 }
