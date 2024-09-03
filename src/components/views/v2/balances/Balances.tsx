@@ -133,7 +133,6 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				// If the asset is TUSDC, use the fixed price of $1 and multiply by the user's balance
 				const price = asset === 'TUSDC' ? 1 : (tickers[asset]?.last || 0);
 				return acc + price * amount;
 			}, 0)
@@ -190,12 +189,6 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 							</tbody>
 						</table>
 					</div>
-				</div>
-				<div className="mt-6 flex flex-col items-center">
-					<img src={signOutIcon} alt="Logout Icon" className="w-6 h-6 mb-2" />
-					<button onClick={this.handleSignOut} className="text-[#FE8A00] hover:underline focus:outline-none">
-						Sign Out
-					</button>
 				</div>
 			</div>
 		);

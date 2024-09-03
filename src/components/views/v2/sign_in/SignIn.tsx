@@ -6,7 +6,7 @@ import { dispatch } from 'model/state/redux/store';
 import { apiPostAuthSignIn, apiPostAuthIsSignedIn, apiPostRun } from 'model/service/api';
 import './SignIn.css';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import DOMPurify from 'dompurify';
@@ -21,12 +21,12 @@ import {
 	IconButton,
 	InputAdornment,
 	Snackbar,
-	Link, CircularProgress,
+	CircularProgress,
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from 'src/assets/images/logo/cube.png';
+import logo from 'src/assets/images/logo/cube.svg';
 import { clearAllIntervals } from 'model/service/recurrent.ts';
 
 const SignInSchema = Yup.object().shape({
@@ -111,25 +111,37 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 						minHeight: '100vh',
 						display: 'flex',
 						flexDirection: 'column',
-						justifyContent: 'center',
+						justifyContent: 'space-between',
 						alignItems: 'center',
-						bgcolor: 'background.default', // Uses the default background color from the theme
+						bgcolor: 'background.default',
 						width: '100%',
+						paddingY: 4,
 					}}
 				>
-					<Container component="main" maxWidth="md">
+					<Box sx={{ marginTop: 2 }}>
+						<img
+							src={logo}
+							alt="Logo"
+							style={{
+								height: '50px',
+								marginTop: '60px',
+								marginBottom: '60px',
+								borderRadius: '10%',
+							}}
+						/>
+					</Box>
+					<Container component="main" maxWidth="md" sx={{ mb: 6 }}>
 						<Paper
-							elevation={0} // Remove elevation to avoid any shadow effects
+							elevation={0}
 							sx={{
 								p: 4,
 								display: 'flex',
 								flexDirection: 'column',
 								alignItems: 'center',
 								width: '100%',
-								backgroundColor: 'transparent', // Ensure the Paper background is transparent
+								backgroundColor: 'transparent',
 							}}
 						>
-							<img src={logo} alt="Logo" style={{ height: '50px', marginBottom: '20px', borderRadius: '10%' }} />
 							<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
 								{isLoading && <CircularProgress sx={{ mt: 2 }} />}
 								{error && <Typography color="error">{error}</Typography>}
@@ -170,6 +182,9 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 																</IconButton>
 															</InputAdornment>
 														),
+														sx: {
+															borderRadius: '50px',
+														},
 													}}
 													helperText={<ErrorMessage name={field} />}
 												/>
@@ -178,15 +193,33 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 												type="submit"
 												fullWidth
 												variant="contained"
-												color="primary"
+												sx={{
+													mt: 3,
+													mb: 2,
+													borderRadius: '50px',
+													fontWeight: 'bold',
+													backgroundColor: 'white',
+													color: 'black',
+													border: 'none',
+												}}
 												disabled={isSubmitting}
-												sx={{ mt: 3, mb: 2, borderRadius: '50px', fontWeight: 'bold' }}
 											>
 												Sign In
 											</Button>
-											<Link href="#" variant="body2" sx={{ color: 'primary.main', textAlign: 'center', display: 'block' }}>
+											<Button
+												fullWidth
+												variant="contained"
+												sx={{
+													mt: 1,
+													borderRadius: '50px',
+													fontWeight: 'bold',
+													backgroundColor: 'black',
+													color: 'white',
+													borderColor: 'white',
+												}}
+											>
 												Where to get it?
-											</Link>
+											</Button>
 										</Form>
 									)}
 								</Formik>
@@ -223,14 +256,17 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	handleSubmit = async (values: any, { setSubmitting }: any) => {
 		this.setState({ isLoading: true, error: undefined });
 		try {
-			const response = await apiPostAuthSignIn({
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				userTelegramId: `${this.state.telegramUser ? sanitizeInput(this.state.telegramUser.id) : undefined}`,
-				exchangeApiKey: `${sanitizeInput(values.apiKey)}`,
-				exchangeApiSecret: `${sanitizeInput(values.apiSecret)}`,
-				exchangeOptions: { subAccountId: `${Number(values.subAccountId)}` },
-			}, this.props.handleUnAuthorized);
+			const response = await apiPostAuthSignIn(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					exchangeEnvironment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					userTelegramId: `${this.state.telegramUser ? sanitizeInput(this.state.telegramUser.id) : undefined}`,
+					exchangeApiKey: `${sanitizeInput(values.apiKey)}`,
+					exchangeApiSecret: `${sanitizeInput(values.apiSecret)}`,
+					exchangeOptions: { subAccountId: `${Number(values.subAccountId)}` },
+				},
+				this.props.handleUnAuthorized
+			);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 
@@ -290,11 +326,14 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	loadMarkets = async () => {
 		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun({
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_markets',
-			}, this.props.handleUnAuthorized);
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_markets',
+				},
+				this.props.handleUnAuthorized
+			);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 			dispatch('api.updateMarkets', response.data.result);
@@ -310,11 +349,14 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	loadCurrencies = async () => {
 		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun({
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_currencies',
-			}, this.props.handleUnAuthorized);
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_currencies',
+				},
+				this.props.handleUnAuthorized
+			);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 			dispatch('api.updateCurrencies', response.data.result);
