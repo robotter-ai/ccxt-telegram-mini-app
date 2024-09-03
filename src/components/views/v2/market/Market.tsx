@@ -30,13 +30,12 @@ const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 });
 
 const Container = styled(Box)({
-	padding: '0 16px',
+	padding: '0 22px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',
 	flexDirection: 'column',
 	alignItems: 'center',
-	gap: '10px',
 });
 
 const ChartContainer = styled(Box)({
@@ -45,6 +44,8 @@ const ChartContainer = styled(Box)({
 });
 
 const ChartDetails = styled(Box)({
+	marginTop: '16px',
+	marginBottom: '30px',
 	display: 'flex',
 	flexDirection: 'row',
 	gap: '30px',
@@ -62,6 +63,7 @@ const ChartDetailItem = styled(Box)({
 	display: 'flex',
 	flexDirection: 'column',
 	alignItems: 'center',
+	gap: '4px',
 });
 
 class MarketStructure extends Base<MarketProps, MarketState> {
@@ -283,7 +285,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					color: MaterialUITheme.palette.background.default,
 				},
 				textColor: MaterialUITheme.palette.text.primary,
-				fontSize: hasPrecision > 2 ? 10 : 11,
+				fontSize: 11,
 			},
 			grid: {
 				vertLines: {
