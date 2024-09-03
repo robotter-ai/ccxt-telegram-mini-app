@@ -1,20 +1,19 @@
 import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
-	// noinspection JSUnusedGlobalSymbols
 	interface Theme {
 		fonts: {
 			primary: string;
 			secondary: string;
-			monospace: string;
 		};
 	}
 
-	// noinspection JSUnusedGlobalSymbols
 	interface ThemeOptions {
 		fonts?: {
 			primary?: string;
 			secondary?: string;
+			tertiary?: string;
+			quaternary?: string;
 			monospace?: string;
 		};
 	}
@@ -49,8 +48,10 @@ export const MaterialUITheme = createTheme({
 		fontFamily: '"GT America Light", sans-serif',
 	},
 	fonts: {
-		primary: '"GT America Light", sans-serif',
-		secondary: '"PP Editorial New Light", serif',
+		primary: '"Work Sans", sans-serif',
+		secondary: '"Cormorant", sans-serif',
+		tertiary: '"Libre Franklin", sans-serif',
+		quaternary: '"Cinzel", serif',
 		monospace: '"GT America Mono Light", monospace',
 	},
 	components: {
