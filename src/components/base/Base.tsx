@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { Map } from 'model/helper/extendable-immutable/map.ts';
+import { Map } from 'model/helper/extendable-immutable/map';
 // import { Component, ContextType } from 'react';
 // import { AppContext } from 'model/contexts/AppContext.tsx';
 
