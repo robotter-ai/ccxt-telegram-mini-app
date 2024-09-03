@@ -1,29 +1,60 @@
-import React from "react";
+import React from 'react';
+import { Button as MuiButton, styled, Box } from '@mui/material';
 
 export enum ButtonType {
-	Full = "full",
-	Bordered = "bordered",
+	Full = 'full',
+	Bordered = 'bordered',
 }
 
-function Button(props: {
-	value: string,
-	type: ButtonType,
-	icon?: string,
-	disabled?: boolean,
-	onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>,
-}) {
-	return (
-		<div className="mx-2 w-full flex justify-center items-center">
-			<button
-				className={`my-2 px-8 py-3 rounded-3xl w-full text-center flex items-center justify-center ${props.type === ButtonType.Full ? "max-w-xs w-full bg-white text-black font-bold" : "border"}`}
-				onClick={props.onClick}
-				disabled={props.disabled}
-			>
-				{props.icon ? <p className="mr-1.5">{props.icon}</p> : null}
-				{props.value}
-			</button>
-		</div>
-	);
+interface ButtonProps {
+	value: string;
+	type: ButtonType;
+	icon?: React.ReactNode;
+	disabled?: boolean;
+	fullWidth?: boolean;
+	onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
 }
+
+const StyledBox = styled(Box)(({}) => ({
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	width: '100%',
+}));
+
+const StyledButton = styled(MuiButton)<{fullwidth: boolean}>(({ theme, fullwidth }) => ({
+	width: fullwidth ? '100%' : 'auto',
+	padding: '8px 24px',
+	borderRadius: '20px',
+	textTransform: 'none',
+	'& .full': {
+		backgroundColor: theme.palette.primary.main,
+		color: theme.palette.background.default,
+		fontWeight: 'bold',
+	},
+	'& .bordered': {
+		backgroundColor: theme.palette.background.default,
+		color: theme.palette.text.primary,
+		fontWeight: 'bold',
+		border: `1px solid`,
+	},
+}));
+
+const Button: React.FC<ButtonProps> = ({ value, type, icon, disabled, fullWidth, onClick }) => {
+	return (
+		<StyledBox>
+			<StyledButton
+				fullwidth={fullWidth ?? true}
+				className={type}
+				onClick={onClick}
+				disabled={disabled}
+				variant={type === ButtonType.Full ? 'contained' : 'outlined'}
+			>
+				{icon && <span style={{ marginRight: '6px' }}>{icon}</span>}
+				{value}
+			</StyledButton>
+		</StyledBox>
+	);
+};
 
 export default Button;
