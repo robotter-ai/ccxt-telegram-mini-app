@@ -27,7 +27,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from 'src/assets/images/logo/cube.svg';
-import { clearAllIntervals } from 'model/service/recurrent.ts';
+import { clearAllIntervals } from 'model/service/recurrent';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
 
 const SignInSchema = Yup.object().shape({
 	apiKey: Yup.string()
@@ -123,9 +124,9 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 							src={logo}
 							alt="Logo"
 							style={{
-								height: '50px',
-								marginTop: '60px',
-								marginBottom: '60px',
+								height: '6rem',
+								marginTop: '1rem',
+								marginBottom: '1rem',
 								borderRadius: '10%',
 							}}
 						/>
@@ -164,7 +165,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 													variant="outlined"
 													margin="normal"
 													fullWidth
-													label={field.replace(/([A-Z])/g, ' $1')}
+													label={field.replace(/([A-Z])/g, ' $1').toUpperCase()}
 													type={showPassword[field as keyof SignInState['showPassword']] ? 'text' : 'password'}
 													onFocus={() => this.setState({ focusedField: field })}
 													onBlur={() => this.setState({ focusedField: null })}
@@ -183,7 +184,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 															</InputAdornment>
 														),
 														sx: {
-															borderRadius: '50px',
+															borderRadius: '1rem',
 														},
 													}}
 													helperText={<ErrorMessage name={field} />}
@@ -197,8 +198,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 													mt: 3,
 													mb: 2,
 													borderRadius: '50px',
-													fontWeight: 'bold',
-													backgroundColor: 'white',
+													backgroundColor: `${MaterialUITheme.palette.text.primary}`,
 													color: 'black',
 													border: 'none',
 												}}
@@ -212,7 +212,6 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 												sx={{
 													mt: 1,
 													borderRadius: '50px',
-													fontWeight: 'bold',
 													backgroundColor: 'black',
 													color: 'white',
 													borderColor: 'white',
