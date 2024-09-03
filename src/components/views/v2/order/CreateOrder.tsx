@@ -57,16 +57,39 @@ const Style = styled(Box)(({theme}) => ({
 	height: '100%',
 	display: 'flex',
 	flexDirection: 'column',
-	gap: theme.spacing(3),
 }));
 
-const TotalContainer = styled(Box)(({}) => ({
+const InputsContainer = styled(Box)({
+	width: '100%',
+	display: 'flex',
+	flexDirection: 'column',
+	padding: '20px 22px',
+	gap: '35px',
+});
+
+const TotalContainer = styled(Box)(({theme}) => ({
 	display: 'flex',
 	justifyContent: 'space-between',
 	alignItems: 'center',
-	padding: '0.5rem 1.5rem',
-	fontWeight: 'bold',
+	padding: '13px 24px',
+	fontSize: '19px',
+	fontWeight: '300',
+	fontFamily: theme.fonts.secondary,
 }));
+
+const Divider = styled(Box)(({theme}) => ({
+	width: '100%',
+	height: '1px',
+	backgroundColor: theme.palette.primary.main,
+}));
+
+const ButtonContainer = styled(Box)({
+	padding: '10px 24px 24px 24px',
+	width: '100%',
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+});
 
 class Structure extends Base<Props, State> {
 
@@ -95,6 +118,7 @@ class Structure extends Base<Props, State> {
 		this.handleOrderTypeChange = this.handleOrderTypeChange.bind(this);
 		this.handleAmountChange = this.handleAmountChange.bind(this);
 		this.handlePriceChange = this.handlePriceChange.bind(this);
+		this.handleCreateOrder = this.handleCreateOrder.bind(this);
 	}
 
 	async componentDidMount() {
@@ -108,191 +132,6 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
-	handleMarketChange(event: SelectChangeEvent) {
-		this.setState({selectedMarket: event.target.value});
-
-		const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
-		const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
-		this.setState({precision: precision ?? 4});
-
-		this.getTotalPrice(event.target.value);
-	};
-
-	handleOrderTypeChange(event: SelectChangeEvent) {
-		this.setState({orderType: event.target.value as OrderType});
-	};
-
-	handleAmountChange(event: ChangeEvent<HTMLInputElement>) {
-		if (this.props.marketId) {
-			this.getTotalPrice(this.props.marketId);
-		}
-
-		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({amount: isValidAmount ? parseFloat(event.target.value) : 0});
-	}
-
-	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
-		const isValidPrice = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({price: isValidPrice ? parseFloat(event.target.value) : 0});
-	}
-
-	async getTotalPrice(marketId: string) {
-		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ticker',
-					parameters: {symbol: marketId},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				if (response.data?.title) {
-					const message = response.data.title;
-
-					this.setState({error: message});
-					toast.error(message);
-
-					return;
-				} else {
-					throw new Error(response.text);
-				}
-			}
-
-			const payload = response.data.result;
-
-			this.setState({marketPrice: Number(payload.last)});
-			return;
-		} catch (exception) {
-			if (axios.isAxiosError(exception)) {
-				if (exception?.response?.status === 401) {
-					return;
-				}
-			}
-
-			const message = 'An error has occurred while performing this operation';
-
-			this.setState({error: message});
-			toast.error(message);
-		}
-	};
-
-	render() {
-		const {isLoading, error, selectedMarket, amount, price, orderType, precision} = this.state;
-		const {markets} = this.props;
-
-		const orderSideButtons = [
-			{
-				label: OrderSideLabelMapper[OrderSide.BUY],
-				onClick: () => this.setState({orderSide: OrderSide.BUY}),
-				activeColor: MaterialUITheme.palette.success.main
-			},
-			{
-				label: OrderSideLabelMapper[OrderSide.SELL],
-				onClick: () => this.setState({orderSide: OrderSide.SELL}),
-				activeColor: MaterialUITheme.palette.error.main
-			},
-		];
-
-
-		const orderTypeButtons = [
-			{label: OrderTypeLabelMapper[OrderType.MARKET], onClick: () => this.setState({orderType: OrderType.MARKET})},
-			{label: OrderTypeLabelMapper[OrderType.LIMIT], onClick: () => this.setState({orderType: OrderType.LIMIT})},
-		];
-
-		const marketOptions = markets.map((market) => ({
-			value: market.symbol,
-			label: `${market.base}/${market.quote}`,
-		}))
-
-		const getTotal = (orderType: OrderType) => {
-			switch (orderType) {
-				case OrderType.LIMIT:
-					return formatPrice(Decimal.mul(new Decimal(amount), new Decimal(price ?? 0)).toNumber());
-				default:
-					return formatPrice(Decimal.mul(new Decimal(amount), new Decimal(this.state.marketPrice ?? 0)).toNumber());
-			}
-		};
-
-		const handleCreateOrder = async () => {
-			this.setState({isSubmitting: true});
-
-			const {selectedMarket, orderSide, orderType, amount, price} = this.state;
-
-			const market = this.props.marketId ? markets.find((m) => m.symbol.toUpperCase() === this.props.marketId)?.symbol : selectedMarket;
-
-			try {
-				if (!market) {
-					toast.error('Selected market is not valid.');
-					return;
-				}
-
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'create_order',
-						parameters: {
-							symbol: market,
-							side: orderSide,
-							type: orderType,
-							amount: amount,
-							price: orderType === OrderType.MARKET ? null : price,
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					throw new Error('Network response was not OK');
-				}
-
-				toast.success('Order created successfully!');
-
-				this.props.navigate('/orders');
-			} catch (error) {
-				console.error('Failed to create order:', error);
-				toast.error('Failed to create order.');
-			} finally {
-				this.setState({isSubmitting: false});
-			}
-		};
-
-		return (
-			<Style>
-				{isLoading ? <Spinner/> : null}
-				{error ? <div>Error: {error}</div> : null}
-				{!this.props.marketId &&
-					<DropDownSelector
-						label={'Market'}
-						options={marketOptions}
-						value={selectedMarket ?? ''}
-						onChange={this.handleMarketChange}
-					/>}
-				<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0}/>
-				<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0}/>
-				<NumberInput label={'Amount'} value={amount} precision={precision} onChange={this.handleAmountChange}/>
-				{orderType === OrderType.LIMIT &&
-					<NumberInput label={'Price'} value={price ?? 0} precision={precision} onChange={this.handlePriceChange}/>}
-				<TotalContainer>
-					<span>Total</span>
-					<span>{getTotal(orderType)}</span>
-				</TotalContainer>
-				<Button
-					value={this.state.isSubmitting ? 'Submitting...' : OrderSideLabelMapper[this.state.orderSide]}
-					type={ButtonType.Full}
-					disabled={this.state.isSubmitting}
-					onClick={async (e) => {
-						e?.preventDefault();
-						e?.stopPropagation();
-						await handleCreateOrder();
-					}}/>
-			</Style>
-		);
-	}
-
 	async initialize() {
 		if (this.props.marketId) {
 			const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
@@ -300,50 +139,7 @@ class Structure extends Base<Props, State> {
 			this.setState({precision: precision ?? 4});
 		}
 
-		try {
-			const response = await apiPostRun(
-				{
-					method: 'fetch_tickers',
-					parameters: {
-						symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-					},
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				if (response.data?.title) {
-					const message = response.data.title;
-
-					this.setState({error: message});
-					toast.error(message);
-
-					return;
-				} else {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(response.text);
-				}
-			}
-
-			const payload = response.data.result;
-
-			dispatch('api.updateTemplateData', payload);
-		} catch (exception: any) {
-			console.error(exception);
-
-			if (axios.isAxiosError(exception)) {
-				if (exception?.response?.status === 401) {
-					return;
-				}
-			}
-
-			const message = 'An error has occurred while performing this operation.'
-
-			this.setState({error: message});
-			toast.error(message);
-		} finally {
-			this.setState({isLoading: false});
-		}
+		this.setState({isLoading: false});
 	}
 
 	async doRecurrently() {
@@ -398,6 +194,200 @@ class Structure extends Base<Props, State> {
 		this.properties.setIn(
 			'recurrent.5s.intervalId',
 			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+		);
+	}
+
+	handleMarketChange(event: SelectChangeEvent) {
+		this.setState({selectedMarket: event.target.value});
+
+		const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
+		const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
+		this.setState({precision: precision ?? 4});
+
+		this.getTotalPrice(event.target.value);
+	};
+
+	handleOrderTypeChange(event: SelectChangeEvent) {
+		this.setState({orderType: event.target.value as OrderType});
+	};
+
+	handleAmountChange(event: ChangeEvent<HTMLInputElement>) {
+		if (this.props.marketId) {
+			this.getTotalPrice(this.props.marketId);
+		}
+
+		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
+		this.setState({amount: isValidAmount ? parseFloat(event.target.value) : 0});
+	}
+
+	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
+		const isValidPrice = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
+		this.setState({price: isValidPrice ? parseFloat(event.target.value) : 0});
+	}
+
+	async handleCreateOrder() {
+		this.setState({isSubmitting: true});
+
+		const {selectedMarket, orderSide, orderType, amount, price} = this.state;
+
+		const market = this.props.marketId ? this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId)?.symbol : selectedMarket;
+
+		try {
+			if (!market) {
+				toast.error('Selected market is not valid.');
+				return;
+			}
+
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'create_order',
+					parameters: {
+						symbol: market,
+						side: orderSide,
+						type: orderType,
+						amount: amount,
+						price: orderType === OrderType.MARKET ? null : price,
+					},
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				throw new Error('Network response was not OK');
+			}
+
+			toast.success('OrderInfo created successfully!');
+
+			this.props.navigate('/orders');
+		} catch (error) {
+			console.error('Failed to create order:', error);
+			toast.error('Failed to create order.');
+		} finally {
+			this.setState({isSubmitting: false});
+		}
+	};
+
+	async getTotalPrice(marketId: string) {
+		try {
+			const response = await apiPostRun(
+				{
+					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+					method: 'fetch_ticker',
+					parameters: {symbol: marketId},
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				if (response.data?.title) {
+					const message = response.data.title;
+
+					this.setState({error: message});
+					toast.error(message);
+
+					return;
+				} else {
+					throw new Error(response.text);
+				}
+			}
+
+			const payload = response.data.result;
+
+			this.setState({marketPrice: Number(payload.last)});
+			return;
+		} catch (exception) {
+			if (axios.isAxiosError(exception)) {
+				if (exception?.response?.status === 401) {
+					return;
+				}
+			}
+
+			const message = 'An error has occurred while performing this operation';
+
+			this.setState({error: message});
+			toast.error(message);
+		}
+	};
+
+	render() {
+		const {isLoading, error, selectedMarket, amount, price, orderType, orderSide, precision} = this.state;
+		const {markets} = this.props;
+
+		const orderSideButtons = [
+			{
+				label: OrderSideLabelMapper[OrderSide.BUY],
+				onClick: () => this.setState({orderSide: OrderSide.BUY}),
+				activeColor: MaterialUITheme.palette.success.main
+			},
+			{
+				label: OrderSideLabelMapper[OrderSide.SELL],
+				onClick: () => this.setState({orderSide: OrderSide.SELL}),
+				activeColor: MaterialUITheme.palette.error.main
+			},
+		];
+
+
+		const orderTypeButtons = [
+			{label: OrderTypeLabelMapper[OrderType.MARKET], onClick: () => this.setState({orderType: OrderType.MARKET})},
+			{label: OrderTypeLabelMapper[OrderType.LIMIT], onClick: () => this.setState({orderType: OrderType.LIMIT})},
+		];
+
+		const marketOptions = markets.map((market) => ({
+			value: market.symbol,
+			label: `${market.base}/${market.quote}`,
+		}))
+
+		const getTotal = (side: OrderSide, type: OrderType) => {
+
+			if (type === OrderType.LIMIT) {
+				if (side === OrderSide.BUY) {
+					return Decimal.mul(new Decimal(amount), new Decimal(price ?? 0)).toNumber();
+				}
+				return new Decimal(price ?? 0).toNumber();
+			}
+			return Decimal.mul(new Decimal(amount), new Decimal(this.state.marketPrice ?? 0)).toNumber();
+		};
+
+		return (
+			<Style>
+				{isLoading ? <Spinner/> : null}
+				{error ? <div>Error: {error}</div> : null}
+				<InputsContainer>
+					{!this.props.marketId &&
+						<DropDownSelector
+							label={'Market'}
+							options={marketOptions}
+							value={selectedMarket ?? ''}
+							onChange={this.handleMarketChange}
+						/>}
+
+					<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0}/>
+					<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0}/>
+					<NumberInput label={'AMOUNT'} value={amount} precision={precision} onChange={this.handleAmountChange}/>
+					{orderType === OrderType.LIMIT &&
+						<NumberInput label={'SET PRICE'} value={price ?? 0} precision={precision}
+												 onChange={this.handlePriceChange}/>}
+				</InputsContainer>
+				<Divider/>
+				<TotalContainer>
+					<span>Total</span>
+					<span>{formatPrice(getTotal(orderSide, orderType))}</span>
+				</TotalContainer>
+				<ButtonContainer>
+					<Button
+						value={this.state.isSubmitting ? 'Submitting...' : OrderSideLabelMapper[this.state.orderSide]}
+						type={ButtonType.Full}
+						disabled={getTotal(orderSide, orderType) === 0 || this.state.isSubmitting}
+						onClick={async (e) => {
+							e?.preventDefault();
+							e?.stopPropagation();
+							await this.handleCreateOrder();
+						}}/>
+				</ButtonContainer>
+			</Style>
 		);
 	}
 }
