@@ -2,6 +2,7 @@ import {useState} from 'react';
 import OrderInfo from "components/views/v2/orders/OrderInfo";
 import {Order} from 'api/types/orders';
 import Button, {ButtonType} from "components/general/Button";
+// @ts-ignore
 import OrderPrice from "components/views/v2/orders/OrderPrice";
 import {styled, Box, Typography, Modal} from '@mui/material';
 
