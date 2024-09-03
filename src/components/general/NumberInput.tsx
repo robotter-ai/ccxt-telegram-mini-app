@@ -1,12 +1,12 @@
-import React, { useRef } from 'react';
+import { FormControl, InputLabel, TextField, styled } from '@mui/material';
 import Decimal from 'decimal.js';
-import { TextField, styled, FormControl, InputLabel } from '@mui/material';
+import React, { useRef } from 'react';
 
-const StyledTextField = styled(TextField)(({theme}) => ({
-	borderRadius: '14px',
+const StyledTextField = styled(TextField)(({ theme }) => ({
 	'& .MuiOutlinedInput-root': {
 		'& fieldset': {
 			borderRadius: '14px',
+			border: '1.8px solid',
 			borderColor: theme.palette.primary.dark,
 		},
 		'&:hover fieldset': {
@@ -18,12 +18,12 @@ const StyledTextField = styled(TextField)(({theme}) => ({
 	},
 }));
 
-const StyledInputLabel = styled(InputLabel)(({theme}) => ({
-	fontSize: '13px',
-	fontWeight: '700',
-	fontFamily: theme.fonts.primary,
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+	fontSize: '15px',
+	fontWeight: '300',
+	lineHeight: '20px',
 	backgroundColor: theme.palette.background.default,
-	padding: '0 6px',
+	padding: '2px 6px',
 	'&.Mui-focused': {
 		color: theme.palette.primary.main,
 	},
@@ -36,7 +36,7 @@ interface NumberInputProps {
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const NumberInput: React.FC<NumberInputProps> = ({label, value, precision, onChange}) => {
+const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onChange }) => {
 	const inputLabelRef = useRef<HTMLLabelElement>(null);
 
 	const handleFocus = () => {
@@ -58,13 +58,13 @@ const NumberInput: React.FC<NumberInputProps> = ({label, value, precision, onCha
 			event.preventDefault();
 			onChange({
 				...event,
-				target: {...event.target, value: Decimal.sum(new Decimal(value), increment).toString()}
+				target: { ...event.target, value: Decimal.sum(new Decimal(value), increment).toString() }
 			} as unknown as React.ChangeEvent<HTMLInputElement>);
 		} else if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			onChange({
 				...event,
-				target: {...event.target, value: Decimal.sub(new Decimal(value), increment).toString()}
+				target: { ...event.target, value: Decimal.sub(new Decimal(value), increment).toString() }
 			} as unknown as React.ChangeEvent<HTMLInputElement>);
 		}
 	};

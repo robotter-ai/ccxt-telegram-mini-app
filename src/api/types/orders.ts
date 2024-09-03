@@ -1,4 +1,4 @@
-import {StringNumber} from "components/views/v2/utils/types";
+import { StringNumber } from "components/views/v2/utils/types";
 
 export type Order = {
 	checkbox: boolean;

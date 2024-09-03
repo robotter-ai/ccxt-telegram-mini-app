@@ -1,4 +1,5 @@
 @import 'https://icons.cube.exchange/cube-icons.css';
+@import 'src/assets/css/tokens.css';
 
 @tailwind base;
 @tailwind components;
@@ -14,6 +15,7 @@
 
 body {
 	background-color: var(--palete-background-default);
+	font-family: 'GT America Light', sans-serif;
 }
 
 @font-face {
@@ -27,35 +29,38 @@ body {
 	font-display: swap
 }
 
-/*@font-face {*/
-/*	font-family: 'GT America Light';*/
-/*	src: url('/src/assets/fonts/gt_america_light.woff2') format("woff2"),*/
-/*	url('/src/assets/fonts/gt_america_light.ttf') format("truetype"),*/
-/*	url('/src/assets/fonts/gt_america_light.woff') format("woff"),*/
-/*	url('/src/assets/fonts/gt_america_light.svg') format("svg");*/
-/*	font-weight: 400;*/
-/*	font-style: normal;*/
-/*	font-display: swap*/
-/*}*/
+@font-face {
+	font-family: 'GT America Light';
+	src:
+		/*url('/src/assets/fonts/gt_america_light.woff2') format("woff2"),*/
+		/*url('/src/assets/fonts/gt_america_light.woff') format("woff"),*/
+		/*url('/src/assets/fonts/gt_america_light.svg') format("svg"),*/
+		url('/src/assets/fonts/gt_america_light.ttf') format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap
+}
 
-/*@font-face {*/
-/*	font-family: 'GT America Mono Light';*/
-/*	src: url('/src/assets/fonts/gt_america_mono_light.woff2') format("woff2"),*/
-/*	url('/src/assets/fonts/gt_america_mono_light.ttf') format("truetype"),*/
-/*	url('/src/assets/fonts/gt_america_mono_light.woff') format("woff"),*/
-/*	url('/src/assets/fonts/gt_america_mono_light.svg') format("svg");*/
-/*	font-weight: 400;*/
-/*	font-style: normal;*/
-/*	font-display: swap*/
-/*}*/
+@font-face {
+	font-family: 'GT America Mono Light';
+	src:
+		/*url('/src/assets/fonts/gt_america_mono_light.ttf') format("truetype"),*/
+		/*url('/src/assets/fonts/gt_america_mono_light.woff') format("woff"),*/
+		/*url('/src/assets/fonts/gt_america_mono_light.svg') format("svg"),*/
+		url('/src/assets/fonts/gt_america_mono_light.woff2') format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap
+}
 
-/*@font-face {*/
-/*	font-family: 'PP Editorial New Light';*/
-/*	src: url('/src/assets/fonts/pp_editorial_new_light.woff2') format("woff2"),*/
-/*	url('/src/assets/fonts/pp_editorial_new_light.ttf') format("truetype"),*/
-/*	url('/src/assets/fonts/pp_editorial_new_light.woff') format("woff"),*/
-/*	url('/src/assets/fonts/pp_editorial_new_light.svg') format("svg");*/
-/*	font-weight: 400;*/
-/*	font-style: normal;*/
-/*	font-display: swap*/
-/*}*/
+@font-face {
+	font-family: 'PP Editorial New Light';
+	src:
+		/*url('/src/assets/fonts/pp_editorial_new_light.woff2') format("woff2"),*/
+		/*url('/src/assets/fonts/pp_editorial_new_light.woff') format("woff"),*/
+		/*url('/src/assets/fonts/pp_editorial_new_light.svg') format("svg"),*/
+		url('/src/assets/fonts/pp_editorial_new_light.ttf') format("truetype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap
+}

@@ -1,19 +1,38 @@
-import React, {ReactNode} from 'react';
-import {Select, MenuItem, styled, SelectChangeEvent, FormControl, InputLabel} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, styled } from '@mui/material';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
+import React, { ReactNode } from 'react';
 
-const StyledSelect = styled(Select)(({theme}) => ({
+const StyledSelect = styled(Select)(({ theme }) => ({
+	borderRadius: '14px',
+	backgroundColor: theme.palette.background.default,
+	borderColor: theme.palette.primary.main,
+	padding: '14px 16px',
 	'& .MuiOutlinedInput-notchedOutline': {
-		borderColor: theme.palette.secondary.main,
+		borderColor: theme.palette.primary.main,
 	},
-	'& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+	'&.Mui-focused .MuiOutlinedInput-notchedOutline': {
 		borderColor: theme.palette.primary.main,
 	},
 	'& .MuiSelect-select': {
-		padding: '0.5rem 1.5rem',
+		borderRadius: '14px',
+		padding: '0',
 	},
 }));
 
-const StyledMenuItem = styled(MenuItem)(({theme}) => ({
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+	fontSize: '15px',
+	fontWeight: '300',
+	lineHeight: '20px',
+	backgroundColor: theme.palette.background.default,
+	padding: '2px 6px',
+	borderRadius: '14px',
+	color: theme.palette.primary.main,
+	'&.Mui-focused': {
+		color: theme.palette.primary.main,
+	},
+}));
+
+const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
 	color: theme.palette.primary.main,
 	'&.Mui-selected': {
 		backgroundColor: theme.palette.primary.main,
@@ -28,11 +47,45 @@ interface DropdownSelectorProps {
 	onChange: (event: SelectChangeEvent<any>, child: ReactNode) => void;
 }
 
-const DropdownSelector: React.FC<DropdownSelectorProps> = ({label, options, value, onChange}) => {
+const DropdownSelector: React.FC<DropdownSelectorProps> = ({ label, options, value, onChange }) => {
 	return (
 		<FormControl variant={'outlined'} fullWidth={true}>
-			<InputLabel shrink={true}>{label}</InputLabel>
-			<StyledSelect value={value} onChange={onChange} label={label}>
+			<StyledInputLabel shrink={true}>{label}</StyledInputLabel>
+			<StyledSelect
+				value={value}
+				onChange={onChange}
+				label={label}
+				MenuProps={{
+					PaperProps: {
+						style: {
+							maxHeight: '200px',
+							marginTop: '6px',
+							borderRadius: '6px',
+						},
+						sx: {
+							'&::-webkit-scrollbar': {
+								width: '4px',
+							},
+							'&::-webkit-scrollbar-thumb': {
+								backgroundColor: MaterialUITheme.palette.text.secondary,
+								borderRadius: '12px',
+								height: '52px',
+							},
+							'&::-webkit-scrollbar-thumb:hover': {
+								backgroundColor: MaterialUITheme.palette.text.secondary,
+							},
+						},
+					},
+					anchorOrigin: {
+						vertical: 'bottom',
+						horizontal: 'left',
+					},
+					transformOrigin: {
+						vertical: 'top',
+						horizontal: 'left',
+					},
+				}}
+			>
 				{options.map((option) => (
 					<StyledMenuItem key={option.value} value={option.value}>
 						{option.label}

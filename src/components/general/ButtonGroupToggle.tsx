@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Button, ButtonGroup, styled} from '@mui/material';
+import { Button, ButtonGroup, styled } from '@mui/material';
+import React, { useState } from 'react';
 
 interface ButtonConfig {
 	label: string;
@@ -12,29 +12,33 @@ interface ButtonGroupToggleProps {
 	defaultButton: number;
 }
 
-const StyledButtonGroup = styled(ButtonGroup)(({theme}) => ({
+const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
 	backgroundColor: theme.palette.secondary.main,
-	padding: '0.125rem',
-	borderRadius: '1.25rem',
+	borderRadius: '40px',
 	width: '100%',
+	overflow: 'hidden',
 }));
 
-const StyledButton = styled(Button)<{ activeColor?: string }>(({theme, activeColor}) => ({
+const StyledButton = styled(Button)<{ activeColor?: string }>(({ theme, activeColor }) => ({
 	flex: 1,
-	padding: '0.5rem 1.5rem',
-	borderRadius: '1.25rem',
-	textTransform: 'none',
+	border: 'none',
+	padding: '10px 0',
+	textTransform: 'uppercase',
+	fontWeight: '300',
 	'&.Mui-selected': {
-		backgroundColor: activeColor ?? theme.palette.primary.main,
+		border: 'none',
+		borderRadius: '40px',
 		color: theme.palette.secondary.main,
-		fontWeight: 'bold',
+		backgroundColor: activeColor ?? theme.palette.primary.main,
 	},
 	'&:not(.Mui-selected)': {
+		border: 'none',
+		borderRadius: '40px',
 		color: theme.palette.primary.main,
 	},
 }));
 
-const ButtonGroupToggle: React.FC<ButtonGroupToggleProps> = ({buttons, defaultButton}) => {
+const ButtonGroupToggle: React.FC<ButtonGroupToggleProps> = ({ buttons, defaultButton }) => {
 	const [activeTab, setActiveTab] = useState<number>(defaultButton);
 
 	return (

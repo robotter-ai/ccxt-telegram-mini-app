@@ -1,15 +1,34 @@
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { Box, Button, styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
+import {
+	apiGetIridiumPrivateUsersDailyLoyalty,
+	apiGetIridiumPrivateUsersInvites,
+	apiGetIridiumPrivateUsersLootBoxes,
+	apiGetIridiumPrivateUsersUserTier,
+	apiGetIridiumPublicPointsBlocksLeaderboard,
+	apiGetIridiumPublicPointsLoyaltyLeaderboard,
+	apiGetIridiumPublicPointsReferralLeaderboard,
+} from 'model/service/api';
 import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 
+interface Props extends BaseProps {
+	data: any,
+	updateRewards: (data: any) => void,
+}
+
+interface State extends BaseState {
+	isLoading: boolean;
+	error?: string;
+}
+
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state: any, props: any) => ({
+const mapStateToProps = (state: State | any, props: Props | any) => ({
 	data: state.api.rewards,
 });
 
@@ -21,14 +40,8 @@ const mapDispatchToProps = (reduxDispatch: any) => ({
 	},
 });
 
-interface Props extends BaseProps {}
-
-interface State extends BaseState {
-	isLoading: boolean;
-	error?: string;
-}
-
 class Structure extends Base<Props, State> {
+
 	constructor(props: Props) {
 		super(props);
 
@@ -54,67 +67,14 @@ class Structure extends Base<Props, State> {
 
 	render() {
 		const { isLoading, error } = this.state;
+		const { data } = this.props;
 
 		return (
-			<StyledContainer>
+			<Box className={this.props.className}>
 				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
-
-				<StyledBox>
-					<Title>Rewards</Title>
-					<Row>
-						<LargeRowTitle>Points</LargeRowTitle>
-						<LargeRowValue>5,213,564</LargeRowValue>
-					</Row>
-				</StyledBox>
-
-				<StyledBox>
-					<Title>Progress</Title>
-					<CompactRow>
-						<RowTitle>Deposits</RowTitle>
-						<RowValue>$8,500</RowValue>
-					</CompactRow>
-					<CompactRow>
-						<RowTitle>Wtd Vol</RowTitle>
-						<RowValue>$486,321</RowValue>
-					</CompactRow>
-					<CompactRow>
-						<RowTitle>Volume</RowTitle>
-						<RowValue>$2,435,934</RowValue>
-					</CompactRow>
-				</StyledBox>
-
-				<RowContainer>
-					<StyledFullBox>
-						<Title>Tier</Title>
-						<CompactRow>
-							<LargeRowValue>Gold</LargeRowValue>
-						</CompactRow>
-						<CompactRow>
-							<RowSubValue>Rank #453</RowSubValue>
-						</CompactRow>
-					</StyledFullBox>
-
-					<StyledFullBox>
-						<Title>Loyalty Score</Title>
-						<Row>
-							<LargeRowValue>236</LargeRowValue>
-						</Row>
-					</StyledFullBox>
-				</RowContainer>
-
-				<StyledBox>
-					<Title>Blocks</Title>
-					<ButtonsRow>
-						<StyledButton variant="contained" color="secondary">
-							Bounty Board
-						</StyledButton>
-						<InvertedButton variant="contained">
-							Claim All
-						</InvertedButton>
-					</ButtonsRow>
-				</StyledBox>
-			</StyledContainer>
+				<pre>{JSON.stringify(data, null, 2)}</pre>
+			</Box>
 		);
 	}
 
@@ -230,99 +190,12 @@ class Structure extends Base<Props, State> {
 	}
 }
 
-const StyledContainer = styled(Box)`
-	background-color: black;
-	padding: 20px;
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-	color: white;
-`;
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled(Structure)(({ theme }) => `
+	background-color: green;
+`);
 
-const StyledBox = styled(Box)`
-	background-color: #333;
-	padding: 20px;
-	border-radius: 8px;
-	position: relative;
-`;
-
-const StyledFullBox = styled(StyledBox)`
-	flex: 1;
-`;
-
-const Title = styled('div')`
-	font-size: 12px;
-	font-weight: bold;
-	position: absolute;
-	top: 8px;
-	left: 10px;
-`;
-
-const Row = styled('div')`
-	display: flex;
-	justify-content: space-between;
-	padding: 10px 0;
-	margin-top: 20px;
-`;
-
-const CompactRow = styled(Row)`
-	padding: 5px 0;
-	margin-top: 10px;
-`;
-
-const RowTitle = styled('div')`
-	font-size: 14px;
-`;
-
-const RowValue = styled('div')`
-	font-size: 14px;
-	font-weight: bold;
-`;
-
-const LargeRowTitle = styled(RowTitle)`
-	font-size: 20px;
-	font-weight: bold;
-`;
-
-const LargeRowValue = styled(RowValue)`
-	font-size: 20px;
-	font-weight: bold;
-`;
-
-const RowSubValue = styled('div')`
-	font-size: 12px;
-	color: #aaa;
-`;
-
-const RowContainer = styled(Box)`
-	display: flex;
-	gap: 20px;
-`;
-
-const ButtonsRow = styled(Box)`
-	display: flex;
-	gap: 10px;
-	margin-top: 10px;
-`;
-
-const StyledButton = styled(Button)`
-	background-color: #2b2b2b;
-	color: white;
-
-	&:hover {
-		background-color: #1f1f1f;
-	}
-`;
-
-const InvertedButton = styled(Button)`
-	background-color: white;
-	color: black;
-
-	&:hover {
-		background-color: #ddd;
-	}
-`;
-
-const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Structure));
+const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));
 
 export const Rewards = Behavior;
