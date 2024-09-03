@@ -1,5 +1,21 @@
 import { createTheme } from '@mui/material/styles';
 
+declare module '@mui/material/styles' {
+	interface Theme {
+		fonts: {
+			primary: string;
+			secondary: string;
+		};
+	}
+
+	interface ThemeOptions {
+		fonts?: {
+			primary?: string;
+			secondary?: string;
+		};
+	}
+}
+
 export const MaterialUITheme = createTheme({
 	palette: {
 		mode: 'dark',
@@ -26,8 +42,12 @@ export const MaterialUITheme = createTheme({
 		},
 	},
 	// typography: {
-	// 	fontFamily: 'Monteserrat',
+	// 	fontFamily: '"Work Sans", sans-serif',
 	// },
+	fonts: {
+		primary: '"Work Sans", sans-serif',
+		secondary: '"Cormorant", sans-serif',
+	},
 	components: {
 		MuiAppBar: {
 			styleOverrides: {
@@ -53,6 +73,6 @@ export const MaterialUITheme = createTheme({
 					color: '#FFFFFF',
 				},
 			}
-		}
+		},
 	},
 });
