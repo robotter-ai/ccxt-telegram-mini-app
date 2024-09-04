@@ -143,7 +143,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 			: 0;
 
 		return (
-			<div className="flex flex-col h-full">
+			<div className="flex flex-col mt-5 h-full">
 				<div className="flex-grow overflow-hidden">
 					<div className="mb-4 ml-4 text-left">
 						<div style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
@@ -186,7 +186,9 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col text-right">
-													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
+													<span className="leading-none">
+  													{`$${price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+													</span>
 													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
 															{percentage}
 													</span>
