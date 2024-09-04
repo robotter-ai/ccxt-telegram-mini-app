@@ -29,6 +29,16 @@ const map = new Map({
 	},
 	telegram: {
 		user: null
+	},
+	maps: {
+		marketsByIds: {},
+		marketsBySymbols: {},
+		marketsByRawIds: {},
+		marketsByRawSymbols: {},
+		currenciesByIds: {},
+		currenciesBySymbols: {},
+		currenciesByRawIds: {},
+		currenciesByRawSymbols: {},
 	}
 });
 

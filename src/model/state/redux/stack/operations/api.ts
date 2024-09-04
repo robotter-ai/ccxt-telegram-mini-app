@@ -224,6 +224,13 @@ pushStack('api.updateMarkets', (currentState: any, payload: any) => {
 			'api.markets',
 			payload
 		);
+
+		for (const market of payload as any[]) {
+			nextState.setIn(`maps.currenciesByIds.${market.id}`, market);
+			nextState.setIn(`maps.currenciesBySymbols.${market.symbol}`, market);
+			nextState.setIn(`maps.currenciesByRawIds.${market.info.marketId}`, market);
+			nextState.setIn(`maps.currenciesByRawSymbols.${market.info.symbol}`, market);
+		}
 	}
 
 	// @ts-ignore
@@ -245,6 +252,13 @@ pushStack('api.updateCurrencies', (currentState: any, payload: any) => {
 			'api.currencies',
 			payload
 		);
+
+		for (const currency of Object.values(payload) as any[]) {
+			nextState.setIn(`maps.currenciesByIds.${currency.id}`, currency);
+			nextState.setIn(`maps.currenciesBySymbols.${currency.code}`, currency);
+			nextState.setIn(`maps.currenciesByRawIds.${currency.info.assetId}`, currency);
+			nextState.setIn(`maps.currenciesByRawSymbols.${currency.info.symbol}`, currency);
+		}
 	}
 
 	// @ts-ignore

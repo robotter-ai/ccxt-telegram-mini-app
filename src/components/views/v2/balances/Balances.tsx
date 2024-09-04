@@ -10,8 +10,9 @@ import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
-interface BalanceProps extends BaseProps {}
-
+interface BalanceProps extends BaseProps {
+	currenciesBySymbols: any;
+}
 interface BalanceState extends BaseState {
 	isLoading: boolean;
 	error?: string;
@@ -22,6 +23,7 @@ interface BalanceState extends BaseState {
 const mapStateToProps = (state: BalanceState | any) => ({
 	balanceData: state.api.balanceData,
 	tickers: state.api.tickers,
+	currenciesBySymbols: state.maps.currenciesBySymbols,
 });
 
 class BalanceStructure extends Base<BalanceProps, BalanceState> {
@@ -133,7 +135,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				const price = asset === 'TUSDC' ? 1 : (tickers[asset]?.last || 0);
+				const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : (tickers[asset]?.last || 0);
 				return acc + price * amount;
 			}, 0)
 			: 0;
@@ -161,10 +163,11 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 							<tbody>
 							{balanceData &&
 								Object.entries(balanceData.total).map(([asset, amount]) => {
+									const currency = this.props.currenciesBySymbols[asset];
 									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-1`;
 									const name = tickers[asset]?.name || asset;
-									const price = asset === 'TUSDC' ? 1 : tickers[asset]?.last || 0;
-									const percentage = asset === 'TUSDC' ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
+									const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : tickers[asset]?.last || 0;
+									const percentage = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
 
 									return (
 										<tr key={asset} className="border-b border-gray-600 border-none">
@@ -173,7 +176,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col ml-1 ">
-													<span className="text-lg leading-none">{name}</span>
+													<span className="text-lg leading-none">{currency.name}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>
