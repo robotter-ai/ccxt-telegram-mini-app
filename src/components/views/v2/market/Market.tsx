@@ -2,6 +2,9 @@ import { Box, styled } from '@mui/material';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
+import { CreateOrder } from 'components/views/v2/order/CreateOrder';
+import { Orders } from "components/views/v2/orders/Orders";
+import { formatPrice } from 'components/views/v2/utils/utils';
 import { ColorType, createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -13,9 +16,6 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import {CreateOrder} from 'components/views/v2/order/CreateOrder';
-import {formatPrice} from 'components/views/v2/utils/utils';
-import {Orders} from "components/views/v2/orders/Orders";
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -26,8 +26,6 @@ interface MarketState extends BaseState {
 	error?: string;
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -51,23 +49,28 @@ const ChartDetails = styled(Box)({
 	marginBottom: '30px',
 	display: 'flex',
 	flexDirection: 'row',
-	gap: '30px',
+	gap: '20px',
 });
 
-const SubTitle = styled(Box)(({theme}) => ({
+const SubTitle = styled(Box)(({ theme }) => ({
+	fontSize: '13px',
 	fontWeight: '300',
-	fontSize: '12px',
+	fontFamily: theme.fonts.monospace,
 	color: theme.palette.text.secondary,
+	whiteSpace: 'nowrap',
 }));
 
-const ChartDetailItem = styled(Box)({
-	fontSize: '14px',
-	fontWeight: '600',
+const ChartDetailItem = styled(Box, {
+	shouldForwardProp: (prop) => prop !== 'dataPrecision',
+})<{ dataPrecision: number }>(({ theme, dataPrecision }) => ({
+	fontSize: `${Math.max(12, 18 - dataPrecision! * 0.5)}px`,
+	fontWeight: '300',
 	display: 'flex',
 	flexDirection: 'column',
 	alignItems: 'center',
 	gap: '4px',
-});
+	fontFamily: theme.fonts.secondary,
+}));
 
 class MarketStructure extends Base<MarketProps, MarketState> {
 	properties: Map = new Map();
@@ -94,9 +97,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		this.marketId = this.props.queryParams.get('marketId');
 		this.market = this.props.markets.find((market: any) => market.id === this.marketId);
+
 		this.precision = (this.market.precision.amount !== null && this.market.precision.amount !== undefined)
 			? this.market.precision.amount
 			: this.market.precision;
+		this.precision = this.precision || 10;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
@@ -125,22 +130,22 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				<ChartContainer id="chart" ref={this.chartReference} />
 
 				<ChartDetails>
-					<ChartDetailItem>
+					<ChartDetailItem dataPrecision={this.precision}>
 						<SubTitle>MARKET</SubTitle>
 						<Box>{`${this.market.base}/${this.market.quote}`}</Box>
 					</ChartDetailItem>
-					<ChartDetailItem>
-						<SubTitle>PRICE (USDC)</SubTitle>
+					<ChartDetailItem dataPrecision={this.precision}>
+						<SubTitle>PRICE</SubTitle>
 						<Box>{this.price ?? '-'}</Box>
 					</ChartDetailItem>
-					<ChartDetailItem>
-						<SubTitle>24H VOL (SOL)</SubTitle>
+					<ChartDetailItem dataPrecision={this.precision}>
+						<SubTitle>24H VOL ({this.market.base})</SubTitle>
 						<Box>{this.volume ?? '-'}</Box>
 					</ChartDetailItem>
 				</ChartDetails>
 
 				<CreateOrder marketId={this.marketId} />
-				<Orders marketId={this.marketId}/>
+				<Orders marketId={this.marketId} />
 			</Container>
 		);
 	}
@@ -160,7 +165,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			if (this.chartSeries) {
 				const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
 
-				if (currentSeries.value !== close) {
+				if (currentSeries?.value !== close) {
 					this.chartSeries.update({
 						time: timestamp / 1000,
 						value: close,
@@ -272,16 +277,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	createMarketChart(precision: number, lines: any) {
-		const hasPrecision = precision || 10;
-
 		if (!this.chartReference.current) {
 			throw Error('The chart reference has not been found.');
 		}
 
 		this.chart = createChart(this.chartReference.current, {
-			watermark: {
-				color: 'rgba(0, 0, 0, 0)',
-			},
 			autoSize: true,
 			layout: {
 				background: {
@@ -289,7 +289,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					color: MaterialUITheme.palette.background.default,
 				},
 				textColor: MaterialUITheme.palette.text.primary,
-				fontSize: 11,
+				fontSize: 12,
 			},
 			grid: {
 				vertLines: {
@@ -301,8 +301,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			},
 			timeScale: {
 				borderVisible: true,
-				borderColor: MaterialUITheme.palette.text.secondary,
 				timeVisible: true,
+				borderColor: MaterialUITheme.palette.text.secondary,
 				secondsVisible: true,
 				fixLeftEdge: true,
 				fixRightEdge: true,
@@ -332,8 +332,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			lastPriceAnimation: 1,
 			priceFormat: {
 				type: 'custom',
-				formatter: (price: number) => formatPrice(price, hasPrecision),
-				minMove: 0.1 ** hasPrecision,
+				formatter: (price: number) => formatPrice(price, precision),
+				minMove: 0.1 ** precision,
 			},
 		});
 
