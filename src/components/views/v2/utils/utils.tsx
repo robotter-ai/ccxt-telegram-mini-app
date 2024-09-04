@@ -75,7 +75,5 @@ export const formatPrice = (price: number, precision?: number) => {
 }
 
 export const removeLeadingZeroes = (value: string) => {
-	console.log('recebeu: ', value);
-	console.log('retornou: ', value.replace(/^0+(?=\d)/, ''));
 	return value.replace(/^0+(?=\d)/, '');
 };
