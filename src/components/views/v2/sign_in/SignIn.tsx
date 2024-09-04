@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { apiPostAuthSignIn, apiPostAuthIsSignedIn, apiPostRun } from 'model/service/api';
@@ -21,12 +21,12 @@ import {
 	IconButton,
 	InputAdornment,
 	Snackbar,
-	CircularProgress,
+	Link, CircularProgress,
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from 'src/assets/images/logo/cube.svg';
+import logo from 'src/assets/images/logo/cube.png';
 import { clearAllIntervals } from 'model/service/recurrent';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 
@@ -143,6 +143,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 								backgroundColor: 'transparent',
 							}}
 						>
+							<img src={logo} alt="Logo" style={{ height: '50px', marginBottom: '20px', borderRadius: '10%' }} />
 							<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
 								{isLoading && <CircularProgress sx={{ mt: 2 }} />}
 								{error && <Typography color="error">{error}</Typography>}
@@ -201,24 +202,15 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 													backgroundColor: `${MaterialUITheme.palette.text.primary}`,
 													color: 'black',
 													border: 'none',
+													fontWeight: 'bold'
 												}}
 												disabled={isSubmitting}
 											>
 												Sign In
 											</Button>
-											<Button
-												fullWidth
-												variant="contained"
-												sx={{
-													mt: 1,
-													borderRadius: '50px',
-													backgroundColor: 'black',
-													color: 'white',
-													borderColor: 'white',
-												}}
-											>
+											<Link href="#" variant="body2" sx={{ color: 'primary.main', textAlign: 'center', display: 'block' }}>
 												Where to get it?
-											</Button>
+											</Link>
 										</Form>
 									)}
 								</Formik>
