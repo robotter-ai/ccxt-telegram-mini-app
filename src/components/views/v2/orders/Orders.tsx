@@ -14,7 +14,7 @@ import {Order} from "api/types/orders";
 
 interface Props extends BaseProps {
 	openOrders: Order[];
-	market: string;
+	marketId: string;
 	data: any,
 }
 
@@ -34,6 +34,7 @@ const mapStateToProps = (state: State | any, props: Props | any) => ({
 const Style = styled(Box)(({theme}) => ({
 	width: '100%',
 	height: '100%',
+	padding: '0 24px',
 }));
 
 class Structure extends Base<Props, State> {
@@ -180,11 +181,9 @@ class Structure extends Base<Props, State> {
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(data, null, 2)}</pre>
 				<OrdersList
-					orders={this.props.market ? this.props.openOrders.filter((order: Order) => order.market === this.props.market) : this.props.openOrders}
-					canceledOrdersRef={this.canceledOrdersRef}
-					cancelAllOpenOrders={this.cancelAllOpenOrders}
+					orders={this.props.marketId ? this.props.openOrders.filter((order: Order) => order.market.toUpperCase() === this.props.marketId) : this.props.openOrders}
+					handleCancelAllOpenOrders={this.cancelAllOpenOrders}
 					handleCancelOrder={this.cancelOpenOrder}
-					fetchData={this.fetchData}
 				/>
 			</Style>
 		);
