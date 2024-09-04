@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import {apiPostRun} from 'model/service/api';
+import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -10,11 +10,7 @@ import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
-
 interface BalanceProps extends BaseProps {}
-
-
-
 
 interface BalanceState extends BaseState {
 	isLoading: boolean;
@@ -143,7 +139,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 			: 0;
 
 		return (
-			<div className="flex flex-col h-full">
+			<div className="flex flex-col h-full px-4 md:px-8">
 				<div className="flex-grow overflow-hidden">
 					<div className="mb-4 ml-4 text-left">
 						<div style={{ fontFamily: '"GT America", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
@@ -156,14 +152,11 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 					<div className="h-full overflow-y-auto">
 						<table className="w-full bg-black text-white">
 							<thead className="sticky top-0 bg-black">
-								<tr>
-									<th style={{ fontFamily: '"GT America", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
-										My holdings
-									</th>
-									{/*<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">*/}
-									{/*	<span className="text-xs whitespace-nowrap">Price (USDC), 24h Chg</span>*/}
-									{/*</th>*/}
-								</tr>
+							<tr>
+								<th style={{ fontFamily: '"GT America", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
+									My holdings
+								</th>
+							</tr>
 							</thead>
 							<tbody>
 							{balanceData &&
@@ -208,12 +201,6 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 						</table>
 					</div>
 				</div>
-				{/*<div className="mt-6 flex flex-col items-center">*/}
-				{/*	<img src={signOutIcon} alt="Logout Icon" className="w-6 h-6 mb-2"/>*/}
-				{/*	<button onClick={this.handleSignOut} className="text-[#FE8A00] hover:underline focus:outline-none">*/}
-				{/*		Sign Out*/}
-				{/*	</button>*/}
-				{/*</div>*/}
 			</div>
 		);
 	}
