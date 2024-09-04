@@ -13,8 +13,9 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { CreateOrder } from '../order/CreateOrder';
-import { formatPrice } from '../utils/utils';
+import {CreateOrder} from 'components/views/v2/order/CreateOrder';
+import {formatPrice} from 'components/views/v2/utils/utils';
+import {Orders} from "components/views/v2/orders/Orders";
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -25,12 +26,14 @@ interface MarketState extends BaseState {
 	error?: string;
 }
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
 
 const Container = styled(Box)({
-	padding: '0 22px',
+	padding: '0 24px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',
@@ -51,11 +54,11 @@ const ChartDetails = styled(Box)({
 	gap: '30px',
 });
 
-const SubTitle = styled(Box)({
+const SubTitle = styled(Box)(({theme}) => ({
 	fontWeight: '300',
 	fontSize: '12px',
-	color: MaterialUITheme.palette.text.secondary,
-});
+	color: theme.palette.text.secondary,
+}));
 
 const ChartDetailItem = styled(Box)({
 	fontSize: '14px',
@@ -137,6 +140,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				</ChartDetails>
 
 				<CreateOrder marketId={this.marketId} />
+				<Orders marketId={this.marketId}/>
 			</Container>
 		);
 	}

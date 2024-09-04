@@ -1,4 +1,4 @@
-import { Box, SelectChangeEvent, styled } from '@mui/material';
+import {Box, SelectChangeEvent, styled, Typography} from '@mui/material';
 import { Market } from "api/types/markets";
 import { OrderSide, OrderType } from "api/types/orders";
 import axios from 'axios';
@@ -20,6 +20,7 @@ import { ChangeEvent } from "react";
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {Check} from "@mui/icons-material";
 
 const OrderSideLabelMapper = { [OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell' };
 const OrderTypeLabelMapper = { [OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit' };
@@ -43,7 +44,8 @@ interface State extends BaseState {
 	isSubmitting?: boolean;
 }
 
-
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State | any, props: Props | any) => ({
 	markets: state.api.markets,
 });
@@ -62,13 +64,22 @@ const InputsContainer = styled(Box)({
 	gap: '40px',
 });
 
-const TotalContainer = styled(Box)({
+const TotalContainer = styled(Box)(({theme}) => ({
 	width: '100%',
 	display: 'flex',
 	justifyContent: 'space-between',
 	alignItems: 'center',
+	fontSize: '17px',
 	fontWeight: '300',
-});
+	fontFamily: theme.fonts.primary,
+}));
+
+const StyledTotalPrice = styled(Typography)(({theme}) => ({
+	fontSize: '19px',
+	fontWeight: '300',
+	fontFamily: theme.fonts.secondary,
+	color: theme.palette.primary.main,
+}));
 
 const Divider = styled(Box)(({ theme }) => ({
 	width: '100%',
@@ -369,12 +380,13 @@ class Structure extends Base<Props, State> {
 				<Divider />
 				<TotalContainer>
 					<span>Total</span>
-					<span>{formatPrice(getTotal(orderSide, orderType))}</span>
+					<StyledTotalPrice>{formatPrice(getTotal(orderSide, orderType))}</StyledTotalPrice>
 				</TotalContainer>
 				<ButtonContainer>
 					<Button
-						value={this.state.isSubmitting ? 'Submitting...' : OrderSideLabelMapper[this.state.orderSide]}
+						value={this.state.isSubmitting ? 'Order placed' : OrderSideLabelMapper[this.state.orderSide]}
 						type={ButtonType.Full}
+						icon={this.state.isSubmitting ? <Check sx={{paddingTop: '-4px'}}/> : undefined}
 						disabled={getTotal(orderSide, orderType) === 0 || this.state.isSubmitting}
 						onClick={async (e) => {
 							e?.preventDefault();
