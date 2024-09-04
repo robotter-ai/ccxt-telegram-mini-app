@@ -11,6 +11,7 @@ import { Market as V1Market } from 'components/views/v1/market/Market';
 import { Orders as V1Orders } from 'components/views/v1/orders/Orders';
 import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOrder';
 // import { Rewards as V1Rewards } from 'components/views/v1/rewards/Rewards';
+import WhereToGetIt from "components/views/v2/sign_in/WhereToGetIt.tsx";
 
 import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
 import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
@@ -69,6 +70,8 @@ const RouterContent = () => {
 			<Route path={Constant.balancesPath.value} element={<Navigate to={`${Constant.currentRoutePath.value}${Constant.balancesPath.value}`} />} />
 			<Route path={Constant.rewardsPath.value} element={<Navigate to={`${Constant.currentRoutePath.value}${Constant.rewardsPath.value}`} />} />
 			<Route path={Constant.developmentPath.value} element={<Navigate to={`${Constant.currentRoutePath.value}${Constant.developmentPath.value}`} />} />
+			<Route path="/where-to-get-it" element={<WhereToGetIt />} />
+
 
 			<Route path={Constant.v1SignInPath.value} element={<V1SignIn />} />
 			<Route path={Constant.v1Path.value} element={<V1Layout />}>

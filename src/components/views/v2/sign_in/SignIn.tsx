@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -214,8 +215,10 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 													borderRadius: '50px',
 													backgroundColor: 'black',
 													color: 'white',
-													borderColor: 'white',
+													border: '2px solid white',
 												}}
+												component={RouterLink}
+												to="/where-to-get-it"
 											>
 												Where to get it?
 											</Button>
