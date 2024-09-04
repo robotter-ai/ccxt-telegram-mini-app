@@ -5,7 +5,7 @@ import {apiPostRun} from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
-// import signOutIcon from 'public/images/signout.svg';
+// import signOutIcon from 'public/images/signoutGrey.svg';
 import { apiPostAuthSignOut } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
