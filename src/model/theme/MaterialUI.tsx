@@ -50,8 +50,6 @@ export const MaterialUITheme = createTheme({
 	fonts: {
 		primary: '"Work Sans", sans-serif',
 		secondary: '"Cormorant", sans-serif',
-		tertiary: '"Libre Franklin", sans-serif',
-		quaternary: '"Cinzel", serif',
 		monospace: '"GT America Mono Light", monospace',
 	},
 	components: {
