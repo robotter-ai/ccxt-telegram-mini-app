@@ -146,7 +146,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 			<div className="flex flex-col h-full">
 				<div className="flex-grow overflow-hidden">
 					<div className="mb-4 ml-4 text-left">
-						<div style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
+						<div style={{ fontFamily: '"GT America", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
 							My balance
 						</div>
 						<div style={{ fontFamily: '"PP Editorial New Light", sans-serif' }} className="mt-4 mb-10 text-3xl text-white">
@@ -157,7 +157,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 						<table className="w-full bg-black text-white">
 							<thead className="sticky top-0 bg-black">
 								<tr>
-									<th style={{ fontFamily: '"Libre Franklin", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
+									<th style={{ fontFamily: '"GT America", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
 										My holdings
 									</th>
 									{/*<th className="px-4 py-2 text-right text-[#FE8A00] w-4/12">*/}
