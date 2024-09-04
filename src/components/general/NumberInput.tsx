@@ -1,6 +1,7 @@
 import { FormControl, InputLabel, TextField, styled } from '@mui/material';
 import Decimal from 'decimal.js';
 import React, { useRef } from 'react';
+import {removeLeadingZeroes} from "components/views/v2/utils/utils";
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
 	'& .MuiOutlinedInput-root': {
@@ -32,7 +33,7 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 
 interface NumberInputProps {
 	label: string;
-	value: number;
+	value: string;
 	precision?: number;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -75,7 +76,7 @@ const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onCh
 			<StyledInputLabel ref={inputLabelRef} shrink={true}>{label}</StyledInputLabel>
 			<StyledTextField
 				variant="outlined"
-				value={value}
+				value={removeLeadingZeroes(value)}
 				onChange={onChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}

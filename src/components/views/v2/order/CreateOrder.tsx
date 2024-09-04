@@ -8,7 +8,7 @@ import ButtonGroupToggle from "components/general/ButtonGroupToggle";
 import DropDownSelector from "components/general/DropdownSelector";
 import NumberInput from "components/general/NumberInput";
 import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
-import { formatPrice } from "components/views/v2/utils/utils";
+import {formatPrice} from "components/views/v2/utils/utils";
 import Decimal from "decimal.js";
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -37,8 +37,8 @@ interface State extends BaseState {
 	precision: number;
 	orderSide: OrderSide;
 	orderType: OrderType;
-	amount: number;
-	price?: number;
+	amount: string;
+	price?: string;
 	isSubmitting?: boolean;
 }
 
@@ -112,8 +112,8 @@ class Structure extends Base<Props, State> {
 			precision: 4,
 			orderSide: OrderSide.BUY,
 			orderType: OrderType.MARKET,
-			amount: 0,
-			price: 0,
+			amount: '0',
+			price: '0',
 			isSubmitting: false,
 		} as Readonly<State>;
 
@@ -167,12 +167,12 @@ class Structure extends Base<Props, State> {
 		}
 
 		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ amount: isValidAmount ? parseFloat(event.target.value) : 0 });
+		this.setState({amount: isValidAmount ? event.target.value : '0'});
 	}
 
 	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
 		const isValidPrice = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ price: isValidPrice ? parseFloat(event.target.value) : 0 });
+		this.setState({price: isValidPrice ? event.target.value : '0'});
 	}
 
 	async handleCreateOrder() {
@@ -316,9 +316,9 @@ class Structure extends Base<Props, State> {
 
 					<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0} />
 					<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0} />
-					<NumberInput label={'AMOUNT'} value={amount} precision={precision} onChange={this.handleAmountChange} />
+					<NumberInput label={'AMOUNT'} value={amount ?? '0'} precision={precision} onChange={this.handleAmountChange}/>
 					{orderType === OrderType.LIMIT &&
-						<NumberInput label={'SET PRICE'} value={price ?? 0} precision={precision}
+						<NumberInput label={'SET PRICE'} value={price ?? '0'} precision={precision}
 							onChange={this.handlePriceChange} />}
 				</InputsContainer>
 				<Divider />

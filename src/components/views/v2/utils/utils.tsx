@@ -73,3 +73,9 @@ export const formatPrice = (price: number, precision?: number) => {
         maximumFractionDigits: precision ?? 2,
     }).format(price);
 }
+
+export const removeLeadingZeroes = (value: string) => {
+	console.log('recebeu: ', value);
+	console.log('retornou: ', value.replace(/^0+(?=\d)/, ''));
+	return value.replace(/^0+(?=\d)/, '');
+};
