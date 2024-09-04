@@ -2,7 +2,7 @@
 import React from 'react';
 // import { useNavigate } from 'react-router-dom';
 import { AppBar, IconButton, styled, Toolbar, Typography } from '@mui/material';
-import { Menu } from '@mui/icons-material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 // import { Constant } from 'model/enum/constant.ts';
 import { connect } from 'react-redux';
 import { dispatch } from 'model/state/redux/store';
@@ -48,19 +48,19 @@ export const HeaderStructure = (props: any) => {
 				{/*<div className="flex items-center" onClick={handleLogoClick}>*/}
 				{/*	<img src={logo} alt="Logo" className="h-10 w-10 mr-2"/>*/}
 				{/*</div>*/}
-				<Typography
-					variant="h6"
-					component="div"
-					sx={{
-						flexGrow: 1,
-						textAlign: 'center',
-						position: 'absolute',
-						left: '50%',
-						transform: 'translateX(-50%)'
-					}}
-				>
-					{getCurrentRouteTitle()}
-				</Typography>
+				{/*<Typography*/}
+				{/*	variant="h6"*/}
+				{/*	component="div"*/}
+				{/*	sx={{*/}
+				{/*		flexGrow: 1,*/}
+				{/*		textAlign: 'center',*/}
+				{/*		position: 'absolute',*/}
+				{/*		left: '50%',*/}
+				{/*		transform: 'translateX(-50%)'*/}
+				{/*	}}*/}
+				{/*>*/}
+				{/*	{getCurrentRouteTitle()}*/}
+				{/*</Typography>*/}
 				<IconButton
 					size="large"
 					edge="end"
@@ -69,7 +69,7 @@ export const HeaderStructure = (props: any) => {
 					sx={{ ml: 'auto' }}
 					onClick={toggleMenu()}
 				>
-					<Menu />
+					<MoreVertIcon />
 				</IconButton>
 			</Toolbar>
 		</Style>
