@@ -22,21 +22,20 @@ const StyledBox = styled(Box)(({}) => ({
 	width: '100%',
 }));
 
-const StyledButton = styled(MuiButton)<{ isfullwidth: boolean }>(({isfullwidth}) => ({
+const StyledButton = styled(MuiButton)<{ isfullwidth: boolean }>(({theme, isfullwidth}) => ({
 	width: isfullwidth ? '100%' : 'auto',
 	fontSize: '16px',
-	fontWeight: '400',
-	fontFamily: '"Work Sans", sans-serif',
+	fontWeight: '300',
 	padding: '12px',
 	borderRadius: '40px',
 	textTransform: 'none',
 	'&.full': {
-		backgroundColor: '#FFFFFF',
-		color: '#000000',
+		backgroundColor: theme.palette.common.white,
+		color: theme.palette.common.black,
 	},
 	'&.bordered': {
-		backgroundColor: '#000000',
-		color: '#FFFFFF',
+		backgroundColor: 'transparent',
+		color: theme.palette.common.white,
 		border: '1px solid',
 	},
 	'&.Mui-disabled': {
@@ -50,7 +49,7 @@ const StyledButton = styled(MuiButton)<{ isfullwidth: boolean }>(({isfullwidth})
 		borderColor: '#ADADAD',
 	},
 	'&.bordered.Mui-disabled': {
-		backgroundColor: '#000000',
+		backgroundColor: theme.palette.common.black,
 		color: '#A0A0A0',
 		borderColor: '#A0A0A0',
 	}

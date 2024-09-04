@@ -19,8 +19,9 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-	fontSize: '15px',
+	fontSize: '13px',
 	fontWeight: '300',
+	fontFamily: theme.fonts.monospace,
 	lineHeight: '20px',
 	backgroundColor: theme.palette.background.default,
 	padding: '2px 6px',
