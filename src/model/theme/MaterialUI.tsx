@@ -31,18 +31,18 @@ export const MaterialUITheme = createTheme({
 		},
 		background: {
 			default: '#000000',
-			paper: '#232322',
+			paper: '#1F1F1F',
 		},
 		text: {
-			secondary: '#949494',
+			secondary: '#ADADAD',
 			primary: '#ffffff',
 			disabled: '#595959',
 		},
 		error: {
-			main: '#f32d54',
+			main: '#F42443',
 		},
 		success: {
-			main: '#1fce79',
+			main: '#00DD1D',
 		},
 	},
 	typography: {
