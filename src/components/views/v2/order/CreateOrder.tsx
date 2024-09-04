@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {Check} from "@mui/icons-material";
+import {dispatch} from "model/state/redux/store";
 
 const OrderSideLabelMapper = { [OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell' };
 const OrderTypeLabelMapper = { [OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit' };
@@ -188,6 +189,10 @@ class Structure extends Base<Props, State> {
 				return;
 			}
 
+			if (!price) {
+				throw new Error('Invalid price');
+			}
+
 			const response = await apiPostRun(
 				{
 					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
@@ -197,8 +202,8 @@ class Structure extends Base<Props, State> {
 						symbol: market,
 						side: orderSide,
 						type: orderType,
-						amount: amount,
-						price: orderType === OrderType.MARKET ? null : price,
+						amount: new Decimal(amount).toNumber(),
+						price: orderType === OrderType.MARKET ? null : new Decimal(price).toNumber(),
 					},
 				},
 				this.props.handleUnAuthorized
@@ -210,13 +215,51 @@ class Structure extends Base<Props, State> {
 
 			toast.success('OrderInfo created successfully!');
 
-			this.props.navigate('/orders');
+			await this.fetchOpenOrders();
+
 		} catch (error) {
 			console.error('Failed to create order: ', error);
 			toast.error('Failed to create order.');
 		} finally {
 			this.setState({ isSubmitting: false });
 		}
+	}
+
+	async fetchOpenOrders() {
+		const response = await apiPostRun(
+			{
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'fetch_open_orders',
+				parameters: {},
+			},
+			this.props.handleUnAuthorized
+		);
+
+		if (response.status !== 200) {
+			throw new Error('Network response was not OK');
+		}
+
+		const payload = response.data;
+
+		if (!Array.isArray(payload.result)) {
+			throw new Error('Unexpected API response format');
+		}
+
+		const output = payload.result
+			.map((order: any) => ({
+				checkbox: false,
+				id: order.id,
+				market: order.symbol,
+				status: order.status,
+				side: order.side,
+				amount: order.amount,
+				price: order.price,
+				datetime: order.timestamp,
+				actions: null,
+			}));
+
+		dispatch('api.updateOpenOrders', output);
 	}
 
 	async getTotalPrice(marketId: string) {
