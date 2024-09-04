@@ -225,11 +225,11 @@ pushStack('api.updateMarkets', (currentState: any, payload: any) => {
 			payload
 		);
 
-		for (const market of payload as any[]) {
+		for (const market of payload) {
 			nextState.setIn(`maps.currenciesByIds.${market.id}`, market);
 			nextState.setIn(`maps.currenciesBySymbols.${market.symbol}`, market);
-			nextState.setIn(`maps.currenciesByRawIds.${market.info.marketId}`, market);
-			nextState.setIn(`maps.currenciesByRawSymbols.${market.info.symbol}`, market);
+			nextState.setIn(`maps.currenciesByRawIds.${market.info?.marketId}`, market);
+			nextState.setIn(`maps.currenciesByRawSymbols.${market.info?.symbol}`, market);
 		}
 	}
 
