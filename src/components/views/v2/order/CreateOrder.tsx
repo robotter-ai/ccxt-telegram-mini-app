@@ -13,8 +13,6 @@ import Decimal from "decimal.js";
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { dispatch } from 'model/state/redux/store';
 import { MaterialUITheme } from "model/theme/MaterialUI";
 import { ChangeEvent } from "react";
 import { connect } from 'react-redux';
@@ -131,7 +129,6 @@ class Structure extends Base<Props, State> {
 
 	async componentDidMount() {
 		await this.initialize();
-		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
@@ -148,59 +145,6 @@ class Structure extends Base<Props, State> {
 		}
 
 		this.setState({ isLoading: false });
-	}
-
-	async doRecurrently() {
-		const recurrentFunction = async () => {
-			try {
-				const response = await apiPostRun(
-					{
-						method: 'fetch_tickers',
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					if (response.data?.title) {
-						const message = response.data.title;
-
-						this.setState({ error: message });
-						toast.error(message);
-
-						return;
-					} else {
-						throw new Error(response.text);
-					}
-				}
-
-				const payload = response.data.result;
-
-				dispatch('api.updateTemplateData', payload);
-			} catch (exception) {
-				console.error(exception);
-
-				if (axios.isAxiosError(exception)) {
-					if (exception?.response?.status === 401) {
-						return;
-					}
-				}
-
-				const message = 'An error has occurred while performing this operation.'
-
-				this.setState({ error: message });
-				toast.error(message);
-
-				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
-			}
-		};
-
-		this.properties.setIn(
-			'recurrent.5s.intervalId',
-			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
-		);
 	}
 
 	handleMarketChange(event: SelectChangeEvent) {
