@@ -99,20 +99,20 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 					minHeight: '100vh',
 					display: 'flex',
 					flexDirection: 'column',
-					justifyContent: 'space-between',
+					justifyContent: 'center',
 					alignItems: 'center',
 					bgcolor: 'background.default',
 					width: '100%',
 					paddingY: 4,
+					gap: 2,
 				}}
 			>
-				<Box sx={{ marginTop: 2 }}>
+				<Box sx={{ marginTop: 2, mb: { xs: 4, md: 6 } }}>
 					<img
 						src={logo}
 						alt="Logo"
 						style={{
 							height: '6rem',
-							marginTop: '1rem',
 							marginBottom: '1rem',
 							borderRadius: '10%',
 						}}

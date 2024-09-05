@@ -11,6 +11,7 @@ import { Constant } from 'model/enum/constant';
 interface Props extends BaseProps {
 	currenciesBySymbols: any;
 }
+
 interface State extends BaseState {
 	isLoading: boolean;
 	error?: string;
@@ -149,7 +150,7 @@ class Structure extends Base<Props, State> {
 							{`$${totalBalanceUSDC.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
 						</div>
 					</div>
-					<div className="h-full overflow-y-auto">
+					<div className="h-full overflow-x-auto">
 						<table className="w-full bg-black text-white">
 							<thead className="sticky top-0 bg-black">
 							<tr>
@@ -169,11 +170,11 @@ class Structure extends Base<Props, State> {
 
 									return (
 										<tr key={asset} className="border-b border-gray-600 border-none">
-											<td className="px-4 py-2 w-1/12">
-												<i className={iconClass} style={{fontSize: '24px'}}></i>
+											<td className="px-4 py-2 w-1/12 text-center">
+												<i className={iconClass} style={{ fontSize: '24px' }}></i>
 											</td>
 											<td className="px-4 py-2 w-7/12">
-												<div className="flex flex-col ml-1 ">
+												<div className="flex flex-col ml-1">
 													<span className="text-lg leading-none">{currency.name}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
@@ -183,7 +184,7 @@ class Structure extends Base<Props, State> {
 													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
 													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
 															{percentage}
-													</span>
+														</span>
 												</div>
 											</td>
 											<td className="px-4 py-2 w-4/12 text-right">
