@@ -5,7 +5,7 @@ import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from "components/views/v2/orders/Orders";
 import { formatPrice } from 'components/views/v2/utils/utils';
-import { ColorType, createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
+import { ColorType, createChart, IChartApi, LastPriceAnimationMode, LineData, LineStyle, PriceLineSource, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
@@ -24,6 +24,8 @@ interface MarketProps extends BaseProps {
 interface MarketState extends BaseState {
 	isLoading: boolean;
 	error?: string;
+	price: string | number | null;
+	volume: string | number | null;
 }
 
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
@@ -79,11 +81,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	marketId: string;
 	precision: number;
-	price: any;
-	volume: any;
 
 	chart?: IChartApi;
 	chartSeries?: any;
+	lastPriceLine?: any;
 
 	chartReference = createRef<HTMLDivElement>();
 
@@ -93,6 +94,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		this.state = {
 			isLoading: true,
 			error: undefined,
+			price: null,
+			volume: null,
 		} as Readonly<MarketState>;
 
 		this.marketId = this.props.queryParams.get('marketId');
@@ -101,7 +104,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		this.precision = (this.market.precision.amount !== null && this.market.precision.amount !== undefined)
 			? this.market.precision.amount
 			: this.market.precision;
-		this.precision = this.precision || 10;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
@@ -121,7 +123,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	render() {
-		const { isLoading } = this.state;
+		const { isLoading, price, volume } = this.state;
 
 		return (
 			<Container>
@@ -136,11 +138,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					</ChartDetailItem>
 					<ChartDetailItem dataPrecision={this.precision}>
 						<SubTitle>PRICE</SubTitle>
-						<Box>{this.price ?? '-'}</Box>
+						<Box>{price ?? '-'}</Box>
 					</ChartDetailItem>
 					<ChartDetailItem dataPrecision={this.precision}>
 						<SubTitle>24H VOL ({this.market.base})</SubTitle>
-						<Box>{this.volume ?? '-'}</Box>
+						<Box>{volume ?? '-'}</Box>
 					</ChartDetailItem>
 				</ChartDetails>
 
@@ -160,6 +162,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	async doRecurrently() {
 		const recurrentFunction = async () => {
+			// const close = Number((Math.random() * (100000 - 10) + 10).toFixed(this.precision));
 			const { timestamp, close } = await this.fetchTickerData(this.marketId);
 
 			if (this.chartSeries) {
@@ -171,7 +174,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 						value: close,
 					});
 
-					this.price = formatPrice(close, this.precision);
+					const formattedPrice = formatPrice(close, this.precision);
+					this.setState({ price: formattedPrice });
+
+					this.addPriceAnnotation(close);
+
 					return;
 				}
 			}
@@ -300,7 +307,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				},
 			},
 			timeScale: {
-				borderVisible: true,
+				visible: true,
+				borderVisible: false,
 				timeVisible: true,
 				borderColor: MaterialUITheme.palette.text.secondary,
 				secondsVisible: true,
@@ -308,34 +316,41 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				fixRightEdge: true,
 			},
 			rightPriceScale: {
-				borderVisible: true,
+				visible: false,
+				borderVisible: false,
 				borderColor: MaterialUITheme.palette.text.secondary,
-				autoScale: true,
+				autoScale: false,
 				scaleMargins: {
 					top: 0.1,
 					bottom: 0.1,
 				},
 			},
+			leftPriceScale: {
+				visible: false,
+			},
 			handleScale: false,
 			handleScroll: false,
 		});
 
+		const hasPrecisionToMinMove = precision || 10;
 		this.chartSeries = this.chart.addLineSeries({
 			color: MaterialUITheme.palette.success.main,
+			lineStyle: LineStyle.Solid,
+			lastPriceAnimation: LastPriceAnimationMode.Continuous,
 			lineWidth: 1,
-			lineStyle: 0,
 			priceLineWidth: 1,
-			priceLineStyle: 1,
-			priceLineVisible: true,
-			lastValueVisible: true,
-			priceLineColor: MaterialUITheme.palette.success.main,
-			lastPriceAnimation: 1,
 			priceFormat: {
 				type: 'custom',
 				formatter: (price: number) => formatPrice(price, precision),
-				minMove: 0.1 ** precision,
+				minMove: 0.1 ** hasPrecisionToMinMove,
 			},
+			priceLineSource: PriceLineSource.LastBar,
 		});
+
+		if (lines.length > 0) {
+			const lastPrice = lines[lines.length - 1].value;
+			this.addPriceAnnotation(lastPrice);
+		}
 
 		window.addEventListener('resize', this.handleChartResize);
 
@@ -343,6 +358,26 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		this.chart.timeScale().fitContent();
 		this.chart.timeScale().scrollToRealTime();
+	}
+
+	addPriceAnnotation(price: number) {
+		if (this.chartSeries) {
+
+			if (this.lastPriceLine) {
+				this.chartSeries.removePriceLine(this.lastPriceLine);
+			}
+
+			this.lastPriceLine = this.chartSeries.createPriceLine({
+				price,
+				color: MaterialUITheme.palette.success.main,
+				lineWidth: 1,
+				lineStyle: LineStyle.Dashed,
+				axisLabelVisible: true,
+				axisLabelColor: MaterialUITheme.palette.success.main,
+				axisLabelTextColor: MaterialUITheme.palette.secondary.main,
+				title: formatPrice(price, this.precision),
+			});
+		}
 	}
 
 	transformCandlesInLines(candles: number[][]): LineData[] {
@@ -359,8 +394,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		if (formattedCandles.length) {
 			const lastCandle = formattedCandles[formattedCandles.length - 1];
-			this.volume = formatPrice(lastCandle.volume!, this.precision);
-			this.price = formatPrice(lastCandle.value, this.precision);
+			this.setState({
+				price: formatPrice(lastCandle.value, this.precision),
+				volume: lastCandle.volume ? lastCandle.volume : null,
+			});
 		}
 
 		return formattedCandles;
