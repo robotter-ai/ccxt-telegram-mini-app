@@ -47,6 +47,45 @@ export const MaterialUITheme = createTheme({
 	},
 	typography: {
 		fontFamily: '"GT America Light", sans-serif',
+		h1: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h2: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h3: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h4: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h5: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h6: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		subtitle1: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		subtitle2: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		// body1: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// body2: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// button: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// caption: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// overline: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
 	},
 	fonts: {
 		primary: '"GT America Light", sans-serif',
