@@ -1,38 +1,36 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import { apiPostAuthSignOut, apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
-// import signOutIcon from 'public/images/signoutGrey.svg';
-import { apiPostAuthSignOut } from 'model/service/api';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
-interface BalanceProps extends BaseProps {
+interface Props extends BaseProps {
 	currenciesBySymbols: any;
 }
-interface BalanceState extends BaseState {
+interface State extends BaseState {
 	isLoading: boolean;
 	error?: string;
 	balanceData: any;
 	tickers: { [key: string]: any };
 }
 
-const mapStateToProps = (state: BalanceState | any) => ({
+const mapStateToProps = (state: State | any) => ({
 	balanceData: state.api.balanceData,
 	tickers: state.api.tickers,
 	currenciesBySymbols: state.maps.currenciesBySymbols,
 });
 
-class BalanceStructure extends Base<BalanceProps, BalanceState> {
+class Structure extends Base<Props, State> {
 	static defaultProps: Partial<BaseProps> = {};
 
 	recurrentIntervalId?: number;
 	recurrentDelay?: number;
 
-	constructor(props: BalanceProps) {
+	constructor(props: Props) {
 		super(props);
 
 		this.state = {
@@ -144,7 +142,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 			<div className="flex flex-col h-full px-4 md:px-8">
 				<div className="flex-grow overflow-hidden">
 					<div className="mb-4 ml-4 text-left">
-						<div style={{ fontFamily: '"GT America", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
+						<div style={{ fontFamily: '"GT America Light", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
 							My balance
 						</div>
 						<div style={{ fontFamily: '"PP Editorial New Light", sans-serif' }} className="mt-4 mb-10 text-3xl text-white">
@@ -155,7 +153,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 						<table className="w-full bg-black text-white">
 							<thead className="sticky top-0 bg-black">
 							<tr>
-								<th style={{ fontFamily: '"GT America", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
+								<th style={{ fontFamily: '"GT America Light", sans-serif' }} className="px-4 py-2 text-left text-sm font-extralight text-neutral-400" colSpan={2}>
 									My holdings
 								</th>
 							</tr>
@@ -164,7 +162,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 							{balanceData &&
 								Object.entries(balanceData.total).map(([asset, amount]) => {
 									const currency = this.props.currenciesBySymbols[asset];
-									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-1`;
+									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-${currency.info.assetId}`;
 									const name = tickers[asset]?.name || asset;
 									const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : tickers[asset]?.last || 0;
 									const percentage = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
@@ -209,7 +207,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 	}
 }
 
-const BalanceBehavior = (props: any) => {
+const Behavior = (props: any) => {
 	const handleUnAuthorized = useHandleUnauthorized();
 	const location = useLocation();
 	const params = useParams();
@@ -218,7 +216,7 @@ const BalanceBehavior = (props: any) => {
 	const navigate = useNavigate();
 
 	return (
-		<BalanceStructure
+		<Structure
 			{...props}
 			queryParams={queryParams}
 			params={params}
@@ -229,4 +227,4 @@ const BalanceBehavior = (props: any) => {
 	);
 };
 
-export const Balances = connect(mapStateToProps)(BalanceBehavior);
+export const Balances = connect(mapStateToProps)(Behavior);
