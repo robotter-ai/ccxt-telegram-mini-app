@@ -196,9 +196,9 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-4/12 text-right">
 												<div className="flex flex-col items-end">
-													<span className="text-lg leading-none">{`$${amount.toFixed(2)}`}</span>
+													<span className="text-lg leading-none">{`$${amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}</span>
 													<div className="flex items-center">
-														<span className="text-xs text-gray-400 mr-2">{`${amount.toFixed(2)}`}</span>
+														<span className="text-xs text-gray-400 mr-2">{`$${amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}</span>
 														<span className="text-xs text-gray-400">{name}</span>
 													</div>
 												</div>
