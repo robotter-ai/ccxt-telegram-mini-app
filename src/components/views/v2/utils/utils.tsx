@@ -66,11 +66,15 @@ export const getCurrentRouteTitle = () => {
 };
 
 export const formatPrice = (price: number, precision?: number) => {
+    const priceString = price.toString();
+    const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
+    const finalPrecision = Math.max(actualPrecision, precision || 2);
+
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        minimumFractionDigits: precision ?? 2,
-        maximumFractionDigits: precision ?? 2,
+        minimumFractionDigits: finalPrecision,
+        maximumFractionDigits: finalPrecision,
     }).format(price);
 }
 
