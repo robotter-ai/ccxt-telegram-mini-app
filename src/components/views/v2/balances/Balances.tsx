@@ -1,11 +1,10 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostAuthSignOut, apiPostRun } from 'model/service/api';
+import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
 interface Props extends BaseProps {
@@ -67,6 +66,7 @@ class Structure extends Base<Props, State> {
 			);
 
 			if (balanceResponse.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Failed to fetch balance');
 			}
 
@@ -84,6 +84,7 @@ class Structure extends Base<Props, State> {
 			);
 
 			if (tickersResponse.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Failed to fetch tickers');
 			}
 
@@ -100,18 +101,6 @@ class Structure extends Base<Props, State> {
 			this.setState({ isLoading: false });
 		}
 	}
-
-	handleSignOut = async () => {
-		try {
-			await apiPostAuthSignOut();
-			dispatch('api.signOut', null);
-			toast.success('Signed out successfully!');
-			this.props.navigate(Constant.homePath.value as string);
-		} catch (exception) {
-			console.error(exception);
-			toast.error('An error occurred during sign out.');
-		}
-	};
 
 	handleClick(currency: any) {
 		const environment = Constant.environment.value;
@@ -147,7 +136,9 @@ class Structure extends Base<Props, State> {
 		}
 
 		const totalBalanceUSDC = balanceData
-			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
+			? Object.entries(balanceData.total).reduce((acc, balance: any) => {
+				const asset = balance[0];
+				const amount = balance[1];
 				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (tickers[asset]?.last || 0);
 				return acc + price * amount;
 			}, 0)
