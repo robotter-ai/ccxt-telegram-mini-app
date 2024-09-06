@@ -31,7 +31,7 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 	fontFamily: theme.fonts.monospace,
 	backgroundColor: theme.palette.background.default,
 	padding: '1px 6px',
-	fontSize: '16px',
+	fontSize: '14px',
 	'&.Mui-focused': {
 		color: theme.palette.primary.main,
 	},

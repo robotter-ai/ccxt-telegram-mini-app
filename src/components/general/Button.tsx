@@ -1,5 +1,5 @@
+import { Box, Button as MuiButton, styled } from '@mui/material';
 import React from 'react';
-import { Button as MuiButton, styled, Box } from '@mui/material';
 
 export enum ButtonType {
 	Full = 'full',
@@ -15,14 +15,16 @@ interface ButtonProps {
 	onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
 }
 
-const StyledBox = styled(Box)(({}) => ({
+const StyledBox = styled(Box)({
 	display: 'flex',
 	justifyContent: 'center',
 	alignItems: 'center',
 	width: '100%',
-}));
+});
 
-const StyledButton = styled(MuiButton)<{ isfullwidth: boolean }>(({theme, isfullwidth}) => ({
+const StyledButton = styled(MuiButton, {
+	shouldForwardProp: (prop) => prop !== 'isfullwidth',
+})<{ isfullwidth: boolean }>(({ theme, isfullwidth }) => ({
 	width: isfullwidth ? '100%' : 'auto',
 	fontSize: '16px',
 	fontWeight: '300',

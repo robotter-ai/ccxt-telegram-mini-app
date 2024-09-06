@@ -19,12 +19,15 @@ const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
 	overflow: 'hidden',
 }));
 
-const StyledButton = styled(Button)<{ activeColor?: string }>(({ theme, activeColor }) => ({
+const StyledButton = styled(Button, {
+	shouldForwardProp: (prop) => prop !== 'activeColor',
+})<{ activeColor?: string }>(({ theme, activeColor }) => ({
 	flex: 1,
 	border: 'none',
 	padding: '10px 0',
 	textTransform: 'uppercase',
 	fontWeight: '300',
+	height: '40px',
 	'&.Mui-selected': {
 		border: 'none',
 		borderRadius: '40px',
