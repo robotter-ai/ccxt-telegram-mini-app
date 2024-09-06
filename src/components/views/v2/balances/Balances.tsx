@@ -121,6 +121,24 @@ class Structure extends Base<Props, State> {
 		}
 	};
 
+	handleClick(currency: any) {
+		let environment = Constant.environment.value;
+
+		let url: string;
+
+		if (environment === 'production') {
+			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+		} else if (environment == 'staging') {
+			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.stagingUSDCurrency.value.toUpperCase()}`;
+		} else if (environment == 'development') {
+			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.developmentUSDCurrency.value.toUpperCase()}`;
+		} else {
+			throw new Error('Invalid environment');
+		}
+
+		this.props.navigate(url);
+	};
+
 	render() {
 		const { isLoading, error, balanceData, tickers } = this.state;
 
@@ -169,7 +187,7 @@ class Structure extends Base<Props, State> {
 									const percentage = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
 
 									return (
-										<tr key={asset} className="border-b border-gray-600 border-none">
+										<tr key={asset} className="border-b border-gray-600 border-none" onClick={() => {this.handleClick(currency)}}>
 											<td className="px-4 py-2 w-1/12 text-center">
 												<i className={iconClass} style={{ fontSize: '24px' }}></i>
 											</td>
