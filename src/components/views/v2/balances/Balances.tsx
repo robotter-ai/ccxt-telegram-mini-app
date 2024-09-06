@@ -1,11 +1,10 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostAuthSignOut, apiPostRun } from 'model/service/api';
+import { apiPostRun } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { dispatch } from 'model/state/redux/store';
 import { Constant } from 'model/enum/constant';
 
 interface Props extends BaseProps {
@@ -67,6 +66,7 @@ class Structure extends Base<Props, State> {
 			);
 
 			if (balanceResponse.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Failed to fetch balance');
 			}
 
@@ -84,21 +84,14 @@ class Structure extends Base<Props, State> {
 			);
 
 			if (tickersResponse.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
 				throw new Error('Failed to fetch tickers');
 			}
 
 			const allTickers = tickersResponse.data.result;
 
-			const relevantTickers = Object.entries(balanceData.total).reduce((acc, [symbol]) => {
-				const tickerKey = Object.keys(allTickers).find(key => key.includes(`t${symbol.slice(1)}tUSDC`));
-				if (tickerKey) {
-					acc[symbol] = allTickers[tickerKey];
-				}
-				return acc;
-			}, {});
-
-			console.log('Filtered ticker data:', relevantTickers);
-			this.setState({ tickers: relevantTickers });
+			console.log('tickers:', allTickers);
+			this.setState({ tickers: allTickers });
 
 		} catch (error) {
 			console.error('Error fetching balance or tickers:', error);
@@ -109,24 +102,12 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
-	handleSignOut = async () => {
-		try {
-			await apiPostAuthSignOut();
-			dispatch('api.signOut', null);
-			toast.success('Signed out successfully!');
-			this.props.navigate(Constant.homePath.value as string);
-		} catch (exception) {
-			console.error(exception);
-			toast.error('An error occurred during sign out.');
-		}
-	};
-
 	handleClick(currency: any) {
-		let environment = Constant.environment.value;
+		const environment = Constant.environment.value;
 
 		let url: string;
 
-		if (['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(currency.code.toUpperCase())) {
+		if (Constant.usdCurrencies.value.includes(currency.code.toUpperCase())) {
 			return;
 		}
 
@@ -155,8 +136,10 @@ class Structure extends Base<Props, State> {
 		}
 
 		const totalBalanceUSDC = balanceData
-			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : (tickers[asset]?.last || 0);
+			? Object.entries(balanceData.total).reduce((acc, balance: any) => {
+				const asset = balance[0];
+				const amount = balance[1];
+				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (tickers[asset]?.last || 0);
 				return acc + price * amount;
 			}, 0)
 			: 0;
@@ -183,12 +166,32 @@ class Structure extends Base<Props, State> {
 							</thead>
 							<tbody>
 							{balanceData &&
-								Object.entries(balanceData.total).map(([asset, amount]) => {
+								Object.entries(balanceData.total).map((balance: any) => {
+									const asset: string = balance[0];
+									const amount: number = balance[1];
+
 									const currency = this.props.currenciesBySymbols[asset];
+
+									const environment = Constant.environment.value;
+									let tickerSymbol: string;
+									if (environment === 'production') {
+										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+									} else if (environment == 'staging') {
+										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+									} else if (environment == 'development') {
+										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+									} else {
+										throw new Error('Invalid environment');
+									}
+
+									const ticker =  tickers[tickerSymbol];
+
+									const usdAmount = Constant.usdCurrencies.value.includes(asset) ? amount : amount * (ticker?.last || 0);
+
 									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-${currency.info.assetId}`;
 									const name = tickers[asset]?.name || asset;
-									const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : tickers[asset]?.last || 0;
-									const percentage = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
+									const price = Constant.usdCurrencies.value.includes(asset) ? 1 : ticker?.last || 0;
+									const percentage = Constant.usdCurrencies.value.includes(asset) ? '0.00%' : ticker?.percentage !== undefined ? `${ticker.percentage.toFixed(2)}%` : 'N/A';
 
 									return (
 										<tr key={asset} className="border-b border-gray-600 border-none" onClick={() => {this.handleClick(currency)}}>
@@ -211,7 +214,7 @@ class Structure extends Base<Props, State> {
 											</td>
 											<td className="px-4 py-2 w-4/12 text-right">
 												<div className="flex flex-col items-end">
-													<span className="text-lg leading-none">{`$${amount.toFixed(2)}`}</span>
+													<span className="text-lg leading-none">{`$${usdAmount.toFixed(2)}`}</span>
 													<div className="flex items-center">
 														<span className="text-xs text-gray-400 mr-2">{`${amount.toFixed(2)}`}</span>
 														<span className="text-xs text-gray-400">{name}</span>
