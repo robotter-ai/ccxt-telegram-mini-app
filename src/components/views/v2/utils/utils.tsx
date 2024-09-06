@@ -24,22 +24,22 @@ export const getCurrentRoute = () => {
 // This is used by the Footer.
 export const getCurrentRouteOrder = () => {
 	switch (getCurrentRoute().value) {
-	case Constant.signInPath.value:
-		return null;
-	case Constant.balancesPath.value:
-		return 0;
-	case Constant.marketsPath.value:
-		return 1;
-	case Constant.marketPath.value:
-		return 1;
-	case Constant.ordersPath.value:
-		return 2;
-	case Constant.createOrderPath.value:
-		return null;
-	case Constant.rewardsPath.value:
-		return 2;
-	default:
-		return null;
+		case Constant.signInPath.value:
+			return null;
+		case Constant.balancesPath.value:
+			return 0;
+		case Constant.marketsPath.value:
+			return 1;
+		case Constant.marketPath.value:
+			return 1;
+		case Constant.ordersPath.value:
+			return 2;
+		case Constant.createOrderPath.value:
+			return null;
+		case Constant.rewardsPath.value:
+			return 2;
+		default:
+			return null;
 	}
 };
 
@@ -65,15 +65,40 @@ export const getCurrentRouteTitle = () => {
 	}
 };
 
-export const formatPrice = (price: number, precision?: number) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: precision ?? 2,
-        maximumFractionDigits: precision ?? 2,
-    }).format(price);
-}
+export const formatPrice = (price: number, precision?: number): string => {
+	const priceString = price.toString();
+	const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
+	const finalPrecision = Math.max(actualPrecision, precision ?? 2);
+
+	const formattedPrice = new Intl.NumberFormat('en-US', {
+		style: 'currency',
+		currency: 'USD',
+		minimumFractionDigits: finalPrecision,
+		maximumFractionDigits: finalPrecision,
+	}).format(price);
+
+	const cleanedPrice = formattedPrice.replace(/(\.\d*?[1-9])0+$/, '$1');
+
+	if (cleanedPrice.includes('.')) {
+		const decimalPart = cleanedPrice.split('.')[1];
+
+		if (decimalPart.length < 2) {
+			return cleanedPrice + '0';
+		} else if (/^0+$/.test(decimalPart)) {
+			return cleanedPrice.split('.')[0] + '.00';
+		} else {
+			return cleanedPrice;
+		}
+	} else {
+		return cleanedPrice + '.00';
+	}
+};
+
 
 export const removeLeadingZeroes = (value: string) => {
 	return value.replace(/^0+(?=\d)/, '');
 };
+
+export const formatVolume = (value: number) => {
+	return value.toFixed(2);
+}

@@ -137,8 +137,6 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 				>
 					<StyledTableCellLeft>
 						{`${row.base} / ${row.quote}`}
-						{/* <Typography variant="body1">
-						</Typography> */}
 					</StyledTableCellLeft>
 					<StyledTableCellRight>
 						<FlexEndContainer>

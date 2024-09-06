@@ -11,20 +11,22 @@ const WhereToGetIt: React.FC = () => {
 				flexDirection: 'column',
 				justifyContent: 'center',
 				alignItems: 'center',
-				bgcolor: 'background.default',
+				bgcolor: '#000000',
 				width: '100%',
 				paddingY: 4,
 			}}
 		>
 			<Container component="main" maxWidth="md" sx={{ mb: 6 }}>
 				<Paper
-					elevation={3}
+					elevation={0}
 					sx={{
 						padding: 4,
 						display: 'flex',
 						flexDirection: 'column',
 						alignItems: 'flex-start',
 						width: '100%',
+						backgroundColor: '#000000',
+						color: 'white',
 					}}
 				>
 					<Typography variant="h4" gutterBottom align="center" sx={{ width: '100%' }}>
@@ -36,7 +38,7 @@ const WhereToGetIt: React.FC = () => {
 					<ol style={{ paddingLeft: '20px', margin: 0 }}>
 						<li>
 							<Typography variant="body2" paragraph>
-								1. Go to <a href="https://www.cube.exchange" target="_blank" rel="noopener noreferrer">https://www.cube.exchange</a>, log in, and complete your KYC verification if you haven't already done so.
+								1. Go to <a href="https://www.cube.exchange" target="_blank" rel="noopener noreferrer" style={{ color: '#FFA500' }}>https://www.cube.exchange</a>, sign in, and complete your KYC verification if you haven't already done so.
 							</Typography>
 						</li>
 						<li>
@@ -51,17 +53,12 @@ const WhereToGetIt: React.FC = () => {
 						</li>
 						<li>
 							<Typography variant="body2" paragraph>
-								4. In the "API" tab, delete the current key by clicking on the red X icon.
+								4. In the "API" tab, click on "Add another API", select your avatar, choose "Write" permissions, and then create the new API keys.
 							</Typography>
 						</li>
 						<li>
 							<Typography variant="body2" paragraph>
-								5. Click on "Add another API", select your avatar, choose "Read" permissions, and then create the new API keys.
-							</Typography>
-						</li>
-						<li>
-							<Typography variant="body2" paragraph>
-								6. Finally, copy the newly generated keys and use them on our sign-in page.
+								5. Finally, copy the newly generated keys and use them to sign in here.
 							</Typography>
 						</li>
 					</ol>
@@ -72,7 +69,7 @@ const WhereToGetIt: React.FC = () => {
 						sx={{
 							mt: 4,
 							borderRadius: '50px',
-							backgroundColor: 'black',
+							backgroundColor: '#000000',
 							color: 'white',
 							border: '2px solid white',
 							'&:hover': {

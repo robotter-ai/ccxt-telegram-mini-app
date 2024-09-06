@@ -38,7 +38,7 @@ export const Footer = (props: any) => {
 		try {
 			await apiPostAuthSignOut();
 			dispatch('api.signOut', null);
-			toast.success('Signed out successfully!');
+			// toast.success('Signed out successfully!');
 			navigate(Constant.homePath.value as string);
 		} catch (exception) {
 			console.error(exception);
