@@ -89,16 +89,8 @@ class Structure extends Base<Props, State> {
 
 			const allTickers = tickersResponse.data.result;
 
-			const relevantTickers = Object.entries(balanceData.total).reduce((acc, [symbol]) => {
-				const tickerKey = Object.keys(allTickers).find(key => key.includes(`t${symbol.slice(1)}tUSDC`));
-				if (tickerKey) {
-					acc[symbol] = allTickers[tickerKey];
-				}
-				return acc;
-			}, {});
-
-			console.log('Filtered ticker data:', relevantTickers);
-			this.setState({ tickers: relevantTickers });
+			console.log('tickers:', allTickers);
+			this.setState({ tickers: allTickers });
 
 		} catch (error) {
 			console.error('Error fetching balance or tickers:', error);
@@ -122,7 +114,7 @@ class Structure extends Base<Props, State> {
 	};
 
 	handleClick(currency: any) {
-		let environment = Constant.environment.value;
+		const environment = Constant.environment.value;
 
 		let url: string;
 
@@ -183,12 +175,32 @@ class Structure extends Base<Props, State> {
 							</thead>
 							<tbody>
 							{balanceData &&
-								Object.entries(balanceData.total).map(([asset, amount]) => {
+								Object.entries(balanceData.total).map((balance: any) => {
+									const asset: string = balance[0];
+									const amount: number = balance[1];
+
 									const currency = this.props.currenciesBySymbols[asset];
+
+									const environment = Constant.environment.value;
+									let tickerSymbol: string;
+									if (environment === 'production') {
+										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+									} else if (environment == 'staging') {
+										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+									} else if (environment == 'development') {
+										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
+									} else {
+										throw new Error('Invalid environment');
+									}
+
+									const ticker =  tickers[tickerSymbol];
+
+									const usdAmount = Constant.usdCurrencies.value.includes(asset) ? amount : amount * (ticker?.last || 0);
+
 									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-${currency.info.assetId}`;
 									const name = tickers[asset]?.name || asset;
-									const price = Constant.usdCurrencies.value.includes(asset) ? 1 : tickers[asset]?.last || 0;
-									const percentage = Constant.usdCurrencies.value.includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
+									const price = Constant.usdCurrencies.value.includes(asset) ? 1 : ticker?.last || 0;
+									const percentage = Constant.usdCurrencies.value.includes(asset) ? '0.00%' : ticker?.percentage !== undefined ? `${ticker.percentage.toFixed(2)}%` : 'N/A';
 
 									return (
 										<tr key={asset} className="border-b border-gray-600 border-none" onClick={() => {this.handleClick(currency)}}>
@@ -211,7 +223,7 @@ class Structure extends Base<Props, State> {
 											</td>
 											<td className="px-4 py-2 w-4/12 text-right">
 												<div className="flex flex-col items-end">
-													<span className="text-lg leading-none">{`$${amount.toFixed(2)}`}</span>
+													<span className="text-lg leading-none">{`$${usdAmount.toFixed(2)}`}</span>
 													<div className="flex items-center">
 														<span className="text-xs text-gray-400 mr-2">{`${amount.toFixed(2)}`}</span>
 														<span className="text-xs text-gray-400">{name}</span>
