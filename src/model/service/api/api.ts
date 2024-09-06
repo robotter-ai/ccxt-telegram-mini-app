@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-ts-comment,@typescript-eslint/no-unused-vars */
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, {AxiosRequestConfig} from 'axios';
 
-import { Environment } from 'model/enum/environment';
+import {Environment} from 'model/enum/environment';
 
 const environment = Environment.production;
 
@@ -52,7 +52,7 @@ async function callAPI(options: Options): Promise<any> {
 
 	const headers = {
 		'Content-Type': 'application/json',
-		...(bearerToken ? { 'Authorization': `Bearer ${bearerToken}` } : {}),
+		...(bearerToken ? {'Authorization': `Bearer ${bearerToken}`} : {}),
 		...axiosOptions.headers,
 	};
 
@@ -217,11 +217,13 @@ export const apiGetFetchBalance = async (data?: any, handleUnAuthorized?: () => 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_balance',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -231,11 +233,13 @@ export const apiGetFetchClosedOrders = async (data?: any, handleUnAuthorized?: (
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_closed_orders',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -245,11 +249,13 @@ export const apiGetFetchCurrencies = async (data?: any, handleUnAuthorized?: () 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_currencies',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -259,11 +265,13 @@ export const apiGetFetchDepositAddresses = async (data?: any, handleUnAuthorized
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_deposit_addresses',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -273,11 +281,13 @@ export const apiGetFetchMarkets = async (data?: any, handleUnAuthorized?: () => 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_markets',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -287,11 +297,13 @@ export const apiGetFetchMyTrades = async (data?: any, handleUnAuthorized?: () =>
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_my_trades',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -301,11 +313,13 @@ export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => vo
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_oHLCV',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -315,11 +329,13 @@ export const apiGetFetchOpenOrder = async (data?: any, handleUnAuthorized?: () =
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_open_order',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -329,11 +345,13 @@ export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_open_orders',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -343,11 +361,13 @@ export const apiGetFetchOrder = async (data?: any, handleUnAuthorized?: () => vo
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_order',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -357,11 +377,13 @@ export const apiGetFetchOrderBook = async (data?: any, handleUnAuthorized?: () =
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_order_book',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -371,11 +393,13 @@ export const apiGetFetchOrders = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_orders',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -385,11 +409,13 @@ export const apiGetFetchOrdersAllMarkets = async (data?: any, handleUnAuthorized
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_orders_all_markets',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -399,11 +425,13 @@ export const apiGetFetchStatus = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_status',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -413,11 +441,13 @@ export const apiGetFetchTicker = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_ticker',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -427,11 +457,13 @@ export const apiGetFetchTickers = async (data?: any, handleUnAuthorized?: () => 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_tickers',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -441,11 +473,13 @@ export const apiGetFetchTrades = async (data?: any, handleUnAuthorized?: () => v
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_trades',
-			...data
+			parameters: {
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
@@ -455,11 +489,14 @@ export const apiGetFetchTradingFee = async (data?: any, handleUnAuthorized?: () 
 	return callAPIorMockAPI({
 		method: 'GET',
 		url: '/run',
-		params: {
+		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
 			method: 'fetch_trading_fee',
-			...data
+			parameters: {
+
+				...data
+			},
 		},
 	}, handleUnAuthorized);
 };
