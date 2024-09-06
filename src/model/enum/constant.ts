@@ -57,6 +57,8 @@ export class Constant extends BaseEnum {
 	static stagingUSDCurrency = new Constant('Staging USD Currency', 'Staging USD currency.', 'tUSDC');
 	static developmentUSDCurrency = Constant.stagingUSDCurrency;
 
+	static usdCurrencies = new Constant('USD Currencies', 'USD currencies.', ['USDC', 'USDT', 'TUSDC', 'TUSDT']);
+
 	title: string;
 
 	description: string;

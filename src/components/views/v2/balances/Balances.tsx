@@ -126,7 +126,7 @@ class Structure extends Base<Props, State> {
 
 		let url: string;
 
-		if (['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(currency.code.toUpperCase())) {
+		if (Constant.usdCurrencies.value.includes(currency.code.toUpperCase())) {
 			return;
 		}
 
@@ -156,7 +156,7 @@ class Structure extends Base<Props, State> {
 
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : (tickers[asset]?.last || 0);
+				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (tickers[asset]?.last || 0);
 				return acc + price * amount;
 			}, 0)
 			: 0;
@@ -187,8 +187,8 @@ class Structure extends Base<Props, State> {
 									const currency = this.props.currenciesBySymbols[asset];
 									const iconClass = `cube-icons-${asset.toLowerCase().replace(/^t/, '')} text-token-${currency.info.assetId}`;
 									const name = tickers[asset]?.name || asset;
-									const price = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? 1 : tickers[asset]?.last || 0;
-									const percentage = ['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
+									const price = Constant.usdCurrencies.value.includes(asset) ? 1 : tickers[asset]?.last || 0;
+									const percentage = Constant.usdCurrencies.value.includes(asset) ? '0.00%' : tickers[asset]?.percentage !== undefined ? `${tickers[asset].percentage.toFixed(2)}%` : 'N/A';
 
 									return (
 										<tr key={asset} className="border-b border-gray-600 border-none" onClick={() => {this.handleClick(currency)}}>
