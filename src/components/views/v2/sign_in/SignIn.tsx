@@ -8,7 +8,12 @@ import DOMPurify from 'dompurify';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
-import { apiPostAuthIsSignedIn, apiPostAuthSignIn, apiPostRun } from 'model/service/api';
+import {
+	apiGetFetchCurrencies,
+	apiGetFetchMarkets,
+	apiPostAuthIsSignedIn,
+	apiPostAuthSignIn,
+} from 'model/service/api';
 import {
 	Box,
 	Button,
@@ -313,14 +318,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	loadMarkets = async () => {
 		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_markets',
-				},
-				this.props.handleUnAuthorized
-			);
+			const response = await apiGetFetchMarkets ({},	this.props.handleUnAuthorized	);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 			dispatch('api.updateMarkets', response.data.result);
@@ -336,14 +334,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	loadCurrencies = async () => {
 		this.setState({ isLoading: true });
 		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_currencies',
-				},
-				this.props.handleUnAuthorized
-			);
+			const response = await apiGetFetchCurrencies ({}, this.props.handleUnAuthorized	);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
 			dispatch('api.updateCurrencies', response.data.result);
