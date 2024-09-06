@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { Box, Button, Container, CssBaseline, Typography, Link } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import logo from 'src/assets/images/logo/cube.png';
 import googleLogo from 'src/assets/images/google.svg';
 
