@@ -51,6 +51,12 @@ export class Constant extends BaseEnum {
 	static defaultBatchSize = new Constant('Default Batch Size', 'Default batch size.', 100);
 	static defaultDelayBetweenBatches = new Constant('Default Delay Between Batches', 'Default delay between batches.', 5);
 
+	static environment = new Constant('Environment', 'Environment.', import.meta.env.VITE_ENVIRONMENT || 'production');
+
+	static productionUSDCurrency = new Constant('Production USD Currency', 'Production USD currency.', 'USDC');
+	static stagingUSDCurrency = new Constant('Staging USD Currency', 'Staging USD currency.', 'tUSDC');
+	static developmentUSDCurrency = Constant.stagingUSDCurrency;
+
 	title: string;
 
 	description: string;
