@@ -1,21 +1,22 @@
-import {connect} from 'react-redux';
-import {useLocation, useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {toast} from 'react-toastify';
-import {Box, styled} from '@mui/material';
-import {Map} from 'model/helper/extendable-immutable/map';
-import {executeAndSetInterval} from 'model/service/recurrent';
-import {dispatch} from 'model/state/redux/store';
-import {apiPostRun} from 'model/service/api';
-import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
-import {Base, BaseProps, BaseState} from 'components/base/Base';
-import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
+import { Box, styled } from '@mui/material';
+import { Order } from "api/types/orders";
+import { Base, BaseProps, BaseState } from 'components/base/Base';
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import { Map } from 'model/helper/extendable-immutable/map';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
+import { apiPostRun } from 'model/service/api';
+import { executeAndSetInterval } from 'model/service/recurrent';
+import { dispatch } from 'model/state/redux/store';
+import { connect } from 'react-redux';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import OrdersList from './OrdersList';
-import {Order} from "api/types/orders";
 
 interface Props extends BaseProps {
 	openOrders: Order[];
 	marketId: string;
 	data: any,
+	hasMarketPath: boolean;
 }
 
 interface State extends BaseState {
@@ -29,12 +30,12 @@ const mapStateToProps = (state: State | any, props: Props | any) => ({
 	openOrders: state.api.orders.open,
 });
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const Style = styled(Box)(({theme}) => ({
+const Style = styled(Box, {
+	shouldForwardProp: (prop) => prop !== 'hasMarketPath',
+})<{ hasMarketPath?: boolean }>(({ hasMarketPath }) => ({
 	width: '100%',
 	height: '100%',
-	padding: '0 24px',
+	padding: hasMarketPath ? '0' : '0 24px',
 }));
 
 class Structure extends Base<Props, State> {
@@ -92,10 +93,10 @@ class Structure extends Base<Props, State> {
 			this.handleFetchResponse(response);
 		} catch (exception: any) {
 			console.error(exception);
-			this.setState({error: exception.message});
+			this.setState({ error: exception.message });
 			toast.error(exception.message);
 		} finally {
-			this.setState({isLoading: false});
+			this.setState({ isLoading: false });
 		}
 	}
 
@@ -172,15 +173,16 @@ class Structure extends Base<Props, State> {
 	}
 
 	render() {
-		const {isLoading, error} = this.state;
-		const {data} = this.props;
+		const { isLoading, error } = this.state;
+		const { data, hasMarketPath } = this.props;
 
 		return (
-			<Style>
-				{isLoading ? <Spinner/> : null}
+			<Style hasMarketPath={hasMarketPath}>
+				{isLoading ? <Spinner /> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<pre>{JSON.stringify(data, null, 2)}</pre>
 				<OrdersList
+					hasMarketPath={hasMarketPath}
 					orders={this.props.marketId ? this.props.openOrders.filter((order: Order) => order.market.toUpperCase() === this.props.marketId) : this.props.openOrders}
 					handleCancelAllOpenOrders={this.cancelAllOpenOrders}
 					handleCancelOrder={this.cancelOpenOrder}

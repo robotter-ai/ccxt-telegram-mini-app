@@ -149,7 +149,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				</ChartDetails>
 
 				<CreateOrder marketId={this.marketId} />
-				<Orders marketId={this.marketId} />
+				<Orders marketId={this.marketId} hasMarketPath={true} />
 			</Container>
 		);
 	}
@@ -159,7 +159,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		const lines = this.transformCandlesInLines(payload);
 
-		const lastMarketPrecision = lines[lines.length - 1].value.toString().split('.')[1].length
+		const lastMarketPrecision = lines[lines.length - 1]?.value?.toString().split('.')[1].length
 		const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
 		this.createMarketChart(setLastMarketPrecision, lines);
@@ -167,31 +167,35 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	async doRecurrently() {
-		const recurrentFunction = async () => {
-			// const close = Number((Math.random() * (100000 - 10) + 10).toFixed(this.precision));
-			const { timestamp, close } = await this.fetchTickerData(this.marketId);
+		try {
+			const recurrentFunction = async () => {
+				// const close = Number((Math.random() * (100000 - 10) + 10).toFixed(this.precision));
+				const { timestamp, close } = await this.fetchTickerData(this.marketId);
 
-			if (this.chartSeries) {
-				const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
+				if (this.chartSeries) {
+					const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
 
-				if (currentSeries?.value !== close) {
-					this.chartSeries.update({
-						time: timestamp / 1000,
-						value: close,
-					});
+					if (currentSeries?.value !== close && close !== null) {
+						this.chartSeries.update({
+							time: timestamp / 1000,
+							value: close,
+						});
 
-					const formattedPrice = formatPrice(close, this.marketPrecision);
-					this.setState({ price: formattedPrice });
+						const formattedPrice = formatPrice(close, this.marketPrecision);
+						this.setState({ price: formattedPrice });
 
-					return;
+						return;
+					}
 				}
-			}
-		};
+			};
 
-		this.properties.setIn(
-			'recurrent.5s.intervalId',
-			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
-		);
+			this.properties.setIn(
+				'recurrent.5s.intervalId',
+				executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+			);
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
+		}
 	}
 
 	async fetchOhlcvData(marketId: string): Promise<any> {
@@ -288,79 +292,83 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	createMarketChart(precision: number, lines: LineData[]) {
-		if (!this.chartReference.current) {
-			throw Error('The chart reference has not been found.');
+		try {
+			if (!this.chartReference.current) {
+				throw Error('The chart reference has not been found.');
+			}
+
+			this.chart = createChart(this.chartReference.current, {
+				autoSize: true,
+				layout: {
+					background: {
+						type: ColorType.Solid,
+						color: MaterialUITheme.palette.background.default,
+					},
+					textColor: MaterialUITheme.palette.text.primary,
+					fontSize: 11,
+				},
+				grid: {
+					vertLines: {
+						visible: false,
+					},
+					horzLines: {
+						visible: false,
+					},
+				},
+				timeScale: {
+					visible: true,
+					borderVisible: true,
+					timeVisible: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					secondsVisible: true,
+					fixLeftEdge: true,
+					fixRightEdge: true,
+				},
+				rightPriceScale: {
+					visible: true,
+					borderVisible: true,
+					alignLabels: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					autoScale: true,
+					scaleMargins: {
+						top: 0.1,
+						bottom: 0.1,
+					},
+				},
+				leftPriceScale: {
+					visible: false,
+				},
+				handleScale: false,
+				handleScroll: false,
+			});
+
+			const valueMinMove = 10;
+			this.chartSeries = this.chart.addLineSeries({
+				color: MaterialUITheme.palette.success.main,
+				lineWidth: 1,
+				priceLineWidth: 1,
+				priceLineVisible: true,
+				lastValueVisible: true,
+				lineStyle: LineStyle.Solid,
+				priceLineStyle: LineStyle.Dashed,
+				priceLineColor: MaterialUITheme.palette.success.main,
+				lastPriceAnimation: LastPriceAnimationMode.Continuous,
+				priceFormat: {
+					type: 'custom',
+					formatter: (price: number) => price.toFixed(precision),
+					minMove: 0.1 ** valueMinMove,
+				},
+			});
+
+			window.addEventListener('resize', this.handleChartResize);
+
+			this.chartSeries.setData(lines);
+
+			this.chart.timeScale().fitContent();
+			this.chart.timeScale().scrollToRealTime();
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
 		}
-
-		this.chart = createChart(this.chartReference.current, {
-			autoSize: true,
-			layout: {
-				background: {
-					type: ColorType.Solid,
-					color: MaterialUITheme.palette.background.default,
-				},
-				textColor: MaterialUITheme.palette.text.primary,
-				fontSize: 11,
-			},
-			grid: {
-				vertLines: {
-					visible: false,
-				},
-				horzLines: {
-					visible: false,
-				},
-			},
-			timeScale: {
-				visible: true,
-				borderVisible: true,
-				timeVisible: true,
-				borderColor: MaterialUITheme.palette.text.secondary,
-				secondsVisible: true,
-				fixLeftEdge: true,
-				fixRightEdge: true,
-			},
-			rightPriceScale: {
-				visible: true,
-				borderVisible: true,
-				alignLabels: true,
-				borderColor: MaterialUITheme.palette.text.secondary,
-				autoScale: true,
-				scaleMargins: {
-					top: 0.1,
-					bottom: 0.1,
-				},
-			},
-			leftPriceScale: {
-				visible: false,
-			},
-			handleScale: false,
-			handleScroll: false,
-		});
-
-		const valueMinMove = 10;
-		this.chartSeries = this.chart.addLineSeries({
-			color: MaterialUITheme.palette.success.main,
-			lineWidth: 1,
-			priceLineWidth: 1,
-			priceLineVisible: true,
-			lastValueVisible: true,
-			lineStyle: LineStyle.Solid,
-			priceLineStyle: LineStyle.Dashed,
-			priceLineColor: MaterialUITheme.palette.success.main,
-			lastPriceAnimation: LastPriceAnimationMode.Continuous,
-			priceFormat: {
-				type: 'custom',
-				formatter: (price: number) => price.toFixed(precision),
-				minMove: 0.1 ** valueMinMove,
-			},
-		});
-
-		window.addEventListener('resize', this.handleChartResize);
-
-		this.chartSeries.setData(lines);
-
-		this.chart.timeScale().fitContent();
-		this.chart.timeScale().scrollToRealTime();
 	}
 
 	transformCandlesInLines(candles: number[][]): LineData[] {
