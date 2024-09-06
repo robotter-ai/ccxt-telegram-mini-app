@@ -126,6 +126,10 @@ class Structure extends Base<Props, State> {
 
 		let url: string;
 
+		if (['USDC', 'USDT', 'TUSDC', 'TUSDT'].includes(currency.code.toUpperCase())) {
+			return;
+		}
+
 		if (environment === 'production') {
 			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
 		} else if (environment == 'staging') {
