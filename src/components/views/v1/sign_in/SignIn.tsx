@@ -4,11 +4,11 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import { clearAllIntervals, executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun, apiPostAuthSignIn, apiPostAuthIsSignedIn } from 'model/service/api';
+import { apiGetFetchCurrencies, apiGetFetchMarkets, apiPostAuthIsSignedIn, apiPostAuthSignIn } from 'model/service/api';
 import './SignIn.css';
 import { toast } from 'react-toastify';
-import { useLocation, useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import DOMPurify from 'dompurify';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -17,17 +17,17 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 // import logo from 'src/assets/images/logo/exchange.png';
 import {
-	Container,
-	Typography,
-	TextField,
+	Box,
 	Button,
 	CircularProgress,
-	Box,
+	Container,
 	CssBaseline,
-	Paper,
 	IconButton,
 	InputAdornment,
+	Paper,
 	Snackbar,
+	TextField,
+	Typography,
 } from '@mui/material';
 
 const SignInSchema = Yup.object().shape({
@@ -314,26 +314,6 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
-					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: '<apiFunction>',
-						parameters: {
-							param1: '<param1Value>',
-							param2: '<param2Value>',
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					// noinspection ExceptionCaughtLocallyJS
-					throw new Error(`An error has occurred while performing this operation: ${response.text}`);
-				}
-
-				const payload = response.data.result;
-				dispatch('api.updateSignInData', payload);
 			} catch (exception: any) {
 				if (axios.isAxiosError(exception)) {
 					if (exception?.response?.status === 401) {
@@ -410,11 +390,8 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 		this.setState({ isLoading: true, error: undefined });
 
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchMarkets(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_markets',
 				},
 				// @ts-ignore
 				this.context.handleUnAuthorized
@@ -441,11 +418,8 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 		this.setState({ isLoading: true, error: undefined });
 
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchCurrencies(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_currencies',
 				},
 				// @ts-ignore
 				this.context.handleUnAuthorized

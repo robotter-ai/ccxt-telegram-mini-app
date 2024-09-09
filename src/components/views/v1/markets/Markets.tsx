@@ -5,7 +5,7 @@ import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { MarketsTable } from 'components/views/v1/markets/MarketsTable';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { apiPostRun } from 'model/service/api';
+import { apiGetFetchMarkets } from 'model/service/api';
 
 interface MarketsProps extends BaseProps {
 	markets: any;
@@ -68,12 +68,8 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 
 	async fetchMarketsData() {
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchMarkets(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_markets',
-					parameters: {},
 				},
 				this.props.handleUnAuthorized
 			);

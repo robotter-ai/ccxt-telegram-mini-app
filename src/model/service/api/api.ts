@@ -316,7 +316,7 @@ export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => vo
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
 			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
-			method: 'fetch_oHLCV',
+			method: 'fetch_ohlcv',
 			parameters: {
 				...data
 			},

@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { executeAndSetInterval } from 'model/service/recurrent';
-import { apiPostRun } from 'model/service/api';
-import { Spinner}  from 'components/views/v1/spinner/Spinner';
+import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
+import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { CandlestickData, createChart, LineData, UTCTimestamp, WhitespaceData } from 'lightweight-charts';
 import { createRef } from 'react';
@@ -114,15 +114,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				handleScale: false,
 			});
 
-			const response = await apiPostRun(
+			const response = await apiGetFetchOHLCV(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ohlcv',
-					parameters: {
-						symbol: this.props.market.id,
-						timeframe: '1s',
-					},
+					symbol: this.props.market.id,
+					timeframe: '1s',
 				},
 				this.props.handleUnAuthorized
 			);
@@ -178,14 +173,9 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			try {
-				const response = await apiPostRun(
+				const response = await apiGetFetchTicker(
 					{
-						exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-						environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-						method: 'fetch_ticker',
-						parameters: {
-							symbol: this.props.market.id,
-						},
+						symbol: this.props.market.id,
 					},
 					this.props.handleUnAuthorized
 				);

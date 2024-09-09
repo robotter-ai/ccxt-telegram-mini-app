@@ -3,12 +3,20 @@ import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
-import { Orders } from "components/views/v2/orders/Orders";
+import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume } from 'components/views/v2/utils/utils';
-import { ColorType, createChart, IChartApi, LastPriceAnimationMode, LineData, LineStyle, UTCTimestamp } from 'lightweight-charts';
+import {
+	ColorType,
+	createChart,
+	IChartApi,
+	LastPriceAnimationMode,
+	LineData,
+	LineStyle,
+	UTCTimestamp
+} from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
@@ -28,6 +36,8 @@ interface MarketState extends BaseState {
 	volume: number | null;
 }
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -200,15 +210,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	async fetchOhlcvData(marketId: string): Promise<any> {
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchOHLCV(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ohlcv',
-					parameters: {
-						symbol: marketId,
-						timeframe: '1s',
-					},
+					symbol: marketId,
+					timeframe: '1s',
 				},
 				this.props.handleUnAuthorized
 			);
@@ -247,14 +252,9 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	async fetchTickerData(marketId: string): Promise<any> {
 		try {
-			const response = await apiPostRun(
+			const response = await apiGetFetchTicker(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ticker',
-					parameters: {
-						symbol: marketId,
-					},
+					symbol: marketId,
 				},
 				this.props.handleUnAuthorized
 			);

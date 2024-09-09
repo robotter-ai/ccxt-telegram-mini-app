@@ -1,25 +1,25 @@
-import {Box, SelectChangeEvent, styled, Typography} from '@mui/material';
-import {Market} from "api/types/markets";
-import {OrderSide, OrderType} from "api/types/orders";
+import { Box, SelectChangeEvent, styled, Typography } from '@mui/material';
+import { Market } from 'api/types/markets';
+import { OrderSide, OrderType } from 'api/types/orders';
 import axios from 'axios';
-import {Base, BaseProps, BaseState} from 'components/base/Base';
-import Button, {ButtonType} from "components/general/Button";
-import ButtonGroupToggle from "components/general/ButtonGroupToggle";
-import DropDownSelector from "components/general/DropdownSelector";
-import NumberInput from "components/general/NumberInput";
-import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
-import {formatPrice} from "components/views/v2/utils/utils";
-import Decimal from "decimal.js";
-import {Map} from 'model/helper/extendable-immutable/map';
-import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
-import {apiPostRun} from 'model/service/api';
-import {MaterialUITheme} from "model/theme/MaterialUI";
-import {ChangeEvent} from "react";
-import {connect} from 'react-redux';
-import {useLocation, useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {toast} from 'react-toastify';
-import {Check} from "@mui/icons-material";
-import {dispatch} from "model/state/redux/store";
+import { Base, BaseProps, BaseState } from 'components/base/Base';
+import Button, { ButtonType } from 'components/general/Button';
+import ButtonGroupToggle from 'components/general/ButtonGroupToggle';
+import DropDownSelector from 'components/general/DropdownSelector';
+import NumberInput from 'components/general/NumberInput';
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import { formatPrice } from 'components/views/v2/utils/utils';
+import Decimal from 'decimal.js';
+import { Map } from 'model/helper/extendable-immutable/map';
+import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
+import { apiGetFetchOpenOrders, apiGetFetchTicker, apiPostCreateOrder } from 'model/service/api';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
+import { ChangeEvent } from 'react';
+import { connect } from 'react-redux';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Check } from '@mui/icons-material';
+import { dispatch } from 'model/state/redux/store';
 
 const OrderSideLabelMapper = {[OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell'};
 const OrderTypeLabelMapper = {[OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit'};
@@ -199,18 +199,13 @@ class Structure extends Base<Props, State> {
 				throw new Error('Invalid price');
 			}
 
-			const response = await apiPostRun(
+			const response = await apiPostCreateOrder(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'create_order',
-					parameters: {
-						symbol: market,
-						side: orderSide,
-						type: orderType,
-						amount: new Decimal(amount).toNumber(),
-						price: orderType === OrderType.MARKET ? null : new Decimal(price).toNumber(),
-					},
+					symbol: market,
+					side: orderSide,
+					type: orderType,
+					amount: new Decimal(amount).toNumber(),
+					price: orderType === OrderType.MARKET ? null : new Decimal(price).toNumber(),
 				},
 				this.props.handleUnAuthorized
 			);
@@ -232,12 +227,8 @@ class Structure extends Base<Props, State> {
 	}
 
 	async fetchOpenOrders() {
-		const response = await apiPostRun(
+		const response = await apiGetFetchOpenOrders(
 			{
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_open_orders',
-				parameters: {},
 			},
 			this.props.handleUnAuthorized
 		);
@@ -295,15 +286,18 @@ class Structure extends Base<Props, State> {
 			this.setState({marketPrice: Number(payload.last)});
 		};
 
-		apiPostRun(
-			{
-				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-				method: 'fetch_ticker',
-				parameters: {symbol: marketId},
-			}, this.props.handleUnAuthorized)
-			.then(handleResponse)
-			.catch(handleException);
+		try {
+			const response = await apiGetFetchTicker(
+				{
+					symbol: marketId
+				},
+				this.props.handleUnAuthorized
+			);
+
+			handleResponse(response);
+		} catch (exception) {
+			handleException(exception)
+		}
 	}
 
 	render() {

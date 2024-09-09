@@ -2,7 +2,7 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import { apiGetFetchMarkets, apiGetFetchTickers } from 'model/service/api';
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -105,22 +105,14 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 
 	async fetchMarketsData() {
 		try {
-			const marketResponse = await apiPostRun(
+			const marketResponse = await apiGetFetchMarkets(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_markets',
-					parameters: {},
 				},
 				this.props.handleUnAuthorized
 			);
 
-			const tickersResponse = await apiPostRun(
+			const tickersResponse = await apiGetFetchTickers(
 				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_tickers',
-					parameters: {},
 				},
 				this.props.handleUnAuthorized
 			);
