@@ -51,11 +51,21 @@ export class Constant extends BaseEnum {
 	static defaultBatchSize = new Constant('Default Batch Size', 'Default batch size.', 100);
 	static defaultDelayBetweenBatches = new Constant('Default Delay Between Batches', 'Default delay between batches.', 5);
 
-	static environment = new Constant('Environment', 'Environment.', import.meta.env.VITE_ENVIRONMENT || 'production');
+	static productionEnvironment = new Constant('Production Environment', 'Production environment.', 'production');
+	static stagingEnvironment = new Constant('Staging Environment', 'Staging environment.', 'staging');
+	static developmentEnvironment = new Constant('Development Environment', 'Development environment.', 'development');
+	static environment = new Constant('Environment', 'Environment.', import.meta.env.VITE_ENVIRONMENT || Constant.productionEnvironment.value);
 
 	static productionUSDCurrency = new Constant('Production USD Currency', 'Production USD currency.', 'USDC');
 	static stagingUSDCurrency = new Constant('Staging USD Currency', 'Staging USD currency.', 'tUSDC');
 	static developmentUSDCurrency = Constant.stagingUSDCurrency;
+	static currentUSDCurrency = new Constant('Current USD Currency', 'Current USD currency.',
+	Constant.productionEnvironment.value == Constant.environment.value
+		? Constant.productionUSDCurrency.value
+		: Constant.stagingUSDCurrency.value == Constant.environment.value
+			? Constant.stagingUSDCurrency.value
+			: Constant.developmentUSDCurrency.value
+	);
 
 	static usdCurrencies = new Constant('USD Currencies', 'USD currencies.', ['USDC', 'USDT', 'TUSDC', 'TUSDT']);
 
