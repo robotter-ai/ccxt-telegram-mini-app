@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
+import { apiGetFetchBalance, apiGetFetchTickers } from 'model/service/api';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -56,12 +56,8 @@ class Structure extends Base<Props, State> {
 
 	async initialize() {
 		try {
-			const balanceResponse = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_balance',
-				},
+			const balanceResponse = await apiGetFetchBalance(
+				{},
 				this.props.handleUnAuthorized
 			);
 
@@ -74,12 +70,8 @@ class Structure extends Base<Props, State> {
 			console.log('Fetched balance data:', balanceData);
 			this.setState({ balanceData });
 
-			const tickersResponse = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_tickers',
-				},
+			const tickersResponse = await apiGetFetchTickers(
+				{},
 				this.props.handleUnAuthorized
 			);
 
