@@ -215,7 +215,7 @@ export const apiPostDeposit = async (data?: any, handleUnAuthorized?: () => void
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchBalance = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -455,7 +455,7 @@ export const apiGetFetchTicker = async (data?: any, handleUnAuthorized?: () => v
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchTickers = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
