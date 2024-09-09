@@ -4,26 +4,25 @@ import {styled, Box, Typography} from '@mui/material';
 
 const OrderSideLabelMapper = {[OrderSide.BUY]: 'BUY', [OrderSide.SELL]: 'SELL'};
 
-const StyledBox = styled(Box)(({theme}) => ({
+const StyledBox = styled(Box)(({}) => ({
 	display: 'flex',
 	flexDirection: 'column',
 	alignItems: 'right',
 	justifyContent: 'center',
 	textAlign: 'right',
-	fontFamily: theme.fonts.primary,
 }));
 
 const StyledOrderPrice = styled(Typography)(({theme}) => ({
 	fontSize: '17px',
 	fontWeight: '300',
-	fontFamily: 'inherit',
+	fontFamily: theme.fonts.primary,
 	color: theme.palette.primary.main,
 }));
 
 const StyledOrderSide = styled(Typography)<{ side: OrderSide }>(({theme, side}) => ({
 	fontSize: '13px',
 	fontWeight: '300',
-	fontFamily: 'inherit',
+	fontFamily: theme.fonts.monospace,
 	color: side === OrderSide.BUY ? theme.palette.success.main : theme.palette.error.main,
 }));
 

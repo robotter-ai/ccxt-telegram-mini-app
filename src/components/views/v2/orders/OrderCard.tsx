@@ -2,12 +2,12 @@ import {useState} from 'react';
 import OrderInfo from "components/views/v2/orders/OrderInfo";
 import {Order} from 'api/types/orders';
 import Button, {ButtonType} from "components/general/Button";
-// @ts-ignore
 import OrderPrice from "components/views/v2/orders/OrderPrice";
 import {styled, Box, Typography, Modal} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const StyledOrderCard = styled(Box)({
-	padding: '12px 24px',
+	padding: '12px 0',
 	display: 'flex',
 	flexDirection: 'row',
 	justifyContent: 'space-between',
@@ -38,7 +38,7 @@ const StyledModal = styled(Modal)(({theme}) => ({
 }));
 
 const StyledModalContent = styled(Box)(({theme}) => ({
-	backgroundColor: theme.palette.background.default,
+	backgroundColor: theme.palette.background.paper,
 	width: '100%',
 	height: '360px',
 	borderTopLeftRadius: '16px',
@@ -54,12 +54,13 @@ const StyledModalTitle = styled(Typography)(({theme}) => ({
 	width: '100%',
 }));
 
-const StyledModalOrderCard = styled(Box)(() => ({
+const StyledModalOrderCard = styled(Box)(({theme}) => ({
 	padding: '16px 24px',
 	display: 'flex',
 	flexDirection: 'row',
 	justifyContent: 'space-between',
 	alignItems: 'center',
+	backgroundColor: theme.palette.background.default,
 }));
 
 const StyledModalButtonContainer = styled(Box)({
@@ -89,7 +90,8 @@ function OrderCard(props: {
 			<StyledOrderInfoContainer>
 				<OrderInfo order={props.order}/>
 				<StyledButtonContainer>
-					<Button icon={"⤬"} value={"Cancel"} type={ButtonType.Bordered} fullWidth={true} onClick={openModal}/>
+					<Button icon={<CloseIcon sx={{marginTop: '-4px'}}/>} value={"Cancel"} type={ButtonType.Bordered}
+									fullWidth={true} onClick={openModal}/>
 				</StyledButtonContainer>
 			</StyledOrderInfoContainer>
 			<OrderPrice order={props.order}/>

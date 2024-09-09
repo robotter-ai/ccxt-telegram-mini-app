@@ -1,28 +1,28 @@
-import { Box, SelectChangeEvent, styled } from '@mui/material';
-import { Market } from "api/types/markets";
-import { OrderSide, OrderType } from "api/types/orders";
+import {Box, SelectChangeEvent, styled, Typography} from '@mui/material';
+import {Market} from "api/types/markets";
+import {OrderSide, OrderType} from "api/types/orders";
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base';
-import Button, { ButtonType } from "components/general/Button";
+import {Base, BaseProps, BaseState} from 'components/base/Base';
+import Button, {ButtonType} from "components/general/Button";
 import ButtonGroupToggle from "components/general/ButtonGroupToggle";
 import DropDownSelector from "components/general/DropdownSelector";
 import NumberInput from "components/general/NumberInput";
-import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
-import { formatPrice } from "components/views/v2/utils/utils";
+import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
+import {formatPrice} from "components/views/v2/utils/utils";
 import Decimal from "decimal.js";
-import { Map } from 'model/helper/extendable-immutable/map';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiPostRun } from 'model/service/api';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { dispatch } from 'model/state/redux/store';
-import { MaterialUITheme } from "model/theme/MaterialUI";
-import { ChangeEvent } from "react";
-import { connect } from 'react-redux';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import {Map} from 'model/helper/extendable-immutable/map';
+import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
+import {apiPostRun} from 'model/service/api';
+import {MaterialUITheme} from "model/theme/MaterialUI";
+import {ChangeEvent} from "react";
+import {connect} from 'react-redux';
+import {useLocation, useNavigate, useParams, useSearchParams} from 'react-router-dom';
+import {toast} from 'react-toastify';
+import {Check} from "@mui/icons-material";
+import {dispatch} from "model/state/redux/store";
 
-const OrderSideLabelMapper = { [OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell' };
-const OrderTypeLabelMapper = { [OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit' };
+const OrderSideLabelMapper = {[OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell'};
+const OrderTypeLabelMapper = {[OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit'};
 
 interface Props extends BaseProps {
 	marketId?: string;
@@ -38,12 +38,13 @@ interface State extends BaseState {
 	precision: number;
 	orderSide: OrderSide;
 	orderType: OrderType;
-	amount: number;
-	price?: number;
+	amount: string;
+	price?: string;
 	isSubmitting?: boolean;
 }
 
-
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State | any, props: Props | any) => ({
 	markets: state.api.markets,
 });
@@ -62,15 +63,24 @@ const InputsContainer = styled(Box)({
 	gap: '40px',
 });
 
-const TotalContainer = styled(Box)({
+const TotalContainer = styled(Box)(({theme}) => ({
 	width: '100%',
 	display: 'flex',
 	justifyContent: 'space-between',
 	alignItems: 'center',
+	fontSize: '17px',
 	fontWeight: '300',
-});
+	fontFamily: theme.fonts.primary,
+}));
 
-const Divider = styled(Box)(({ theme }) => ({
+const StyledTotalPrice = styled(Typography)(({theme}) => ({
+	fontSize: '19px',
+	fontWeight: '300',
+	fontFamily: theme.fonts.secondary,
+	color: theme.palette.primary.main,
+}));
+
+const Divider = styled(Box)(({theme}) => ({
 	width: '100%',
 	marginTop: '20px',
 	marginBottom: '20px',
@@ -103,8 +113,8 @@ class Structure extends Base<Props, State> {
 			precision: 4,
 			orderSide: OrderSide.BUY,
 			orderType: OrderType.MARKET,
-			amount: 0,
-			price: 0,
+			amount: '0',
+			price: '0',
 			isSubmitting: false,
 		} as Readonly<State>;
 
@@ -120,7 +130,6 @@ class Structure extends Base<Props, State> {
 
 	async componentDidMount() {
 		await this.initialize();
-		await this.doRecurrently();
 	}
 
 	async componentWillUnmount() {
@@ -133,97 +142,50 @@ class Structure extends Base<Props, State> {
 		if (this.props.marketId) {
 			const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
 			const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
-			this.setState({ precision: precision ?? 4 });
+			this.setState({precision: precision ?? 4});
 		}
 
-		this.setState({ isLoading: false });
-	}
-
-	async doRecurrently() {
-		const recurrentFunction = async () => {
-			try {
-				const response = await apiPostRun(
-					{
-						method: 'fetch_tickers',
-						parameters: {
-							symbols: ['tSOLtUSDC', 'tBTCtUSDC'],
-						},
-					},
-					this.props.handleUnAuthorized
-				);
-
-				if (response.status !== 200) {
-					if (response.data?.title) {
-						const message = response.data.title;
-
-						this.setState({ error: message });
-						toast.error(message);
-
-						return;
-					} else {
-						throw new Error(response.text);
-					}
-				}
-
-				const payload = response.data.result;
-
-				dispatch('api.updateTemplateData', payload);
-			} catch (exception) {
-				console.error(exception);
-
-				if (axios.isAxiosError(exception)) {
-					if (exception?.response?.status === 401) {
-						return;
-					}
-				}
-
-				const message = 'An error has occurred while performing this operation.'
-
-				this.setState({ error: message });
-				toast.error(message);
-
-				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
-			}
-		};
-
-		this.properties.setIn(
-			'recurrent.5s.intervalId',
-			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
-		);
+		this.setState({isLoading: false});
 	}
 
 	handleMarketChange(event: SelectChangeEvent) {
-		this.setState({ selectedMarket: event.target.value });
+		this.setState({selectedMarket: event.target.value});
 
 		const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
 		const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
-		this.setState({ precision: precision ?? 4 });
+		this.setState({precision: precision ?? 4});
 
-		this.getTotalPrice(event.target.value);
+		this.getTotalPrice(event.target.value).catch((error) => {
+			console.log('GetTotalPrice Error: ', error)
+			toast.error("Couldn't calculate total price");
+		});
 	}
 
 	handleOrderTypeChange(event: SelectChangeEvent) {
-		this.setState({ orderType: event.target.value as OrderType });
+		this.setState({orderType: event.target.value as OrderType});
 	}
 
 	handleAmountChange(event: ChangeEvent<HTMLInputElement>) {
 		if (this.props.marketId) {
-			this.getTotalPrice(this.props.marketId);
+			this.getTotalPrice(this.props.marketId).catch((error) => {
+				console.log('GetTotalPrice Error: ', error)
+				toast.error("Couldn't calculate total price");
+			});
 		}
 
 		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ amount: isValidAmount ? parseFloat(event.target.value) : 0 });
+		this.setState({amount: isValidAmount ? event.target.value : '0'});
 	}
 
 	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
 		const isValidPrice = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ price: isValidPrice ? parseFloat(event.target.value) : 0 });
+		this.setState({price: isValidPrice ? event.target.value : '0'});
 	}
 
 	async handleCreateOrder() {
-		this.setState({ isSubmitting: true });
+		this.setState({isSubmitting: true});
 
-		const { selectedMarket, orderSide, orderType, amount, price } = this.state;
+		const {selectedMarket, orderSide, orderType, amount, price} = this.state;
 
 		const market = this.props.marketId ? this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId)?.symbol : selectedMarket;
 
@@ -231,6 +193,10 @@ class Structure extends Base<Props, State> {
 			if (!market) {
 				toast.error('Selected market is not valid.');
 				return;
+			}
+
+			if (!price) {
+				throw new Error('Invalid price');
 			}
 
 			const response = await apiPostRun(
@@ -242,8 +208,8 @@ class Structure extends Base<Props, State> {
 						symbol: market,
 						side: orderSide,
 						type: orderType,
-						amount: amount,
-						price: orderType === OrderType.MARKET ? null : price,
+						amount: new Decimal(amount).toNumber(),
+						price: orderType === OrderType.MARKET ? null : new Decimal(price).toNumber(),
 					},
 				},
 				this.props.handleUnAuthorized
@@ -255,7 +221,8 @@ class Structure extends Base<Props, State> {
 
 			toast.success('OrderInfo created successfully!');
 
-			this.props.navigate('/orders');
+			await this.fetchOpenOrders();
+
 		} catch (error) {
 			console.error('Failed to create order: ', error);
 			toast.error('Failed to create order.');
@@ -264,70 +231,102 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
+	async fetchOpenOrders() {
+		const response = await apiPostRun(
+			{
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'fetch_open_orders',
+				parameters: {},
+			},
+			this.props.handleUnAuthorized
+		);
+
+		if (response.status !== 200) {
+			throw new Error('Network response was not OK');
+		}
+
+		const payload = response.data;
+
+		if (!Array.isArray(payload.result)) {
+			throw new Error('Unexpected API response format');
+		}
+
+		const output = payload.result
+			.map((order: any) => ({
+				checkbox: false,
+				id: order.id,
+				market: order.symbol,
+				status: order.status,
+				side: order.side,
+				amount: order.amount,
+				price: order.price,
+				datetime: order.timestamp,
+				actions: null,
+			}));
+
+		dispatch('api.updateOpenOrders', output);
+	}
+
 	async getTotalPrice(marketId: string) {
-		try {
-			const response = await apiPostRun(
-				{
-					exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
-					environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
-					method: 'fetch_ticker',
-					parameters: { symbol: marketId },
-				},
-				this.props.handleUnAuthorized
-			);
-
-			if (response.status !== 200) {
-				if (response.data?.title) {
-					const message = response.data.title;
-
-					this.setState({ error: message });
-					toast.error(message);
-
-					return;
-				} else {
-					throw new Error(response.text);
-				}
-			}
-
-			const payload = response.data.result;
-
-			this.setState({ marketPrice: Number(payload.last) });
-			return;
-		} catch (exception) {
+		const handleException = (exception: unknown) => {
 			if (axios.isAxiosError(exception)) {
 				if (exception?.response?.status === 401) {
 					return;
 				}
 			}
 
-			const message = 'An error has occurred while performing this operation';
+			const message = "Couldn't get total price";
 
-			this.setState({ error: message });
+			this.setState({error: message});
 			toast.error(message);
-		}
+		};
+
+		const handleResponse = (response: any) => {
+			if (response.status !== 200) {
+				const message = response.data.title ?? response.text;
+
+				this.setState({error: message});
+				toast.error(message);
+			}
+
+			const payload = response.data.result;
+
+			this.setState({marketPrice: Number(payload.last)});
+		};
+
+		apiPostRun(
+			{
+				exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
+				environment: `${import.meta.env.VITE_EXCHANGE_ENVIRONMENT}`,
+				method: 'fetch_ticker',
+				parameters: {symbol: marketId},
+			}, this.props.handleUnAuthorized)
+			.then(handleResponse)
+			.catch(handleException);
 	}
 
 	render() {
-		const { isLoading, error, selectedMarket, amount, price, orderType, orderSide, precision } = this.state;
-		const { markets } = this.props;
+		const {isLoading, error, selectedMarket, amount, price, orderType, orderSide, precision} = this.state;
+		const {markets} = this.props;
 
 		const orderSideButtons = [
 			{
 				label: OrderSideLabelMapper[OrderSide.BUY],
-				onClick: () => this.setState({ orderSide: OrderSide.BUY }),
+				onClick: () => this.setState({orderSide: OrderSide.BUY}),
 				activeColor: MaterialUITheme.palette.success.main
 			},
 			{
 				label: OrderSideLabelMapper[OrderSide.SELL],
-				onClick: () => this.setState({ orderSide: OrderSide.SELL }),
+				onClick: () => this.setState({orderSide: OrderSide.SELL}),
 				activeColor: MaterialUITheme.palette.error.main
 			},
 		];
 
 
 		const orderTypeButtons = [
-			{ label: OrderTypeLabelMapper[OrderType.MARKET], onClick: () => this.setState({ orderType: OrderType.MARKET }) },
-			{ label: OrderTypeLabelMapper[OrderType.LIMIT], onClick: () => this.setState({ orderType: OrderType.LIMIT }) },
+			{label: OrderTypeLabelMapper[OrderType.MARKET], onClick: () => this.setState({orderType: OrderType.MARKET})},
+			{label: OrderTypeLabelMapper[OrderType.LIMIT], onClick: () => this.setState({orderType: OrderType.LIMIT})},
 		];
 
 		const marketOptions = markets.map((market) => ({
@@ -348,7 +347,7 @@ class Structure extends Base<Props, State> {
 
 		return (
 			<Style>
-				{isLoading ? <Spinner /> : null}
+				{isLoading ? <Spinner/> : null}
 				{error ? <div>Error: {error}</div> : null}
 				<InputsContainer>
 					{!this.props.marketId &&
@@ -359,28 +358,29 @@ class Structure extends Base<Props, State> {
 							onChange={this.handleMarketChange}
 						/>}
 
-					<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0} />
-					<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0} />
-					<NumberInput label={'AMOUNT'} value={amount} precision={precision} onChange={this.handleAmountChange} />
+					<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0}/>
+					<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0}/>
+					<NumberInput label={'AMOUNT'} value={amount ?? '0'} precision={precision} onChange={this.handleAmountChange}/>
 					{orderType === OrderType.LIMIT &&
-						<NumberInput label={'SET PRICE'} value={price ?? 0} precision={precision}
-							onChange={this.handlePriceChange} />}
+						<NumberInput label={'SET PRICE'} value={price ?? '0'} precision={precision}
+												 onChange={this.handlePriceChange}/>}
 				</InputsContainer>
-				<Divider />
+				<Divider/>
 				<TotalContainer>
 					<span>Total</span>
-					<span>{formatPrice(getTotal(orderSide, orderType))}</span>
+					<StyledTotalPrice>{formatPrice(getTotal(orderSide, orderType))}</StyledTotalPrice>
 				</TotalContainer>
 				<ButtonContainer>
 					<Button
-						value={this.state.isSubmitting ? 'Submitting...' : OrderSideLabelMapper[this.state.orderSide]}
+						value={this.state.isSubmitting ? 'Order placed' : OrderSideLabelMapper[this.state.orderSide]}
 						type={ButtonType.Full}
+						icon={this.state.isSubmitting ? <Check sx={{paddingTop: '-4px'}}/> : undefined}
 						disabled={getTotal(orderSide, orderType) === 0 || this.state.isSubmitting}
 						onClick={async (e) => {
 							e?.preventDefault();
 							e?.stopPropagation();
 							await this.handleCreateOrder();
-						}} />
+						}}/>
 				</ButtonContainer>
 			</Style>
 		);

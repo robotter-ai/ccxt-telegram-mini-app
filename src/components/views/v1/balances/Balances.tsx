@@ -12,6 +12,10 @@ import { Constant } from 'model/enum/constant';
 
 interface BalanceProps extends BaseProps {}
 
+interface Ticker {
+	last: number;
+}
+
 interface BalanceState extends BaseState {
 	isLoading: boolean;
 	error?: string;
@@ -135,9 +139,9 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, [asset, amount]) => {
-				const ticker = tickers[asset];
+				const ticker: Ticker | undefined = tickers[asset];
 				const price = ticker?.last || 0;
-				return acc + price * amount;
+				return acc + price * (amount as number);
 			}, 0)
 			: 0;
 
@@ -171,7 +175,7 @@ class BalanceStructure extends Base<BalanceProps, BalanceState> {
 											</td>
 											<td className="px-4 py-2 w-7/12">
 												<div className="flex flex-col">
-													<span className="text-lg leading-none">{amount}</span>
+													<span className="text-lg leading-none">{Number(amount).toLocaleString()}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>

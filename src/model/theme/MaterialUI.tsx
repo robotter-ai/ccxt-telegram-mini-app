@@ -30,22 +30,61 @@ export const MaterialUITheme = createTheme({
 		},
 		background: {
 			default: '#000000',
-			paper: '#232322',
+			paper: '#1F1F1F',
 		},
 		text: {
-			secondary: '#949494',
+			secondary: '#ADADAD',
 			primary: '#ffffff',
 			disabled: '#595959',
 		},
 		error: {
-			main: '#f32d54',
+			main: '#F42443',
 		},
 		success: {
-			main: '#1fce79',
+			main: '#00DD1D',
 		},
 	},
 	typography: {
 		fontFamily: '"GT America Light", sans-serif',
+		h1: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h2: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h3: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h4: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h5: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		h6: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		subtitle1: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		subtitle2: {
+			fontFamily: '"PP Editorial New Light", sans-serif'
+		},
+		// body1: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// body2: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// button: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// caption: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
+		// overline: {
+		// 	fontFamily: '"PP Editorial New Light", sans-serif'
+		// },
 	},
 	fonts: {
 		primary: '"Work Sans", sans-serif',

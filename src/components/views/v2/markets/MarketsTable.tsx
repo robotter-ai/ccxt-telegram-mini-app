@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
 
 const Container = styled(Box)({
-	padding: '16px 22px',
+	padding: '20px 22px 0px',
 	width: '100%',
 	display: 'flex',
 	flexDirection: 'column',
@@ -21,9 +21,10 @@ const ScrollContainer = styled(Box)(({ theme }) => ({
 	overflowY: 'auto',
 	maxHeight: '70vh',
 	width: '100%',
+	padding: '0 2px',
 	flex: 1,
 	[theme.breakpoints.down(414)]: {
-		maxHeight: '60vh',
+		maxHeight: '65vh',
 	},
 }));
 
@@ -55,6 +56,8 @@ const StyledTableCellLeft = styled(TableCell)({
 	alignItems: 'center',
 	border: 'none',
 	boxSizing: 'border-box',
+	fontWeight: '300',
+	fontSize: '17px',
 });
 
 const StyledTableCellRight = styled(TableCell)({
@@ -66,6 +69,8 @@ const StyledTableCellRight = styled(TableCell)({
 	justifyContent: 'flex-end',
 	border: 'none',
 	boxSizing: 'border-box',
+	fontWeight: '300',
+	fontSize: '17px',
 });
 
 const FlexEndContainer = styled(Box)({
@@ -76,6 +81,8 @@ const FlexEndContainer = styled(Box)({
 
 const PercentageText = styled(Typography)<{ percentage: number }>((props: TypographyProps & { percentage: number }) => ({
 	fontWeight: '300',
+	fontSize: '13px',
+	fontFamily: MaterialUITheme.fonts.monospace,
 	color: props.percentage >= 0 ? MaterialUITheme.palette.success.main : MaterialUITheme.palette.error.main,
 }));
 
@@ -129,9 +136,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 					onClick={() => handleClick(row)}
 				>
 					<StyledTableCellLeft>
-						<Typography variant="body1">
-							{`${row.base} / ${row.quote}`}
-						</Typography>
+						{`${row.base} / ${row.quote}`}
 					</StyledTableCellLeft>
 					<StyledTableCellRight>
 						<FlexEndContainer>
@@ -159,13 +164,15 @@ export function MarketsTable({ rows }: Props) {
 	);
 
 	return (
-		<Container>
-			<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
-			<ScrollContainer>
-				<StyledTable>
-					<ListMarkets markets={filteredRows} />
-				</StyledTable>
-			</ScrollContainer>
-		</Container>
+		<>
+			<Container>
+				<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
+				<ScrollContainer>
+					<StyledTable>
+						<ListMarkets markets={filteredRows} />
+					</StyledTable>
+				</ScrollContainer>
+			</Container>
+		</>
 	);
 }

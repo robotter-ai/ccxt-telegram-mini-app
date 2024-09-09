@@ -2,7 +2,10 @@ import { Box, styled } from '@mui/material';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
-import { ColorType, createChart, IChartApi, LineData, UTCTimestamp } from 'lightweight-charts';
+import { CreateOrder } from 'components/views/v2/order/CreateOrder';
+import { Orders } from "components/views/v2/orders/Orders";
+import { formatPrice, formatVolume } from 'components/views/v2/utils/utils';
+import { ColorType, createChart, IChartApi, LastPriceAnimationMode, LineData, LineStyle, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiPostRun } from 'model/service/api';
@@ -13,8 +16,6 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { CreateOrder } from '../order/CreateOrder';
-import { formatPrice } from '../utils/utils';
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -23,6 +24,8 @@ interface MarketProps extends BaseProps {
 interface MarketState extends BaseState {
 	isLoading: boolean;
 	error?: string;
+	price: string | number | null;
+	volume: number | null;
 }
 
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
@@ -30,7 +33,7 @@ const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 });
 
 const Container = styled(Box)({
-	padding: '0 22px',
+	padding: '0 24px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',
@@ -48,23 +51,31 @@ const ChartDetails = styled(Box)({
 	marginBottom: '30px',
 	display: 'flex',
 	flexDirection: 'row',
-	gap: '30px',
+	gap: '20px',
 });
 
-const SubTitle = styled(Box)({
+const SubTitle = styled(Box)(({ theme }) => ({
+	fontSize: '13px',
 	fontWeight: '300',
-	fontSize: '12px',
-	color: MaterialUITheme.palette.text.secondary,
-});
+	fontFamily: theme.fonts.monospace,
+	color: theme.palette.text.secondary,
+	whiteSpace: 'nowrap',
+}));
 
-const ChartDetailItem = styled(Box)({
-	fontSize: '14px',
-	fontWeight: '600',
+const ChartDetailItem = styled(Box, {
+	shouldForwardProp: (prop) => prop !== 'dataPrecision',
+})<{ dataPrecision: number }>(({ theme, dataPrecision }) => ({
+	fontSize: `${Math.max(12, 18 - (dataPrecision || 4) * 0.5)}px`,
+	fontWeight: '300',
 	display: 'flex',
 	flexDirection: 'column',
 	alignItems: 'center',
 	gap: '4px',
-});
+	fontFamily: theme.fonts.secondary,
+	[theme.breakpoints.down(414)]: {
+		fontSize: `${Math.max(10, 16 - (dataPrecision || 4) * 0.5)}px`,
+	},
+}));
 
 class MarketStructure extends Base<MarketProps, MarketState> {
 	properties: Map = new Map();
@@ -72,9 +83,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	market: any;
 
 	marketId: string;
-	precision: number;
-	price: any;
-	volume: any;
+	marketPrecision: number;
 
 	chart?: IChartApi;
 	chartSeries?: any;
@@ -87,11 +96,14 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		this.state = {
 			isLoading: true,
 			error: undefined,
+			price: null,
+			volume: null,
 		} as Readonly<MarketState>;
 
 		this.marketId = this.props.queryParams.get('marketId');
 		this.market = this.props.markets.find((market: any) => market.id === this.marketId);
-		this.precision = (this.market.precision.amount !== null && this.market.precision.amount !== undefined)
+
+		this.marketPrecision = (this.market.precision.amount !== null && this.market.precision.amount !== undefined)
 			? this.market.precision.amount
 			: this.market.precision;
 
@@ -113,7 +125,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	render() {
-		const { isLoading } = this.state;
+		const { isLoading, price, volume } = this.state;
 
 		return (
 			<Container>
@@ -122,56 +134,68 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				<ChartContainer id="chart" ref={this.chartReference} />
 
 				<ChartDetails>
-					<ChartDetailItem>
+					<ChartDetailItem dataPrecision={this.marketPrecision}>
 						<SubTitle>MARKET</SubTitle>
 						<Box>{`${this.market.base}/${this.market.quote}`}</Box>
 					</ChartDetailItem>
-					<ChartDetailItem>
-						<SubTitle>PRICE (USDC)</SubTitle>
-						<Box>{this.price ?? '-'}</Box>
+					<ChartDetailItem dataPrecision={this.marketPrecision}>
+						<SubTitle>PRICE</SubTitle>
+						<Box>{price ?? '-'}</Box>
 					</ChartDetailItem>
-					<ChartDetailItem>
-						<SubTitle>24H VOL (SOL)</SubTitle>
-						<Box>{this.volume ?? '-'}</Box>
+					<ChartDetailItem dataPrecision={this.marketPrecision}>
+						<SubTitle>24H VOL ({this.market.base})</SubTitle>
+						<Box>{volume ? formatVolume(volume) : '-'}</Box>
 					</ChartDetailItem>
 				</ChartDetails>
 
 				<CreateOrder marketId={this.marketId} />
+				<Orders marketId={this.marketId} hasMarketPath={true} />
 			</Container>
 		);
 	}
 
 	async initialize() {
 		const payload = await this.fetchOhlcvData(this.marketId);
+
 		const lines = this.transformCandlesInLines(payload);
 
-		this.createMarketChart(this.precision, lines);
+		const lastMarketPrecision = lines[lines.length - 1]?.value?.toString().split('.')[1].length
+		const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
+
+		this.createMarketChart(setLastMarketPrecision, lines);
 		this.setState({ isLoading: false });
 	}
 
 	async doRecurrently() {
-		const recurrentFunction = async () => {
-			const { timestamp, close } = await this.fetchTickerData(this.marketId);
+		try {
+			const recurrentFunction = async () => {
+				// const close = Number((Math.random() * (100000 - 10) + 10).toFixed(this.precision));
+				const { timestamp, close } = await this.fetchTickerData(this.marketId);
 
-			if (this.chartSeries) {
-				const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
+				if (this.chartSeries) {
+					const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
 
-				if (currentSeries.value !== close) {
-					this.chartSeries.update({
-						time: timestamp / 1000,
-						value: close,
-					});
+					if (currentSeries?.value !== close && close !== null) {
+						this.chartSeries.update({
+							time: timestamp / 1000,
+							value: close,
+						});
 
-					this.price = formatPrice(close, this.precision);
-					return;
+						const formattedPrice = formatPrice(close, this.marketPrecision);
+						this.setState({ price: formattedPrice });
+
+						return;
+					}
 				}
-			}
-		};
+			};
 
-		this.properties.setIn(
-			'recurrent.5s.intervalId',
-			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
-		);
+			this.properties.setIn(
+				'recurrent.5s.intervalId',
+				executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+			);
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
+		}
 	}
 
 	async fetchOhlcvData(marketId: string): Promise<any> {
@@ -267,78 +291,84 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
-	createMarketChart(precision: number, lines: any) {
-		const hasPrecision = precision || 10;
+	createMarketChart(precision: number, lines: LineData[]) {
+		try {
+			if (!this.chartReference.current) {
+				throw Error('The chart reference has not been found.');
+			}
 
-		if (!this.chartReference.current) {
-			throw Error('The chart reference has not been found.');
+			this.chart = createChart(this.chartReference.current, {
+				autoSize: true,
+				layout: {
+					background: {
+						type: ColorType.Solid,
+						color: MaterialUITheme.palette.background.default,
+					},
+					textColor: MaterialUITheme.palette.text.primary,
+					fontSize: 11,
+				},
+				grid: {
+					vertLines: {
+						visible: false,
+					},
+					horzLines: {
+						visible: false,
+					},
+				},
+				timeScale: {
+					visible: true,
+					borderVisible: true,
+					timeVisible: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					secondsVisible: true,
+					fixLeftEdge: true,
+					fixRightEdge: true,
+				},
+				rightPriceScale: {
+					visible: true,
+					borderVisible: true,
+					alignLabels: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					autoScale: true,
+					scaleMargins: {
+						top: 0.1,
+						bottom: 0.1,
+					},
+				},
+				leftPriceScale: {
+					visible: false,
+				},
+				handleScale: false,
+				handleScroll: false,
+			});
+
+			const valueMinMove = 10;
+			this.chartSeries = this.chart.addLineSeries({
+				color: MaterialUITheme.palette.success.main,
+				lineWidth: 1,
+				priceLineWidth: 1,
+				priceLineVisible: true,
+				lastValueVisible: true,
+				lineStyle: LineStyle.Solid,
+				priceLineStyle: LineStyle.Dashed,
+				priceLineColor: MaterialUITheme.palette.success.main,
+				lastPriceAnimation: LastPriceAnimationMode.Continuous,
+				priceFormat: {
+					type: 'custom',
+					formatter: (price: number) => price.toFixed(precision),
+					minMove: 0.1 ** valueMinMove,
+				},
+			});
+
+			window.addEventListener('resize', this.handleChartResize);
+
+			this.chartSeries.setData(lines);
+
+			this.chart.timeScale().fitContent();
+			this.chart.timeScale().scrollToRealTime();
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
 		}
-
-		this.chart = createChart(this.chartReference.current, {
-			watermark: {
-				color: 'rgba(0, 0, 0, 0)',
-			},
-			autoSize: true,
-			layout: {
-				background: {
-					type: ColorType.Solid,
-					color: MaterialUITheme.palette.background.default,
-				},
-				textColor: MaterialUITheme.palette.text.primary,
-				fontSize: 11,
-			},
-			grid: {
-				vertLines: {
-					visible: false,
-				},
-				horzLines: {
-					visible: false,
-				},
-			},
-			timeScale: {
-				borderVisible: true,
-				borderColor: MaterialUITheme.palette.text.secondary,
-				timeVisible: true,
-				secondsVisible: true,
-				fixLeftEdge: true,
-				fixRightEdge: true,
-			},
-			rightPriceScale: {
-				borderVisible: true,
-				borderColor: MaterialUITheme.palette.text.secondary,
-				autoScale: true,
-				scaleMargins: {
-					top: 0.1,
-					bottom: 0.1,
-				},
-			},
-			handleScale: false,
-			handleScroll: false,
-		});
-
-		this.chartSeries = this.chart.addLineSeries({
-			color: MaterialUITheme.palette.success.main,
-			lineWidth: 1,
-			lineStyle: 0,
-			priceLineWidth: 1,
-			priceLineStyle: 1,
-			priceLineVisible: true,
-			lastValueVisible: true,
-			priceLineColor: MaterialUITheme.palette.success.main,
-			lastPriceAnimation: 1,
-			priceFormat: {
-				type: 'custom',
-				formatter: (price: number) => formatPrice(price, hasPrecision),
-				minMove: 0.1 ** hasPrecision,
-			},
-		});
-
-		window.addEventListener('resize', this.handleChartResize);
-
-		this.chartSeries.setData(lines);
-
-		this.chart.timeScale().fitContent();
-		this.chart.timeScale().scrollToRealTime();
 	}
 
 	transformCandlesInLines(candles: number[][]): LineData[] {
@@ -355,8 +385,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		if (formattedCandles.length) {
 			const lastCandle = formattedCandles[formattedCandles.length - 1];
-			this.volume = formatPrice(lastCandle.volume!, this.precision);
-			this.price = formatPrice(lastCandle.value, this.precision);
+			this.setState({
+				price: formatPrice(lastCandle.value, this.marketPrecision),
+				volume: lastCandle.volume ? lastCandle.volume : null,
+			});
 		}
 
 		return formattedCandles;

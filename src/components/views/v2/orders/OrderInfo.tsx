@@ -2,37 +2,36 @@ import {useSelector} from 'react-redux';
 import {Order} from 'api/types/orders';
 import {styled, Box, Typography} from '@mui/material';
 
-const StyledOrderDetails = styled(Box)(({theme}) => ({
+const StyledOrderDetails = styled(Box)(({}) => ({
 	flexGrow: 1,
 	textAlign: 'left',
-	fontFamily: theme.fonts.primary,
 }));
 
 const StyledOrderId = styled(Typography)(({theme}) => ({
 	fontSize: '13px',
 	fontWeight: '300',
-	fontFamily: 'inherit',
+	fontFamily: theme.fonts.monospace,
 	color: theme.palette.text.secondary,
 }));
 
 const StyledOrderAmount = styled(Typography)(({theme}) => ({
 	fontSize: '17px',
 	fontWeight: '300',
-	fontFamily: 'inherit',
+	fontFamily: theme.fonts.primary,
 	color: theme.palette.text.primary,
 }));
 
 const StyledOrderMarket = styled(Typography)(({theme}) => ({
 	fontSize: '13px',
 	fontWeight: '300',
-	fontFamily: 'inherit',
+	fontFamily: theme.fonts.monospace,
 	color: theme.palette.text.secondary,
 }));
 
 const StyledOrderDate = styled(Typography)(({theme}) => ({
 	fontSize: '13px',
 	fontWeight: '300',
-	fontFamily: 'inherit',
+	fontFamily: theme.fonts.monospace,
 	color: theme.palette.text.secondary,
 }));
 

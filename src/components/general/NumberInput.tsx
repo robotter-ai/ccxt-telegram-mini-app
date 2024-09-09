@@ -1,6 +1,7 @@
 import { FormControl, InputLabel, TextField, styled } from '@mui/material';
+import { removeLeadingZeroes } from "components/views/v2/utils/utils";
 import Decimal from 'decimal.js';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
 	'& .MuiOutlinedInput-root': {
@@ -19,8 +20,9 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-	fontSize: '15px',
+	fontSize: '14px',
 	fontWeight: '300',
+	fontFamily: theme.fonts.monospace,
 	lineHeight: '20px',
 	backgroundColor: theme.palette.background.default,
 	padding: '2px 6px',
@@ -31,13 +33,14 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 
 interface NumberInputProps {
 	label: string;
-	value: number;
+	value: string;
 	precision?: number;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onChange }) => {
 	const inputLabelRef = useRef<HTMLLabelElement>(null);
+	const textFieldRef = useRef<HTMLInputElement>(null);
 
 	const handleFocus = () => {
 		if (inputLabelRef.current) {
@@ -69,17 +72,32 @@ const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onCh
 		}
 	};
 
+	useEffect(() => {
+		const handleWheel = (event: WheelEvent) => {
+			if (textFieldRef.current && textFieldRef.current.contains(event.target as Node)) {
+				event.preventDefault();
+			}
+		};
+
+		window.addEventListener('wheel', handleWheel, { passive: false });
+
+		return () => {
+			window.removeEventListener('wheel', handleWheel);
+		};
+	}, []);
+
 	return (
 		<FormControl variant="outlined" fullWidth={true}>
 			<StyledInputLabel ref={inputLabelRef} shrink={true}>{label}</StyledInputLabel>
 			<StyledTextField
 				variant="outlined"
-				value={value}
+				value={removeLeadingZeroes(value)}
 				onChange={onChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
 				onKeyDown={handleKeyDown}
 				type="number"
+				inputRef={textFieldRef}
 			/>
 		</FormControl>
 	);

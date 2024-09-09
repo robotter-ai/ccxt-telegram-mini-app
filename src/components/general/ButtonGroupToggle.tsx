@@ -13,28 +13,31 @@ interface ButtonGroupToggleProps {
 }
 
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
-	backgroundColor: theme.palette.secondary.main,
+	backgroundColor: theme.palette.background.paper,
 	borderRadius: '40px',
 	width: '100%',
 	overflow: 'hidden',
 }));
 
-const StyledButton = styled(Button)<{ activeColor?: string }>(({ theme, activeColor }) => ({
+const StyledButton = styled(Button, {
+	shouldForwardProp: (prop) => prop !== 'activeColor',
+})<{ activeColor?: string }>(({ theme, activeColor }) => ({
 	flex: 1,
 	border: 'none',
 	padding: '10px 0',
 	textTransform: 'uppercase',
 	fontWeight: '300',
+	height: '40px',
 	'&.Mui-selected': {
 		border: 'none',
 		borderRadius: '40px',
-		color: theme.palette.secondary.main,
+		color: theme.palette.common.black,
 		backgroundColor: activeColor ?? theme.palette.primary.main,
 	},
 	'&:not(.Mui-selected)': {
 		border: 'none',
 		borderRadius: '40px',
-		color: theme.palette.primary.main,
+		color: theme.palette.text.secondary,
 	},
 }));
 

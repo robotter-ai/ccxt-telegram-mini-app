@@ -24,7 +24,7 @@ const initialize = async () => {
 						<ThemeProvider theme={MaterialUITheme}>
 							<CssBaseline />
 							{/* <TelegramUI id='telegramUI' appearance='dark'> */}
-									<ToastContainer/>
+									<ToastContainer autoClose={3000}/>
 									<Router/>
 							{/* </TelegramUI> */}
 						</ThemeProvider>

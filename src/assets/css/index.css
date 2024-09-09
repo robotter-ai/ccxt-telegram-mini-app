@@ -1,5 +1,5 @@
 @import 'https://icons.cube.exchange/cube-icons.css';
-@import 'src/assets/css/tokens.css';
+@import 'tokens.css';
 
 @tailwind base;
 @tailwind components;

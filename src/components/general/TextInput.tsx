@@ -3,7 +3,6 @@ import React, { useRef } from 'react';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
 	backgroundColor: theme.palette.background.default,
-
 	'& .MuiOutlinedInput-root': {
 		'& fieldset': {
 			borderRadius: '14px',
@@ -20,14 +19,19 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 			color: theme.palette.primary.main,
 		},
 	},
+	'& .MuiOutlinedInput-input': {
+		padding: '11px 16px',
+		fontSize: '17px',
+		height: '26px',
+	},
 }));
 
 const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
-	fontSize: '15px',
 	fontWeight: '300',
-	lineHeight: '20px',
+	fontFamily: theme.fonts.monospace,
 	backgroundColor: theme.palette.background.default,
-	padding: '2px 6px',
+	padding: '1px 6px',
+	fontSize: '14px',
 	'&.Mui-focused': {
 		color: theme.palette.primary.main,
 	},

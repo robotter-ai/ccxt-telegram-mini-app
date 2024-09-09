@@ -143,7 +143,7 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 				quote: market.quote,
 				active: market.active,
 				precision: market.precision.amount,
-				price: tickers[market.symbol].last,
+				price: tickers[market.symbol].last ?? 0,
 				datetime: tickers[market.symbol].datetime,
 				percentage: tickers[market.symbol].close && tickers[market.symbol].open
 					? ((tickers[market.symbol].close - tickers[market.symbol].open) / tickers[market.symbol].open) * 100
