@@ -95,23 +95,13 @@ class Structure extends Base<Props, State> {
 	}
 
 	handleClick(currency: any) {
-		const environment = Constant.environment.value;
-
 		let url: string;
 
 		if (Constant.usdCurrencies.value.includes(currency.code.toUpperCase())) {
 			return;
 		}
 
-		if (environment === 'production') {
-			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
-		} else if (environment == 'staging') {
-			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.stagingUSDCurrency.value.toUpperCase()}`;
-		} else if (environment == 'development') {
-			url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.developmentUSDCurrency.value.toUpperCase()}`;
-		} else {
-			throw new Error('Invalid environment');
-		}
+		url = `${Constant.marketPath.value}?marketId=${currency.code.toUpperCase()}${Constant.currentUSDCurrency.value.toUpperCase()}`;
 
 		this.props.navigate(url);
 	};
@@ -130,8 +120,10 @@ class Structure extends Base<Props, State> {
 		const totalBalanceUSDC = balanceData
 			? Object.entries(balanceData.total).reduce((acc, balance: any) => {
 				const asset = balance[0];
+				const market = `${asset}${Constant.currentUSDCurrency.value}`.toUpperCase();
 				const amount = balance[1];
-				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (tickers[asset]?.last || 0);
+				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (tickers[market]?.last || 0);
+
 				return acc + price * amount;
 			}, 0)
 			: 0;
