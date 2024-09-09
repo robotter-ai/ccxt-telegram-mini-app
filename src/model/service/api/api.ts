@@ -183,7 +183,7 @@ export const apiPostCreateOrder = async (data?: any, handleUnAuthorized?: () => 
 // noinspection JSUnusedGlobalSymbols
 export const apiGetDescribe = async (data?: any, handleUnAuthorized?: () => void) => {
 	return await callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: `${import.meta.env.VITE_EXCHANGE_ID}`,
@@ -231,7 +231,7 @@ export const apiGetFetchBalance = async (data?: any, handleUnAuthorized?: () => 
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchClosedOrders = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -263,7 +263,7 @@ export const apiGetFetchCurrencies = async (data?: any, handleUnAuthorized?: () 
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchDepositAddresses = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -295,7 +295,7 @@ export const apiGetFetchMarkets = async (data?: any, handleUnAuthorized?: () => 
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchMyTrades = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -311,7 +311,7 @@ export const apiGetFetchMyTrades = async (data?: any, handleUnAuthorized?: () =>
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -327,7 +327,7 @@ export const apiGetFetchOHLCV = async (data?: any, handleUnAuthorized?: () => vo
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOpenOrder = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -343,7 +343,7 @@ export const apiGetFetchOpenOrder = async (data?: any, handleUnAuthorized?: () =
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -359,7 +359,7 @@ export const apiGetFetchOpenOrders = async (data?: any, handleUnAuthorized?: () 
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOrder = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -375,7 +375,7 @@ export const apiGetFetchOrder = async (data?: any, handleUnAuthorized?: () => vo
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOrderBook = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -391,7 +391,7 @@ export const apiGetFetchOrderBook = async (data?: any, handleUnAuthorized?: () =
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOrders = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -407,7 +407,7 @@ export const apiGetFetchOrders = async (data?: any, handleUnAuthorized?: () => v
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchOrdersAllMarkets = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -423,7 +423,7 @@ export const apiGetFetchOrdersAllMarkets = async (data?: any, handleUnAuthorized
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchStatus = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -439,7 +439,7 @@ export const apiGetFetchStatus = async (data?: any, handleUnAuthorized?: () => v
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchTicker = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -471,7 +471,7 @@ export const apiGetFetchTickers = async (data?: any, handleUnAuthorized?: () => 
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchTrades = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -487,7 +487,7 @@ export const apiGetFetchTrades = async (data?: any, handleUnAuthorized?: () => v
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchTradingFee = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
