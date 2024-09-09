@@ -247,7 +247,7 @@ export const apiGetFetchClosedOrders = async (data?: any, handleUnAuthorized?: (
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchCurrencies = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
@@ -279,7 +279,7 @@ export const apiGetFetchDepositAddresses = async (data?: any, handleUnAuthorized
 // noinspection JSUnusedGlobalSymbols
 export const apiGetFetchMarkets = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
-		method: 'GET',
+		method: 'POST',
 		url: '/run',
 		data: {
 			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
