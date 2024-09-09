@@ -122,7 +122,8 @@ class Structure extends Base<Props, State> {
 				const asset = balance[0];
 				const market = `${asset}${Constant.currentUSDCurrency.value}`.toUpperCase();
 				const amount = balance[1];
-				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (tickers[market]?.last || 0);
+				const ticker = Object.values(tickers).find((ticker: any) => ticker.symbol.toUpperCase() === market);
+				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (ticker?.last || 0);
 
 				return acc + price * amount;
 			}, 0)
@@ -156,19 +157,9 @@ class Structure extends Base<Props, State> {
 
 									const currency = this.props.currenciesBySymbols[asset];
 
-									const environment = Constant.environment.value;
-									let tickerSymbol: string;
-									if (environment === 'production') {
-										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
-									} else if (environment == 'staging') {
-										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
-									} else if (environment == 'development') {
-										tickerSymbol = `${currency.code.toUpperCase()}${Constant.productionUSDCurrency.value.toUpperCase()}`;
-									} else {
-										throw new Error('Invalid environment');
-									}
+									const marketSymbol = `${asset}${Constant.currentUSDCurrency.value}`.toUpperCase();
 
-									const ticker =  tickers[tickerSymbol];
+									const ticker: any =  Object.values(tickers).find((ticker: any) => ticker.symbol.toUpperCase() === marketSymbol);
 
 									const usdAmount = Constant.usdCurrencies.value.includes(asset) ? amount : amount * (ticker?.last || 0);
 
