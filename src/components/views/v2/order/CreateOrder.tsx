@@ -329,13 +329,13 @@ class Structure extends Base<Props, State> {
 		}))
 
 		const getTotal = (side: OrderSide, type: OrderType) => {
-			let total: any;
+			let total: Decimal;
 
 			if (type === OrderType.LIMIT) {
 				if (side === OrderSide.BUY) {
 					total = Decimal.mul(new Decimal(amount), new Decimal(price ?? 0));
 				} else {
-					total = new Decimal(price ?? 0);
+					total = Decimal.mul(new Decimal(amount), new Decimal(price ?? 0));
 				}
 			} else {
 				total = Decimal.mul(new Decimal(amount), new Decimal(this.state.marketPrice ?? 0));
@@ -374,7 +374,7 @@ class Structure extends Base<Props, State> {
 						value={this.state.isSubmitting ? 'Order placed' : OrderSideLabelMapper[this.state.orderSide]}
 						type={ButtonType.Full}
 						icon={this.state.isSubmitting ? <Check sx={{ paddingTop: '-4px' }} /> : undefined}
-						disabled={getTotal(orderSide, orderType) === 0 || this.state.isSubmitting}
+						disabled={Number(getTotal(orderSide, orderType)) === 0 || this.state.isSubmitting}
 						onClick={async (e) => {
 							e?.preventDefault();
 							e?.stopPropagation();

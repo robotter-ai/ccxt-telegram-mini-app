@@ -65,8 +65,8 @@ export const getCurrentRouteTitle = () => {
 	}
 };
 
-export const formatPrice = (price: number, precision?: number): string => {
-	const priceString = price.toString();
+export const formatPrice = (price: number | string, precision?: number): string => {
+	const priceString = typeof price === 'string' ? price : price.toString();
 	const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
 	const finalPrecision = Math.max(actualPrecision, precision ?? 2);
 
@@ -75,7 +75,7 @@ export const formatPrice = (price: number, precision?: number): string => {
 		currency: 'USD',
 		minimumFractionDigits: finalPrecision,
 		maximumFractionDigits: finalPrecision,
-	}).format(price);
+	}).format(typeof price === 'string' ? Number(price) : price);
 
 	const cleanedPrice = formattedPrice.replace(/(\.\d*?[1-9])0+$/, '$1');
 
