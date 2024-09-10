@@ -13,14 +13,14 @@ const WhereToGetIt: React.FC = () => {
 				alignItems: 'center',
 				bgcolor: '#000000',
 				width: '100%',
-				paddingY: 4,
+				paddingY: 1,
 			}}
 		>
 			<Container component="main" maxWidth="md" sx={{ mb: 6 }}>
 				<Paper
 					elevation={0}
 					sx={{
-						padding: 4,
+						padding: 1,
 						display: 'flex',
 						flexDirection: 'column',
 						alignItems: 'flex-start',

@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import              { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiGetFetchBalance, apiGetFetchTickers } from 'model/service/api';
@@ -170,16 +170,16 @@ class Structure extends Base<Props, State> {
 
 									return (
 										<tr key={asset} className="border-b border-gray-600 border-none" onClick={() => {this.handleClick(currency)}}>
-											<td className="px-4 py-2 w-1/12 text-center">
+											<td className="py-2 w-1/12 text-center">
 												<i className={iconClass} style={{ fontSize: '24px' }}></i>
 											</td>
-											<td className="px-4 py-2 w-7/12">
+											<td className="py-2 w-7/12">
 												<div className="flex flex-col ml-1">
 													<span className="text-lg leading-none">{currency.name}</span>
 													<span className="text-sm text-gray-400">{asset}</span>
 												</div>
 											</td>
-											<td className="px-4 py-2 w-7/12">
+											<td className="px-3 py-2 w-7/12">
 												<div className="flex flex-col text-right">
 													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
 													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
