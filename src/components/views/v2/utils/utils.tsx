@@ -102,3 +102,7 @@ export const removeLeadingZeroes = (value: string) => {
 export const formatVolume = (value: number) => {
 	return value.toFixed(2);
 }
+
+export const getPrecision = (price: number | string) => {
+	return String(price).replace('$', '').split('.')[1]?.length
+}

@@ -4,7 +4,7 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
-import { formatPrice, formatVolume } from 'components/views/v2/utils/utils';
+import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
 import {
 	ColorType,
 	createChart,
@@ -113,9 +113,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		this.marketId = this.props.queryParams.get('marketId');
 		this.market = this.props.markets.find((market: any) => market.id === this.marketId);
 
-		this.marketPrecision = (this.market.precision.amount !== null && this.market.precision.amount !== undefined)
-			? this.market.precision.amount
-			: this.market.precision;
+		this.marketPrecision = this.market.precision.amount ?? this.market.precision;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
@@ -158,7 +156,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					</ChartDetailItem>
 				</ChartDetails>
 
-				<CreateOrder marketId={this.marketId} />
+				<CreateOrder marketId={this.marketId} marketPrecision={getPrecision(price!)} />
 				<Orders marketId={this.marketId} hasMarketPath={true} />
 			</Container>
 		);

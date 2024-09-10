@@ -35,10 +35,11 @@ interface NumberInputProps {
 	label: string;
 	value: string;
 	precision?: number;
+	showAllDecimals?: boolean;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onChange }) => {
+const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, showAllDecimals, onChange }) => {
 	const inputLabelRef = useRef<HTMLLabelElement>(null);
 	const textFieldRef = useRef<HTMLInputElement>(null);
 
@@ -61,13 +62,13 @@ const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onCh
 			event.preventDefault();
 			onChange({
 				...event,
-				target: { ...event.target, value: Decimal.sum(new Decimal(value), increment).toString() }
+				target: { ...event.target, value: Decimal.sum(new Decimal(value), increment).toFixed(precision || 0) }
 			} as unknown as React.ChangeEvent<HTMLInputElement>);
 		} else if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			onChange({
 				...event,
-				target: { ...event.target, value: Decimal.sub(new Decimal(value), increment).toString() }
+				target: { ...event.target, value: Decimal.sub(new Decimal(value), increment).toFixed(precision || 0) }
 			} as unknown as React.ChangeEvent<HTMLInputElement>);
 		}
 	};
@@ -86,12 +87,14 @@ const NumberInput: React.FC<NumberInputProps> = ({ label, value, precision, onCh
 		};
 	}, []);
 
+	const formattedValue = showAllDecimals ? new Decimal(value).toFixed(precision || 0) : removeLeadingZeroes(value);
+
 	return (
 		<FormControl variant="outlined" fullWidth={true}>
 			<StyledInputLabel ref={inputLabelRef} shrink={true}>{label}</StyledInputLabel>
 			<StyledTextField
 				variant="outlined"
-				value={removeLeadingZeroes(value)}
+				value={formattedValue}
 				onChange={onChange}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
