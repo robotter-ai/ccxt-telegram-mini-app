@@ -1,4 +1,4 @@
-import              { connect } from 'react-redux';
+import { connect } from 'react-redux';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiGetFetchBalance, apiGetFetchTickers } from 'model/service/api';
