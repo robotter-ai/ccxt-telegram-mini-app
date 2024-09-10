@@ -167,7 +167,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		const lines = this.transformCandlesInLines(payload);
 
-		const lastMarketPrecision = lines[lines.length - 1]?.value?.toString().split('.')[1].length
+		const lastMarketPrecision = lines[lines.length - 1]?.value?.toString().split('.')[1]?.length || 0
 		const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
 		this.createMarketChart(setLastMarketPrecision, lines);
