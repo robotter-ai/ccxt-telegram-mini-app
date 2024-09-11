@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Box, Button, styled, LinearProgress } from '@mui/material';
-import { TrendingUp, BookmarkAddedOutlined, EmojiEventsOutlined, SignalCellularAltOutlined }from '@mui/icons-material';
+import {HexagonOutlined, TrendingUp, BookmarkAddedOutlined, EmojiEventsOutlined, SignalCellularAltOutlined }from '@mui/icons-material';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
@@ -65,12 +65,12 @@ class Structure extends Base<Props, State> {
 					<Title>Rewards</Title>
 					<Row>
 						<LargeRowTitle>Points</LargeRowTitle>
-						<RowValue>5,213,564</RowValue>
+						<RowValueNum>5,213,564</RowValueNum>
 					</Row>
 				</StyledBox>
 
 				<StyledBox>
-						<TitleOne>Progress <SignalCellularAltOutlined fontSize="medium" style={{ marginLeft: '14.5em' }}/> </TitleOne>
+						<TitleOne>Progress <SignalCellularAltOutlined fontSize="medium" style={{ marginLeft: '9.8em' }}/> </TitleOne>
 						<CompactRowOne>
 							<RowTitle>Deposits</RowTitle>
 							<RowValue>$8,500</RowValue>
@@ -117,7 +117,7 @@ class Structure extends Base<Props, State> {
 				</RowContainer>
 
 				<StyledBox>
-					<Title>Blocks</Title>
+					<Title>Blocks <HexagonOutlined fontSize="small" style={{  marginLeft: '12em', color: 'grey' }}/></Title>
 					<ButtonsRow>
 						<StyledButton variant="contained" color="secondary">
 							Bounty Board
@@ -264,18 +264,18 @@ const StyledFullBox = styled(StyledBox)`
 `;
 
 const Title = styled('div')`
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: normal;
 	position: absolute;
-	top: 12px;
-	left: 16px;
+	top: 1em;
+	left: 1.3em;
 	padding: 0 0.25em ;
 `;
 
 const Row = styled('div')`
 	display: flex;
 	justify-content: space-between;
-	padding: 0.25em 0;
+	padding: 0.25em;
 	margin-top: 1em;
 `;
 
@@ -313,9 +313,19 @@ const RowValue = styled('div')`
 	font-weight:normal;
 `;
 
+const RowValueNum = styled('div')`
+	right: 2em;
+	font-size: 22px;
+	margin-top: 0.4em;
+	font-weight:normal;
+`;
+
 const LargeRowTitle = styled(RowTitle)`
+	left: 0.1em;
+	position: relative;
 	font-size: 20px;
 	font-weight: lighter;
+	margin-top: 0.4em;
 `;
 
 const LargeRowValue = styled(RowValue)`
@@ -339,13 +349,12 @@ const RowContainer = styled(Box)`
 const ButtonsRow = styled(Box)`
 	gap: 7.5em;
 	display: flex;
-
 	margin-top: 7.5em;
 `;
 
 const StyledButton = styled(Button)`
 	color: white;
-	padding: 0.7em 1.5em;
+	padding: 1.2em 1.5em;
 	font-size: 8px;
 	font-style: normal;
 	border-radius: 5em;
@@ -357,9 +366,8 @@ const StyledButton = styled(Button)`
 `;
 
 const InvertedButton = styled(Button)`
-	padding: 0.5em 2em;
 	font-size: 8px;
-	text-align: left;
+	left: 3em;
 	border-radius: 5em;
 	background-color: white;
 	color: black;
