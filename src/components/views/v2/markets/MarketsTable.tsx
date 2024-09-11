@@ -7,6 +7,26 @@ import * as React from 'react';
 import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
 
+interface Data {
+	id: number;
+	symbol: string;
+	base: string;
+	quote: string;
+	precision: number;
+	price: number;
+	datetime: string;
+	percentage: number;
+}
+
+interface Props {
+	rows: Data[];
+}
+
+interface EnhancedTableToolbarProps {
+	filterText: string;
+	onFilterTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
 const Container = styled(Box)({
 	padding: '20px 22px 0px',
 	width: '100%',
@@ -58,6 +78,7 @@ const StyledTableCellLeft = styled(TableCell)({
 	boxSizing: 'border-box',
 	fontWeight: '300',
 	fontSize: '17px',
+	whiteSpace: 'nowrap',
 });
 
 const StyledTableCellRight = styled(TableCell)({
@@ -71,6 +92,18 @@ const StyledTableCellRight = styled(TableCell)({
 	boxSizing: 'border-box',
 	fontWeight: '300',
 	fontSize: '17px',
+	whiteSpace: 'nowrap',
+});
+
+const StyledTableCellChart = styled(TableCell)({
+	flex: 1,
+	padding: '0',
+	textAlign: 'center',
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'center',
+	border: 'none',
+	boxSizing: 'border-box',
 });
 
 const FlexEndContainer = styled(Box)({
@@ -79,32 +112,16 @@ const FlexEndContainer = styled(Box)({
 	alignItems: 'flex-end',
 });
 
+const getColorForPercentage = (percentage: number) => {
+	return percentage >= 0 ? MaterialUITheme.palette.success.main : MaterialUITheme.palette.error.main;
+}
+
 const PercentageText = styled(Typography)<{ percentage: number }>((props: TypographyProps & { percentage: number }) => ({
 	fontWeight: '300',
 	fontSize: '13px',
 	fontFamily: MaterialUITheme.fonts.monospace,
-	color: props.percentage >= 0 ? MaterialUITheme.palette.success.main : MaterialUITheme.palette.error.main,
+	color: getColorForPercentage(props.percentage),
 }));
-
-interface Data {
-	id: number;
-	symbol: string;
-	base: string;
-	quote: string;
-	precision: number;
-	price: number;
-	datetime: string;
-	percentage: number;
-}
-
-interface Props {
-	rows: Data[];
-}
-
-interface EnhancedTableToolbarProps {
-	filterText: string;
-	onFilterTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	return (
@@ -138,10 +155,18 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 					<StyledTableCellLeft>
 						{`${row.base} / ${row.quote}`}
 					</StyledTableCellLeft>
+					{/* <StyledTableCellChart>
+						<MarketChart
+							market={row}
+							colorChart={getColorForPercentage(row.percentage)}
+						/>
+					</StyledTableCellChart> */}
 					<StyledTableCellRight>
 						<FlexEndContainer>
 							{formatPrice(row.price, row.precision)}
-							<PercentageText percentage={row.percentage}>
+							<PercentageText
+								percentage={row.percentage}
+							>
 								{row.percentage > 0 ? `+${row.percentage.toFixed(2)}` : `${row.percentage.toFixed(2)}`}%
 							</PercentageText>
 						</FlexEndContainer>
