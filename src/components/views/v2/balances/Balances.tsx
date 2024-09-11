@@ -131,7 +131,7 @@ class Structure extends Base<Props, State> {
 
 		return (
 			<div className="flex flex-col h-full px-4 md:px-8">
-				<div className="flex-grow overflow-hidden">
+				<div className="flex-grow overflow-scroll">
 					<div className="mb-4 ml-4 text-left">
 						<div style={{ fontFamily: '"GT America Light", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
 							My balance
