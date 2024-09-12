@@ -36,14 +36,12 @@ interface MarketState extends BaseState {
 	volume: number | null;
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
 
 const Container = styled(Box)({
-	padding: '0 24px',
+	padding: '0 22px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',

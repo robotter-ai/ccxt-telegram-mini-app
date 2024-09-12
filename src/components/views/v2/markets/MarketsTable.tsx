@@ -4,9 +4,10 @@ import TextInput from 'components/general/TextInput';
 import { Constant } from 'model/enum/constant';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 import * as React from 'react';
+import { useInView } from 'react-intersection-observer';
 import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
-import MarketChart from "components/views/v2/markets/MarketChart";
+import MarketChart from './MarketChart';
 
 interface Data {
 	id: number;
@@ -29,7 +30,7 @@ interface EnhancedTableToolbarProps {
 }
 
 const Container = styled(Box)({
-	padding: '20px 22px 0px',
+	padding: '6px 22px 0px',
 	width: '100%',
 	display: 'flex',
 	flexDirection: 'column',
@@ -140,6 +141,19 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	);
 }
 
+function LazyMarketChart({ market }: { market: Data }) {
+	const { ref, inView } = useInView({
+		triggerOnce: true,
+		threshold: 0.1,
+	});
+
+	return (
+		<StyledTableCellChart ref={ref}>
+			{inView && <MarketChart market={market} colorChart={getColorForPercentage(market.percentage)} />}
+		</StyledTableCellChart>
+	);
+}
+
 function ListMarkets({ markets }: { markets: Data[] }) {
 	const navigate = useNavigate();
 	const handleClick = (market: Data) => {
@@ -157,12 +171,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 					<StyledTableCellLeft>
 						{`${row.base} / ${row.quote}`}
 					</StyledTableCellLeft>
-					<StyledTableCellChart>
-						<MarketChart
-							market={row}
-							colorChart={getColorForPercentage(row.percentage)}
-						/>
-					</StyledTableCellChart>
+					<LazyMarketChart market={row} />
 					<StyledTableCellRight>
 						<FlexEndContainer>
 							{formatPrice(row.price, row.precision)}
