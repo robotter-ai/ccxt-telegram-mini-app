@@ -6,6 +6,7 @@ import { MaterialUITheme } from 'model/theme/MaterialUI';
 import * as React from 'react';
 import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
+import MarketChart from "components/views/v2/markets/MarketChart";
 
 interface Data {
 	id: number;
@@ -50,6 +51,8 @@ const ScrollContainer = styled(Box)(({ theme }) => ({
 
 const StyledTable = styled(Table)({
 	width: '100%',
+	display: 'flex',
+	flexDirection: 'column',
 	flex: 1,
 });
 
@@ -65,11 +68,10 @@ const StyledTableRow = styled(TableRow)({
 	width: '100%',
 	border: 'none',
 	boxSizing: 'border-box',
-	flex: 1,
 });
 
 const StyledTableCellLeft = styled(TableCell)({
-	flex: 1,
+	width: 'calc(50% - 30px)',
 	padding: '10px 0',
 	textAlign: 'left',
 	display: 'flex',
@@ -96,7 +98,7 @@ const StyledTableCellRight = styled(TableCell)({
 });
 
 const StyledTableCellChart = styled(TableCell)({
-	flex: 1,
+	width: '100px',
 	padding: '0',
 	textAlign: 'center',
 	display: 'flex',
@@ -155,12 +157,12 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 					<StyledTableCellLeft>
 						{`${row.base} / ${row.quote}`}
 					</StyledTableCellLeft>
-					{/* <StyledTableCellChart>
+					<StyledTableCellChart>
 						<MarketChart
 							market={row}
 							colorChart={getColorForPercentage(row.percentage)}
 						/>
-					</StyledTableCellChart> */}
+					</StyledTableCellChart>
 					<StyledTableCellRight>
 						<FlexEndContainer>
 							{formatPrice(row.price, row.precision)}
