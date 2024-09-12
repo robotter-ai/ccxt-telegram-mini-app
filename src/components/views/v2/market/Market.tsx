@@ -38,8 +38,6 @@ interface MarketState extends BaseState {
 	chartType: 'CHART' | 'BOOK';
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -51,7 +49,7 @@ const ChartTypeToggleContainer = styled(Box)({
 })
 
 const Container = styled(Box)({
-	padding: '0 24px',
+	padding: '0 22px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',

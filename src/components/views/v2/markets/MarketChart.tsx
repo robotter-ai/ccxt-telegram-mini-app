@@ -2,6 +2,7 @@ import { Box, styled } from '@mui/material';
 import {
 	ColorType,
 	createChart,
+	CrosshairMode,
 	IChartApi,
 	LineData,
 	LineStyle,
@@ -30,22 +31,31 @@ function movingAverage(data: LineData[], windowSize: number) {
 		const window = data.slice(i, end);
 		const sum = window.reduce((acc, point) => acc + point.value, 0);
 		const avg = sum / window.length;
-		averages.push({time: data[i].time, value: avg});
+		averages.push({ time: data[i].time, value: avg });
 	}
 
 	return averages;
 }
 
 const MarketChart = ({ market, colorChart }: MarketChartProps) => {
-	const chartRef = useRef<HTMLDivElement>();
-	const [chart, setChart] = useState<IChartApi>();
-	const [chartSeries, setChartSeries] = useState<any>();
+	const markertChartRef = useRef<HTMLDivElement>(null);
+	const [chart, setChart] = useState<IChartApi | null>(null);
+	const [chartSeries, setChartSeries] = useState<any>(null);
 
 	useEffect(() => {
 		const fetchOhlcvData = async (marketId: number) => {
 			try {
-				const response = await apiGetFetchOHLCV({ symbol: marketId, timeframe: '1s' });
-				if (response.status !== 200) throw new Error(response.text);
+				const response = await apiGetFetchOHLCV(
+					{
+						symbol: marketId,
+						timeframe: '1s',
+					}
+				);
+
+				if (response.status !== 200) {
+					throw new Error(response.text);
+				}
+
 				return response.data.result;
 			} catch (exception) {
 				console.error(exception);
@@ -55,7 +65,7 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 
 		const transformCandlesInLines = (candles: number[][]) => {
 			if (!candles || !Array.isArray(candles)) {
-				return []
+				return [];
 			}
 
 			const formattedCandles = candles.map(candle => {
@@ -69,11 +79,11 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 		};
 
 		const createMarketChart = (lines: LineData[]) => {
-			if (!chartRef.current) {
+			if (!markertChartRef.current) {
 				throw Error('The chart reference has not been found.');
 			}
 
-			const newChart = createChart(chartRef.current, {
+			const newChart = createChart(markertChartRef.current, {
 				autoSize: true,
 				handleScale: false,
 				handleScroll: false,
@@ -102,6 +112,18 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 				},
 			});
 
+			newChart.applyOptions({
+				crosshair: {
+					mode: CrosshairMode.Hidden,
+					horzLine: {
+						visible: false,
+					},
+					vertLine: {
+						visible: false,
+					},
+				},
+			});
+
 			const newChartSeries = newChart.addLineSeries({
 				color: colorChart,
 				lineWidth: 1,
@@ -112,6 +134,8 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 			const smoothedData = movingAverage(lines, 3);
 
 			newChartSeries.setData(smoothedData);
+			newChartSeries.setData(lines);
+
 			newChart.timeScale().fitContent();
 			newChart.timeScale().scrollToRealTime();
 
@@ -120,22 +144,24 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 		};
 
 		const initialize = async () => {
-			if (chart!) {
+			if (chart) {
 				return;
 			}
 
 			const payload = await fetchOhlcvData(market.id);
-			const lines = transformCandlesInLines(payload);
+			if (!payload || !payload.length) {
+				return;
+			}
 
+			const lines = transformCandlesInLines(payload);
 			createMarketChart(lines);
 		};
 
 		initialize();
-
-	}, [market, chartSeries, chart, colorChart]);
+	}, [market, chart, chartSeries, colorChart]);
 
 	return (
-		<ChartContainer ref={chartRef} />
+		<ChartContainer ref={markertChartRef} />
 	);
 };
 
