@@ -1,5 +1,12 @@
 import { Box, styled } from '@mui/material';
-import { ColorType, createChart, IChartApi, LineData, LineStyle, UTCTimestamp } from 'lightweight-charts';
+import {
+	ColorType,
+	createChart,
+	IChartApi,
+	LineData,
+	LineStyle,
+	UTCTimestamp,
+} from 'lightweight-charts';
 import { apiGetFetchOHLCV } from 'model/service/api';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { useEffect, useRef, useState } from 'react';
@@ -12,8 +19,22 @@ interface MarketChartProps {
 
 const ChartContainer = styled(Box)({
 	width: '73px',
-	height: '22px',
+	height: '45px',
 });
+
+function movingAverage(data: LineData[], windowSize: number) {
+	const averages = [];
+
+	for (let i = 0; i < data.length; i++) {
+		const end = Math.min(data.length, i + windowSize);
+		const window = data.slice(i, end);
+		const sum = window.reduce((acc, point) => acc + point.value, 0);
+		const avg = sum / window.length;
+		averages.push({time: data[i].time, value: avg});
+	}
+
+	return averages;
+}
 
 const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 	const chartRef = useRef<HTMLDivElement>();
@@ -88,7 +109,9 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 				lineStyle: LineStyle.Solid,
 			});
 
-			newChartSeries.setData(lines);
+			const smoothedData = movingAverage(lines, 3);
+
+			newChartSeries.setData(smoothedData);
 			newChart.timeScale().fitContent();
 			newChart.timeScale().scrollToRealTime();
 
