@@ -1,10 +1,10 @@
-import { Box, styled } from '@mui/material';
+import {Box, styled} from '@mui/material';
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base';
-import { Spinner } from 'components/views/v1/spinner/Spinner';
-import { CreateOrder } from 'components/views/v2/order/CreateOrder';
-import { Orders } from 'components/views/v2/orders/Orders';
-import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
+import {Base, BaseProps, BaseState} from 'components/base/Base';
+import {Spinner} from 'components/views/v1/spinner/Spinner';
+import {CreateOrder} from 'components/views/v2/order/CreateOrder';
+import {Orders} from 'components/views/v2/orders/Orders';
+import {formatPrice, formatVolume, getPrecision} from 'components/views/v2/utils/utils';
 import {
 	ColorType,
 	createChart,
@@ -14,16 +14,17 @@ import {
 	LineStyle,
 	UTCTimestamp
 } from 'lightweight-charts';
-import { Map } from 'model/helper/extendable-immutable/map';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { dispatch } from 'model/state/redux/store';
-import { MaterialUITheme } from 'model/theme/MaterialUI';
-import { createRef } from 'react';
-import { connect } from 'react-redux';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import {Map} from 'model/helper/extendable-immutable/map';
+import {useHandleUnauthorized} from 'model/hooks/useHandleUnauthorized';
+import {apiGetFetchOHLCV, apiGetFetchTicker} from 'model/service/api';
+import {executeAndSetInterval} from 'model/service/recurrent';
+import {dispatch} from 'model/state/redux/store';
+import {MaterialUITheme} from 'model/theme/MaterialUI';
+import {createRef} from 'react';
+import {connect} from 'react-redux';
+import {useLocation, useParams, useSearchParams} from 'react-router-dom';
+import {toast} from 'react-toastify';
+import ButtonGroupToggle from "components/general/ButtonGroupToggle";
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -34,6 +35,7 @@ interface MarketState extends BaseState {
 	error?: string;
 	price: string | number | null;
 	volume: number | null;
+	chartType: 'CHART' | 'BOOK';
 }
 
 // @ts-ignore
@@ -41,6 +43,12 @@ interface MarketState extends BaseState {
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
+
+const ChartTypeToggleContainer = styled(Box)({
+	width: '100%',
+	display: 'flex',
+	margin: '10px 0',
+})
 
 const Container = styled(Box)({
 	padding: '0 24px',
@@ -51,10 +59,11 @@ const Container = styled(Box)({
 	alignItems: 'center',
 });
 
-const ChartContainer = styled(Box)({
+const ChartContainer = styled(Box)<{ hidden?: boolean }>(({hidden}) => ({
 	width: '100%',
 	minHeight: '400px',
-});
+	display: hidden ? 'none' : 'block',
+}));
 
 const ChartDetails = styled(Box)({
 	marginTop: '16px',
@@ -64,7 +73,7 @@ const ChartDetails = styled(Box)({
 	gap: '20px',
 });
 
-const SubTitle = styled(Box)(({ theme }) => ({
+const SubTitle = styled(Box)(({theme}) => ({
 	fontSize: '13px',
 	fontWeight: '300',
 	fontFamily: theme.fonts.monospace,
@@ -74,7 +83,7 @@ const SubTitle = styled(Box)(({ theme }) => ({
 
 const ChartDetailItem = styled(Box, {
 	shouldForwardProp: (prop) => prop !== 'dataPrecision',
-})<{ dataPrecision: number }>(({ theme, dataPrecision }) => ({
+})<{ dataPrecision: number }>(({theme, dataPrecision}) => ({
 	fontSize: `${Math.max(12, 18 - (dataPrecision || 4) * 0.5)}px`,
 	fontWeight: '300',
 	display: 'flex',
@@ -96,9 +105,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	marketPrecision: number;
 
 	chart?: IChartApi;
+	book?: IChartApi;
 	chartSeries?: any;
 
 	chartReference = createRef<HTMLDivElement>();
+	bookReference = createRef<HTMLDivElement>();
 
 	constructor(props: MarketProps) {
 		super(props);
@@ -108,6 +119,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			error: undefined,
 			price: null,
 			volume: null,
+			chartType: 'CHART',
 		} as Readonly<MarketState>;
 
 		this.marketId = this.props.queryParams.get('marketId');
@@ -133,13 +145,28 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	render() {
-		const { isLoading, price, volume } = this.state;
+		const {isLoading, price, volume, chartType} = this.state;
+
+		const chartTypeButtons = [
+			{
+				label: 'CHART',
+				onClick: () => this.setState({chartType: 'CHART'}),
+			},
+			{
+				label: 'BOOK',
+				onClick: () => this.setState({chartType: 'BOOK'}),
+			},
+		];
 
 		return (
 			<Container>
-				{isLoading && <Spinner />}
+				{isLoading && <Spinner/>}
+				<ChartTypeToggleContainer>
+					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0}/>
+				</ChartTypeToggleContainer>
 
-				<ChartContainer id="chart" ref={this.chartReference} />
+				<ChartContainer id="chart" ref={this.chartReference} hidden={chartType === 'BOOK'}/>
+				<ChartContainer id='book' ref={this.bookReference} hidden={chartType === 'CHART'}/>
 
 				<ChartDetails>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
@@ -156,8 +183,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					</ChartDetailItem>
 				</ChartDetails>
 
-				<CreateOrder marketId={this.marketId} marketPrecision={getPrecision(price!)} />
-				<Orders marketId={this.marketId} hasMarketPath={true} />
+				<CreateOrder marketId={this.marketId} marketPrecision={getPrecision(price!)}/>
+				<Orders marketId={this.marketId} hasMarketPath={true}/>
 			</Container>
 		);
 	}
@@ -171,14 +198,15 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
 		this.createMarketChart(setLastMarketPrecision, lines);
-		this.setState({ isLoading: false });
+		this.createMarketBook(setLastMarketPrecision, lines);
+		this.setState({isLoading: false});
 	}
 
 	async doRecurrently() {
 		try {
 			const recurrentFunction = async () => {
 				// const close = Number((Math.random() * (100000 - 10) + 10).toFixed(this.precision));
-				const { timestamp, close } = await this.fetchTickerData(this.marketId);
+				const {timestamp, close} = await this.fetchTickerData(this.marketId);
 
 				if (this.chartSeries) {
 					const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
@@ -190,7 +218,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 						});
 
 						const formattedPrice = formatPrice(close, this.marketPrecision);
-						this.setState({ price: formattedPrice });
+						this.setState({price: formattedPrice});
 
 						return;
 					}
@@ -220,7 +248,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				if (response.data?.title) {
 					const message = response.data.title;
 
-					this.setState({ error: message });
+					this.setState({error: message});
 					toast.error(message);
 
 					return;
@@ -243,7 +271,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 			const message = 'An error has occurred while performing this operation';
 
-			this.setState({ error: message });
+			this.setState({error: message});
 			toast.error(message);
 		}
 	}
@@ -261,7 +289,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				if (response.data?.title) {
 					const message = response.data.title;
 
-					this.setState({ error: message });
+					this.setState({error: message});
 					toast.error(message);
 
 					return;
@@ -282,7 +310,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 			const message = 'An error has occurred while performing this operation';
 
-			this.setState({ error: message });
+			this.setState({error: message});
 			toast.error(message);
 
 			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
@@ -369,6 +397,86 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
+	createMarketBook(precision: number, lines: LineData[]) {
+		try {
+			if (!this.bookReference.current) {
+				throw Error('The chart reference has not been found.');
+			}
+
+			this.book = createChart(this.bookReference.current, {
+				autoSize: true,
+				layout: {
+					background: {
+						type: ColorType.Solid,
+						color: MaterialUITheme.palette.background.default,
+					},
+					textColor: MaterialUITheme.palette.text.primary,
+					fontSize: 11,
+				},
+				grid: {
+					vertLines: {
+						visible: false,
+					},
+					horzLines: {
+						visible: false,
+					},
+				},
+				timeScale: {
+					visible: true,
+					borderVisible: true,
+					timeVisible: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					secondsVisible: true,
+					fixLeftEdge: true,
+					fixRightEdge: true,
+				},
+				rightPriceScale: {
+					visible: true,
+					borderVisible: true,
+					alignLabels: true,
+					borderColor: MaterialUITheme.palette.text.secondary,
+					autoScale: true,
+					scaleMargins: {
+						top: 0.1,
+						bottom: 0.1,
+					},
+				},
+				leftPriceScale: {
+					visible: false,
+				},
+				handleScale: false,
+				handleScroll: false,
+			});
+
+			const valueMinMove = 10;
+			this.chartSeries = this.book.addLineSeries({
+				color: MaterialUITheme.palette.error.main,
+				lineWidth: 1,
+				priceLineWidth: 1,
+				priceLineVisible: true,
+				lastValueVisible: true,
+				lineStyle: LineStyle.Solid,
+				priceLineStyle: LineStyle.Dashed,
+				priceLineColor: MaterialUITheme.palette.error.main,
+				lastPriceAnimation: LastPriceAnimationMode.Continuous,
+				priceFormat: {
+					type: 'custom',
+					formatter: (price: number) => price.toFixed(precision),
+					minMove: 0.1 ** valueMinMove,
+				},
+			});
+
+			window.addEventListener('resize', this.handleChartResize);
+
+			this.chartSeries.setData(lines);
+
+			this.book.timeScale().fitContent();
+			this.book.timeScale().scrollToRealTime();
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
+		}
+	}
+
 	transformCandlesInLines(candles: number[][]): LineData[] {
 		if (!candles || !Array.isArray(candles)) return [];
 
@@ -377,7 +485,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			return {
 				time: Number(candle[0]) as UTCTimestamp,
 				value: Number(candle[4]),
-				...(isLastCandle && { volume: Number(candle[5]) }),
+				...(isLastCandle && {volume: Number(candle[5])}),
 			};
 		});
 
@@ -394,7 +502,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 	handleChartResize = () => {
 		if (this.chartReference.current) {
-			this.chart!.applyOptions({ width: this.chartReference.current.clientWidth });
+			this.chart!.applyOptions({width: this.chartReference.current.clientWidth});
 		}
 	};
 }
