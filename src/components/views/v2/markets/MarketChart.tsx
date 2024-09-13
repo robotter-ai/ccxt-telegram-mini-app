@@ -39,6 +39,7 @@ function movingAverage(data: LineData[], windowSize: number) {
 
 const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 	const markertChartRef = useRef<HTMLDivElement>(null);
+
 	const [chart, setChart] = useState<IChartApi | null>(null);
 	const [chartSeries, setChartSeries] = useState<any>(null);
 
@@ -79,68 +80,74 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 		};
 
 		const createMarketChart = (lines: LineData[]) => {
-			if (!markertChartRef.current) {
-				throw Error('The chart reference has not been found.');
+			try {
+				if (!markertChartRef.current) {
+					console.warn('The chart reference has not been found');
+					return;
+				}
+
+				const newChart = createChart(markertChartRef.current, {
+					autoSize: true,
+					handleScale: false,
+					handleScroll: false,
+					layout: {
+						background: {
+							type: ColorType.Solid, color: MaterialUITheme.palette.background.default,
+						},
+					},
+					grid: {
+						vertLines: {
+							visible: false,
+						},
+						horzLines: {
+							visible: false,
+
+						},
+					},
+					timeScale: {
+						visible: false,
+					},
+					rightPriceScale: {
+						visible: false,
+					},
+					leftPriceScale: {
+						visible: false,
+					},
+				});
+
+				newChart.applyOptions({
+					crosshair: {
+						mode: CrosshairMode.Hidden,
+						horzLine: {
+							visible: false,
+						},
+						vertLine: {
+							visible: false,
+						},
+					},
+				});
+
+				const newChartSeries = newChart.addLineSeries({
+					color: colorChart,
+					lineWidth: 1,
+					priceLineVisible: false,
+					lineStyle: LineStyle.Solid,
+				});
+
+				const smoothedData = movingAverage(lines, 3);
+
+				newChartSeries.setData(smoothedData);
+				newChartSeries.setData(lines);
+
+				newChart.timeScale().fitContent();
+				newChart.timeScale().scrollToRealTime();
+
+				setChart(newChart);
+				setChartSeries(newChartSeries);
+
+			} catch (exception) {
+				console.error(`chart: ${exception}`);
 			}
-
-			const newChart = createChart(markertChartRef.current, {
-				autoSize: true,
-				handleScale: false,
-				handleScroll: false,
-				layout: {
-					background: {
-						type: ColorType.Solid, color: MaterialUITheme.palette.background.default,
-					},
-				},
-				grid: {
-					vertLines: {
-						visible: false,
-					},
-					horzLines: {
-						visible: false,
-
-					},
-				},
-				timeScale: {
-					visible: false,
-				},
-				rightPriceScale: {
-					visible: false,
-				},
-				leftPriceScale: {
-					visible: false,
-				},
-			});
-
-			newChart.applyOptions({
-				crosshair: {
-					mode: CrosshairMode.Hidden,
-					horzLine: {
-						visible: false,
-					},
-					vertLine: {
-						visible: false,
-					},
-				},
-			});
-
-			const newChartSeries = newChart.addLineSeries({
-				color: colorChart,
-				lineWidth: 1,
-				priceLineVisible: false,
-				lineStyle: LineStyle.Solid,
-			});
-
-			const smoothedData = movingAverage(lines, 3);
-
-			newChartSeries.setData(smoothedData);
-			newChartSeries.setData(lines);
-
-			newChart.timeScale().fitContent();
-			newChart.timeScale().scrollToRealTime();
-
-			setChart(newChart);
-			setChartSeries(newChartSeries);
 		};
 
 		const initialize = async () => {
@@ -161,7 +168,9 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 	}, [market, chart, chartSeries, colorChart]);
 
 	return (
-		<ChartContainer ref={markertChartRef} />
+		<>
+			<ChartContainer ref={markertChartRef} />
+		</>
 	);
 };
 

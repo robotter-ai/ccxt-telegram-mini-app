@@ -144,7 +144,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 function LazyMarketChart({ market }: { market: Data }) {
 	const { ref, inView } = useInView({
 		triggerOnce: true,
-		threshold: 0.1,
+		threshold: 0.5,
 	});
 
 	return (
