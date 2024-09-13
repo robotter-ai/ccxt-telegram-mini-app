@@ -214,13 +214,18 @@ class Structure extends Base<Props, State> {
 				throw new Error('Network response was not OK');
 			}
 
-			toast.success('OrderInfo created successfully!');
+			toast.success('Order created successfully!');
 
 			await this.fetchOpenOrders();
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to create order: ', error);
-			toast.error('Failed to create order.');
+
+			if (error.response && error.response.data && error.response.data.message) {
+				toast.error(`${error.response.data.message}`);
+			} else {
+				toast.error('Failed to create order due to an unknown error.');
+			}
 		} finally {
 			this.setState({ isSubmitting: false });
 		}
