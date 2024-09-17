@@ -98,6 +98,7 @@ const StyledTableCellRight = styled(TableCell)({
 	whiteSpace: 'nowrap',
 });
 
+// @ts-ignore
 const StyledTableCellChart = styled(TableCell)({
 	width: '100px',
 	padding: '0',
