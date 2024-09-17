@@ -6,6 +6,7 @@ import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
 import {
+	CandlestickData,
 	ColorType,
 	createChart,
 	IChartApi,
@@ -25,6 +26,8 @@ import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
+import { candlesChartConfig, candlesSeriesConfig } from './charts/candles';
+import { linesChartConfig, linesSeriesConfig } from './charts/lines';
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -322,68 +325,10 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				return;
 			}
 
-			this.chart = createChart(this.chartReference.current, {
-				autoSize: true,
-				layout: {
-					background: {
-						type: ColorType.Solid,
-						color: MaterialUITheme.palette.background.default,
-					},
-					textColor: MaterialUITheme.palette.text.primary,
-					fontSize: 11,
-				},
-				grid: {
-					vertLines: {
-						visible: false,
-					},
-					horzLines: {
-						visible: false,
-					},
-				},
-				timeScale: {
-					visible: true,
-					borderVisible: true,
-					timeVisible: true,
-					borderColor: MaterialUITheme.palette.text.secondary,
-					secondsVisible: true,
-					fixLeftEdge: true,
-					fixRightEdge: true,
-				},
-				rightPriceScale: {
-					visible: true,
-					borderVisible: true,
-					alignLabels: true,
-					borderColor: MaterialUITheme.palette.text.secondary,
-					autoScale: true,
-					scaleMargins: {
-						top: 0.1,
-						bottom: 0.1,
-					},
-				},
-				leftPriceScale: {
-					visible: false,
-				},
-				handleScale: false,
-				handleScroll: false,
-			});
+			this.chart = linesChartConfig(this.chartReference.current);
 
 			const valueMinMove = 10;
-			this.chartSeries = this.chart.addLineSeries({
-				color: MaterialUITheme.palette.success.main,
-				lineWidth: 1,
-				priceLineWidth: 1,
-				priceLineVisible: true,
-				lastValueVisible: true,
-				lineStyle: LineStyle.Solid,
-				priceLineStyle: LineStyle.Dashed,
-				priceLineColor: MaterialUITheme.palette.success.main,
-				lastPriceAnimation: LastPriceAnimationMode.Continuous,
-				priceFormat: {
-					type: 'custom',
-					formatter: (price: number) => price.toFixed(precision),
-					minMove: 0.1 ** valueMinMove,
-				},
-			});
+			this.chartSeries = linesSeriesConfig(this.chart, precision, valueMinMove);
 
 			window.addEventListener('resize', this.handleChartResize);
 
@@ -477,28 +422,95 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
+	createMarketCandleChart(candles: CandlestickData[]){
+		try {
+			if (!this.chartReference.current) {
+				console.warn('The chart reference has not been found');
+				return;
+			}
+
+			this.chart = candlesChartConfig(this.chartReference.current);
+			this.chartSeries = candlesSeriesConfig(this.chart);
+
+
+			this.chartSeries.setData(candles);
+			this.chart.timeScale().fitContent();
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
+		}
+	}
+
 	transformCandlesInLines(candles: number[][]): LineData[] {
 		if (!candles || !Array.isArray(candles)) {
 			return [];
 		}
 
-		const formattedCandles = candles.map((candle, index) => {
+		const formattedLines = candles.map((candle, index) => {
 			const isLastCandle = index === candles.length - 1;
 
 			return {
 				time: Number(candle[0]) as UTCTimestamp,
-				value: Number(candle[4]),
+				value: Number(candle[4]), // "low" or candle[2] "close"?
 				...(isLastCandle && { volume: Number(candle[5]) }),
 			};
 		});
 
-		if (formattedCandles.length) {
-			const lastCandle = formattedCandles[formattedCandles.length - 1];
+		if (formattedLines.length) {
+			const lastCandle = formattedLines[formattedLines.length - 1];
 			this.setState({
 				price: formatPrice(lastCandle.value, this.marketPrecision),
 				volume: lastCandle.volume ? lastCandle.volume : null,
 			});
 		}
+
+		return formattedLines;
+	}
+
+	transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] {
+		if (!candles || !Array.isArray(candles)) {
+			return [];
+		}
+
+		const formattedCandles = candles.map((candle, index) => {
+			if (index === 0) {
+				return {
+					time: Number(candle[0]) as UTCTimestamp,
+					open: Number(candle[1]),
+					close: Number(candle[2]),
+					high: Number(candle[3]),
+					low: Number(candle[4]),
+					volume: Number(candle[5]),
+				}
+			}
+
+			const lastCandle = {
+				open: Number(candles[index - 1][1]),
+				close: Number(candles[index - 1][2]),
+				high: Number(candles[index - 1][3]),
+				low: Number(candles[index - 1][4]),
+			};
+
+			const newCandle = {
+				open: Number(candle[1]),
+				close: Number(candle[2]),
+				high: Number(candle[3]),
+				low: Number(candle[4]),
+			};
+
+			if (JSON.stringify(newCandle) === JSON.stringify(lastCandle)) {
+				return;
+			}
+
+			return {
+				time: Number(candle[0]) as UTCTimestamp,
+				open: Number(candle[1]),
+				close: Number(candle[2]),
+				high: Number(candle[3]),
+				low: Number(candle[4]),
+				volume: Number(candle[5]),
+			};
+
+		}).filter(candle => candle !== undefined);
 
 		return formattedCandles;
 	}
