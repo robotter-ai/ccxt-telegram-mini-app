@@ -55,6 +55,7 @@ interface Props extends BaseProps {
 interface State extends BaseState {
 	isLoading: boolean;
 	error?: string;
+	progress: number;
 }
 
 class Structure extends Base<Props, State> {
@@ -64,6 +65,7 @@ class Structure extends Base<Props, State> {
 		this.state = {
 			isLoading: true,
 			error: undefined,
+			progress: 0,
 		} as Readonly<State>;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
@@ -73,11 +75,26 @@ class Structure extends Base<Props, State> {
 	async componentDidMount() {
 		await this.initialize();
 		await this.doRecurrently();
+		this.updateProgress();
 	}
 
 	async componentWillUnmount() {
 		if (this.properties.getIn<number>('recurrent.5s.intervalId')) {
 			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
+		}
+	}
+
+	updateProgress() {
+
+		const { data } = this.props;
+		const referralLeaderboard = data?.points_referral_leaderboard?.top || [];
+
+		if (referralLeaderboard.length > 0) {
+			const maxPoints = 10000000;
+			const currentPoints = referralLeaderboard[0].points || 0;
+			const progress = (currentPoints / maxPoints) * 100;
+
+			this.setState({ progress });
 		}
 	}
 
@@ -89,7 +106,7 @@ class Structure extends Base<Props, State> {
 		const referralLeaderboard = data?.points_referral_leaderboard?.top || [];
 		const loyaltyLeaderboard = data?.points_loyalty_leaderboard?.top || [];
 		const usersDailyLoyalty = data?.users_daily_loyalty || [];
-
+		const progress = this.state.progress;
 
 		const formatNumber = (num: any) =>
 			new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(num));
@@ -110,7 +127,7 @@ class Structure extends Base<Props, State> {
 				</StyledBox>
 
 				<StyledBox>
-					<TitleOne>Progress <SignalCellularAltOutlined fontSize="medium" style={{ marginLeft: '9.8em' }} /></TitleOne>
+					<TitleOne>Progress <SignalCellularAltOutlined  fontSize="medium" style={{ marginLeft: '9.8em' }} /></TitleOne>
 					<CompactRowOne>
 						<RowTitle>Deposits</RowTitle>
 						<RowValue>
@@ -129,7 +146,7 @@ class Structure extends Base<Props, State> {
 							${loyaltyLeaderboard.length > 0 ? formatNumber(loyaltyLeaderboard[0].points) : 'N/A'}
 						</RowValue>
 					</CompactRowOne>
-					<LinearProgress variant="indeterminate" style={{ marginBottom: '1.25em' }} />
+					<LinearProgress variant="determinate" value={progress} style={{ marginBottom: '1.25em' }} />
 				</StyledBox>
 
 				<RowContainer>
