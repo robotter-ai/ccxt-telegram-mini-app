@@ -4,8 +4,10 @@ import TextInput from 'components/general/TextInput';
 import { Constant } from 'model/enum/constant';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 import * as React from 'react';
+import { useInView } from 'react-intersection-observer';
 import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
+import MarketChart from './MarketChart';
 
 interface Data {
 	id: number;
@@ -28,7 +30,7 @@ interface EnhancedTableToolbarProps {
 }
 
 const Container = styled(Box)({
-	padding: '20px 22px 0px',
+	padding: '6px 22px 0px',
 	width: '100%',
 	display: 'flex',
 	flexDirection: 'column',
@@ -50,6 +52,8 @@ const ScrollContainer = styled(Box)(({ theme }) => ({
 
 const StyledTable = styled(Table)({
 	width: '100%',
+	display: 'flex',
+	flexDirection: 'column',
 	flex: 1,
 });
 
@@ -65,11 +69,10 @@ const StyledTableRow = styled(TableRow)({
 	width: '100%',
 	border: 'none',
 	boxSizing: 'border-box',
-	flex: 1,
 });
 
 const StyledTableCellLeft = styled(TableCell)({
-	flex: 1,
+	width: 'calc(50% - 30px)',
 	padding: '10px 0',
 	textAlign: 'left',
 	display: 'flex',
@@ -96,7 +99,7 @@ const StyledTableCellRight = styled(TableCell)({
 });
 
 const StyledTableCellChart = styled(TableCell)({
-	flex: 1,
+	width: '100px',
 	padding: '0',
 	textAlign: 'center',
 	display: 'flex',
@@ -138,6 +141,19 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	);
 }
 
+function LazyMarketChart({ market }: { market: Data }) {
+	const { ref, inView } = useInView({
+		triggerOnce: true,
+		threshold: 0.5,
+	});
+
+	return (
+		<StyledTableCellChart ref={ref}>
+			{inView && <MarketChart market={market} colorChart={getColorForPercentage(market.percentage)} />}
+		</StyledTableCellChart>
+	);
+}
+
 function ListMarkets({ markets }: { markets: Data[] }) {
 	const navigate = useNavigate();
 	const handleClick = (market: Data) => {
@@ -155,12 +171,7 @@ function ListMarkets({ markets }: { markets: Data[] }) {
 					<StyledTableCellLeft>
 						{`${row.base} / ${row.quote}`}
 					</StyledTableCellLeft>
-					{/* <StyledTableCellChart>
-						<MarketChart
-							market={row}
-							colorChart={getColorForPercentage(row.percentage)}
-						/>
-					</StyledTableCellChart> */}
+					<LazyMarketChart market={row} />
 					<StyledTableCellRight>
 						<FlexEndContainer>
 							{formatPrice(row.price, row.precision)}

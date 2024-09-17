@@ -1,11 +1,12 @@
 import { Box, styled } from '@mui/material';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
-import { Spinner } from 'components/views/v1/spinner/Spinner';
+import ButtonGroupToggle from "components/general/ButtonGroupToggle";
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
 import {
+	CandlestickData,
 	ColorType,
 	createChart,
 	IChartApi,
@@ -24,6 +25,9 @@ import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Spinner } from '../layout/spinner/Spinner';
+import { candlesChartConfig, candlesSeriesConfig } from './charts/candles';
+import { linesChartConfig, linesSeriesConfig } from './charts/lines';
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -34,16 +38,17 @@ interface MarketState extends BaseState {
 	error?: string;
 	price: string | number | null;
 	volume: number | null;
+	chartType: 'CHART' | 'BOOK';
 }
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
-	markets: state.api.markets,
-});
+const ChartTypeToggleContainer = styled(Box)({
+	width: '100%',
+	display: 'flex',
+	margin: '10px 0',
+})
 
 const Container = styled(Box)({
-	padding: '0 24px',
+	padding: '0 22px',
 	height: '100%',
 	width: '100%',
 	display: 'flex',
@@ -51,10 +56,11 @@ const Container = styled(Box)({
 	alignItems: 'center',
 });
 
-const ChartContainer = styled(Box)({
+const ChartContainer = styled(Box)<{ hidden?: boolean }>(({ hidden }) => ({
 	width: '100%',
 	minHeight: '400px',
-});
+	display: hidden ? 'none' : 'block',
+}));
 
 const ChartDetails = styled(Box)({
 	marginTop: '16px',
@@ -87,6 +93,10 @@ const ChartDetailItem = styled(Box, {
 	},
 }));
 
+const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
+	markets: state.api.markets,
+});
+
 class MarketStructure extends Base<MarketProps, MarketState> {
 	properties: Map = new Map();
 
@@ -96,9 +106,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	marketPrecision: number;
 
 	chart?: IChartApi;
+	book?: IChartApi;
 	chartSeries?: any;
 
 	chartReference = createRef<HTMLDivElement>();
+	bookReference = createRef<HTMLDivElement>();
 
 	constructor(props: MarketProps) {
 		super(props);
@@ -108,6 +120,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			error: undefined,
 			price: null,
 			volume: null,
+			chartType: 'CHART',
 		} as Readonly<MarketState>;
 
 		this.marketId = this.props.queryParams.get('marketId');
@@ -133,13 +146,28 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	render() {
-		const { isLoading, price, volume } = this.state;
+		const { isLoading, price, volume, chartType } = this.state;
+
+		const chartTypeButtons = [
+			{
+				label: 'CHART',
+				onClick: () => this.setState({ chartType: 'CHART' }),
+			},
+			{
+				label: 'BOOK',
+				onClick: () => this.setState({ chartType: 'BOOK' }),
+			},
+		];
 
 		return (
 			<Container>
 				{isLoading && <Spinner />}
+				<ChartTypeToggleContainer>
+					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0} />
+				</ChartTypeToggleContainer>
 
-				<ChartContainer id="chart" ref={this.chartReference} />
+				<ChartContainer id="chart" ref={this.chartReference} hidden={chartType === 'BOOK'} />
+				<ChartContainer id='book' ref={this.bookReference} hidden={chartType === 'CHART'} />
 
 				<ChartDetails>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
@@ -171,6 +199,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
 		this.createMarketChart(setLastMarketPrecision, lines);
+		this.createMarketBook(setLastMarketPrecision, lines);
 		this.setState({ isLoading: false });
 	}
 
@@ -292,10 +321,34 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	createMarketChart(precision: number, lines: LineData[]) {
 		try {
 			if (!this.chartReference.current) {
-				throw Error('The chart reference has not been found.');
+				console.warn('The chart reference has not been found');
+				return;
 			}
 
-			this.chart = createChart(this.chartReference.current, {
+			this.chart = linesChartConfig(this.chartReference.current);
+
+			const valueMinMove = 10;
+			this.chartSeries = linesSeriesConfig(this.chart, precision, valueMinMove);
+
+			window.addEventListener('resize', this.handleChartResize);
+
+			this.chartSeries.setData(lines);
+
+			this.chart.timeScale().fitContent();
+			this.chart.timeScale().scrollToRealTime();
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
+		}
+	}
+
+	createMarketBook(precision: number, lines: LineData[]) {
+		try {
+			if (!this.bookReference.current) {
+				console.warn('The chart reference has not been found');
+				return;
+			}
+
+			this.book = createChart(this.bookReference.current, {
 				autoSize: true,
 				layout: {
 					background: {
@@ -341,15 +394,15 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			});
 
 			const valueMinMove = 10;
-			this.chartSeries = this.chart.addLineSeries({
-				color: MaterialUITheme.palette.success.main,
+			this.chartSeries = this.book.addLineSeries({
+				color: MaterialUITheme.palette.error.main,
 				lineWidth: 1,
 				priceLineWidth: 1,
 				priceLineVisible: true,
 				lastValueVisible: true,
 				lineStyle: LineStyle.Solid,
 				priceLineStyle: LineStyle.Dashed,
-				priceLineColor: MaterialUITheme.palette.success.main,
+				priceLineColor: MaterialUITheme.palette.error.main,
 				lastPriceAnimation: LastPriceAnimationMode.Continuous,
 				priceFormat: {
 					type: 'custom',
@@ -362,32 +415,102 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 			this.chartSeries.setData(lines);
 
+			this.book.timeScale().fitContent();
+			this.book.timeScale().scrollToRealTime();
+		} catch (exception) {
+			console.error(`chart: ${exception}`);
+		}
+	}
+
+	createMarketCandleChart(candles: CandlestickData[]){
+		try {
+			if (!this.chartReference.current) {
+				console.warn('The chart reference has not been found');
+				return;
+			}
+
+			this.chart = candlesChartConfig(this.chartReference.current);
+			this.chartSeries = candlesSeriesConfig(this.chart);
+
+
+			this.chartSeries.setData(candles);
 			this.chart.timeScale().fitContent();
-			this.chart.timeScale().scrollToRealTime();
 		} catch (exception) {
 			console.error(`chart: ${exception}`);
 		}
 	}
 
 	transformCandlesInLines(candles: number[][]): LineData[] {
-		if (!candles || !Array.isArray(candles)) return [];
+		if (!candles || !Array.isArray(candles)) {
+			return [];
+		}
 
-		const formattedCandles = candles.map((candle, index) => {
+		const formattedLines = candles.map((candle, index) => {
 			const isLastCandle = index === candles.length - 1;
+
 			return {
 				time: Number(candle[0]) as UTCTimestamp,
-				value: Number(candle[4]),
+				value: Number(candle[4]), // "low" or candle[2] "close"?
 				...(isLastCandle && { volume: Number(candle[5]) }),
 			};
 		});
 
-		if (formattedCandles.length) {
-			const lastCandle = formattedCandles[formattedCandles.length - 1];
+		if (formattedLines.length) {
+			const lastCandle = formattedLines[formattedLines.length - 1];
 			this.setState({
 				price: formatPrice(lastCandle.value, this.marketPrecision),
 				volume: lastCandle.volume ? lastCandle.volume : null,
 			});
 		}
+
+		return formattedLines;
+	}
+
+	transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] {
+		if (!candles || !Array.isArray(candles)) {
+			return [];
+		}
+
+		const formattedCandles = candles.map((candle, index) => {
+			if (index === 0) {
+				return {
+					time: Number(candle[0]) as UTCTimestamp,
+					open: Number(candle[1]),
+					close: Number(candle[2]),
+					high: Number(candle[3]),
+					low: Number(candle[4]),
+					volume: Number(candle[5]),
+				}
+			}
+
+			const lastCandle = {
+				open: Number(candles[index - 1][1]),
+				close: Number(candles[index - 1][2]),
+				high: Number(candles[index - 1][3]),
+				low: Number(candles[index - 1][4]),
+			};
+
+			const newCandle = {
+				open: Number(candle[1]),
+				close: Number(candle[2]),
+				high: Number(candle[3]),
+				low: Number(candle[4]),
+			};
+
+			if (JSON.stringify(newCandle) === JSON.stringify(lastCandle)) {
+				return;
+			}
+
+			return {
+				time: Number(candle[0]) as UTCTimestamp,
+				open: Number(candle[1]),
+				close: Number(candle[2]),
+				high: Number(candle[3]),
+				low: Number(candle[4]),
+				volume: Number(candle[5]),
+			};
+
+		}).filter(candle => candle !== undefined);
 
 		return formattedCandles;
 	}

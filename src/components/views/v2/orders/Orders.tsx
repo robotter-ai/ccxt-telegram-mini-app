@@ -116,7 +116,7 @@ class Structure extends Base<Props, State> {
 		return response;
 	}
 
-	async cancelOpenOrder(order: Order) {
+	async cancelOpenOrder(order: Order, suppressToast: boolean = false) {
 		if (!order || !order.id) return;
 
 		try {
@@ -124,10 +124,14 @@ class Structure extends Base<Props, State> {
 			this.canceledOrdersRef.add(order.id);
 			await this.fetchData();
 
-			toast.success(`Order ${order.id} canceled successfully!`);
+			if (!suppressToast) {
+				toast.success(`Order ${order.id} canceled successfully!`);
+			}
 		} catch (error) {
 			console.error('Failed to cancel order:', error);
-			toast.error(`Failed to cancel order ${order.id}.`);
+			if (!suppressToast) {
+				toast.error(`Failed to cancel order ${order.id}.`);
+			}
 			throw error;
 		}
 	}
@@ -141,30 +145,74 @@ class Structure extends Base<Props, State> {
 			try {
 				await this.cancelOpenOrder(order);
 			} catch (error: any) {
-				errors.push(new Error(`Failed to cancel order ${order.id}.`));
+				errors.push(error);
 			}
 		});
 
 		await Promise.all(promises);
 
 		if (errors.length > 0) {
-			throw new Error(errors.map(error => error.message).join('\n'));
+			const errorMessage = errors.map(error => error.message).join('\n');
+			toast.error(`Failed to cancel some orders: ${errorMessage}`);
+			throw new Error(errorMessage);
 		}
 	}
 
 	async cancelAllOpenOrders(orders: readonly Order[]) {
+		if (!orders || orders.length === 0) return;
+
 		try {
-			await this.cancelOpenOrders(orders);
+			const { successes, failures } = await this.processOrderCancellations(orders, true);
 
 			this.props.openOrders.forEach((order: any) => this.canceledOrdersRef.add(order.id));
-
 			dispatch('api.updateOpenOrders', []);
 
-			toast.success('All orders canceled successfully!');
+			this.displaySummaryToast(successes, failures);
 		} catch (error) {
-			console.error(error);
-			toast.error('Failed to cancel all orders.');
+			console.error('Failed to cancel all orders:', error);
+			toast.error('An unexpected error occurred while canceling orders.');
 		}
+	}
+
+	private async processOrderCancellations(orders: readonly Order[], suppressToast: boolean) {
+		const successes: string[] = [];
+		const failures: string[] = [];
+
+		await Promise.all(orders.map(async (order) => {
+			try {
+				await this.cancelOpenOrder(order, suppressToast);
+				successes.push(order.id);
+			} catch (error) {
+				const errorMessage = this.extractErrorMessage(error);
+				failures.push(errorMessage);
+			}
+		}));
+
+		return { successes, failures };
+	}
+
+	private displaySummaryToast(successes: string[], failures: string[]) {
+		if (successes.length > 0) {
+			const orderText = successes.length === 1 ? 'order' : 'orders';
+			toast.success(`Cancelment successfully requested for ${successes.length} ${orderText}.`, {
+				toastId: 'success-summary',
+				style: { whiteSpace: 'pre-line', wordWrap: 'break-word' },
+			});
+		}
+
+		if (failures.length > 0) {
+			const formattedFailures = failures.map((failure, index) => `${index + 1}. ${failure}`).join('\n');
+
+			toast.error(`Failed to cancel ${failures.length} order(s):\n${formattedFailures}`, {
+				toastId: 'error-summary',
+				style: { whiteSpace: 'pre-line', wordWrap: 'break-word' },
+			});
+		}
+	}
+
+	private extractErrorMessage(error: any,): string {
+		const errorMessage = error.response?.data?.message || error.message || 'Unknown error occurred';
+		return `${errorMessage}`;
 	}
 
 	render() {

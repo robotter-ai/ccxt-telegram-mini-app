@@ -187,16 +187,17 @@ class Structure extends Base<Props, State> {
 
 		const { selectedMarket, orderSide, orderType, amount, price } = this.state;
 
-		const market = this.props.marketId ? this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId)?.symbol : selectedMarket;
+		const market = this.props.marketId
+			? this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId)?.symbol
+			: selectedMarket;
 
 		try {
 			if (!market) {
-				toast.error('Selected market is not valid.');
-				return;
+				throw new Error('Selected market is not valid.');
 			}
 
-			if (!price) {
-				throw new Error('Invalid price');
+			if (orderType === OrderType.LIMIT && (!price || parseFloat(price) <= 0)) {
+				throw new Error('Invalid price. Please enter a valid price for a limit order.');
 			}
 
 			const response = await apiPostCreateOrder(
@@ -214,15 +215,31 @@ class Structure extends Base<Props, State> {
 				throw new Error('Network response was not OK');
 			}
 
-			toast.success('OrderInfo created successfully!');
+			toast.success('Order created successfully!');
 
 			await this.fetchOpenOrders();
 
-		} catch (error) {
-			console.error('Failed to create order: ', error);
-			toast.error('Failed to create order.');
+		} catch (error: any) {
+			console.error('Failed to create order:', error);
+
+			const errorMessage = this.extractErrorMessage(error);
+
+			toast.error(errorMessage, {
+				style: { whiteSpace: 'pre-line', wordWrap: 'break-word' },
+				autoClose: false,
+			});
 		} finally {
 			this.setState({ isSubmitting: false });
+		}
+	}
+
+	private extractErrorMessage(error: any): string {
+		if (error.response && error.response.data && error.response.data.message) {
+			return error.response.data.message;
+		} else if (error.message) {
+			return error.message;
+		} else {
+			return 'Failed to create order due to an unknown error.';
 		}
 	}
 

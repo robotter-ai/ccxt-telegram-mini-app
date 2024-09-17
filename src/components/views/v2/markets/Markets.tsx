@@ -1,3 +1,4 @@
+import { Box, styled } from '@mui/material';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
@@ -22,6 +23,10 @@ interface MarketsState extends BaseState {
 	isLoading: boolean;
 	error?: string;
 }
+
+const Container = styled(Box)({
+	width: '100%',
+});
 
 const mapStateToProps = (state: any) => ({
 	markets: state.api.markets,
@@ -93,27 +98,25 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 		}
 
 		if (!Array.isArray(markets)) {
-			return <div>Error: Invalid data format</div>;
+			return <div>Error: invalid data format</div>;
 		}
 
 		return (
-			<div className='w-full'>
+			<Container>
 				<MarketsTable rows={markets} />
-			</div>
+			</Container>
 		);
 	}
 
 	async fetchMarketsData() {
 		try {
 			const marketResponse = await apiGetFetchMarkets(
-				{
-				},
+				{},
 				this.props.handleUnAuthorized
 			);
 
 			const tickersResponse = await apiGetFetchTickers(
-				{
-				},
+				{},
 				this.props.handleUnAuthorized
 			);
 
@@ -143,8 +146,8 @@ class MarketsStructure extends Base<MarketsProps, MarketsState> {
 			}));
 
 			this.props.dispatch({ type: 'api.updateMarkets', payload: formattedMarkets });
-		} catch (exception: any) {
-			console.error('Fetch markets data error:', exception);
+		} catch (exception) {
+			console.error(exception);
 			this.setState({ error: (exception as Error).message });
 			toast.error((exception as Error).message);
 		}
