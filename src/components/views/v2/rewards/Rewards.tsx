@@ -1,12 +1,28 @@
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
 import axios from 'axios';
-import { Box, Button, styled, LinearProgress } from '@mui/material';
-import {HexagonOutlined, TrendingUp, BookmarkAddedOutlined, EmojiEventsOutlined, SignalCellularAltOutlined }from '@mui/icons-material';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { dispatch } from 'model/state/redux/store';
-import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
-import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import {connect} from 'react-redux';
+import {toast} from 'react-toastify';
+import {Box, Button, LinearProgress, styled} from '@mui/material';
+import {
+	TrendingUp,
+	HexagonOutlined,
+	EmojiEventsOutlined,
+	BookmarkAddedOutlined,
+	SignalCellularAltOutlined,
+} from '@mui/icons-material';
+import {dispatch} from 'model/state/redux/store';
+import {executeAndSetInterval} from 'model/service/recurrent';
+import {Spinner} from 'components/views/v2/layout/spinner/Spinner';
+import {Base, BaseProps, BaseState, withHooks} from 'components/base/Base';
+import {
+	// apiGetIridiumPrivateUsersInfo,
+	apiGetIridiumPrivateUsersInvites,
+	apiGetIridiumPrivateUsersUserTier,
+	apiGetIridiumPrivateUsersLootBoxes,
+	apiGetIridiumPrivateUsersDailyLoyalty,
+	apiGetIridiumPublicPointsBlocksLeaderboard,
+	apiGetIridiumPublicPointsLoyaltyLeaderboard,
+	apiGetIridiumPublicPointsReferralLeaderboard,
+} from "model/service/api";
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -22,7 +38,19 @@ const mapDispatchToProps = (reduxDispatch: any) => ({
 	},
 });
 
-interface Props extends BaseProps {}
+interface Props extends BaseProps {
+	updateRewards(data: any): void;
+	data: {
+		users_info?: any;
+		users_invites?: any;
+		users_user_tier?: any;
+		users_loot_boxes?: any;
+		users_daily_loyalty?: any;
+		points_blocks_leaderboard?: any;
+		points_loyalty_leaderboard?: any;
+		points_referral_leaderboard?: any;
+	};
+}
 
 interface State extends BaseState {
 	isLoading: boolean;
@@ -55,69 +83,91 @@ class Structure extends Base<Props, State> {
 
 	render() {
 		const { isLoading, error } = this.state;
+		const { data } = this.props;
+    const usersInfo = data?.users_info || {};
+		const usersUserTier = data?.users_user_tier || [];
+		const referralLeaderboard = data?.points_referral_leaderboard?.top || [];
+		const loyaltyLeaderboard = data?.points_loyalty_leaderboard?.top || [];
+		const usersDailyLoyalty = data?.users_daily_loyalty || [];
+
+
+		const formatNumber = (num: any) =>
+			new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(num));
 
 		return (
 			<StyledContainer>
-				{isLoading ? <Spinner /> : null}
-				{error ? <div>Error: {error}</div> : null}
+				{isLoading && <Spinner />}
+				{error && <div>Error: {error}</div>}
 
 				<StyledBox>
 					<Title>Rewards</Title>
 					<Row>
-						<LargeRowTitle>Points</LargeRowTitle>
-						<RowValueNum>5,213,564</RowValueNum>
+						<LargeRowTitle>Blocks</LargeRowTitle>
+						<RowValueNum>
+							{usersInfo.blocks !== undefined ? usersInfo.blocks : 'N/A'}
+						</RowValueNum>
 					</Row>
 				</StyledBox>
 
 				<StyledBox>
-						<TitleOne>Progress <SignalCellularAltOutlined fontSize="medium" style={{ marginLeft: '9.8em' }}/> </TitleOne>
-						<CompactRowOne>
-							<RowTitle>Deposits</RowTitle>
-							<RowValue>$8,500</RowValue>
-						</CompactRowOne>
-						<CompactRowOne>
-							<RowTitle>Wtd Vol</RowTitle>
-							<RowValue>$486,321</RowValue>
-						</CompactRowOne>
-						<CompactRowOne>
-							<RowTitle>Volume</RowTitle>
-							<RowValue>$2,435,934</RowValue>
-						</CompactRowOne>
-					<LinearProgress variant="indeterminate" style={{marginBottom:'1.25em'}} />
+					<TitleOne>Progress <SignalCellularAltOutlined fontSize="medium" style={{ marginLeft: '9.8em' }} /></TitleOne>
+					<CompactRowOne>
+						<RowTitle>Deposits</RowTitle>
+						<RowValue>
+							${referralLeaderboard.length > 0 ? formatNumber(referralLeaderboard[0].points) : 'N/A'}
+						</RowValue>
+					</CompactRowOne>
+					<CompactRowOne>
+						<RowTitle>Wtd Vol</RowTitle>
+						<RowValue>
+							${usersDailyLoyalty && usersDailyLoyalty.dailyVolume !== undefined ? formatNumber(usersDailyLoyalty.dailyVolume) : 'N/A'}
+						</RowValue>
+					</CompactRowOne>
+					<CompactRowOne>
+						<RowTitle>Volume</RowTitle>
+						<RowValue>
+							${loyaltyLeaderboard.length > 0 ? formatNumber(loyaltyLeaderboard[0].points) : 'N/A'}
+						</RowValue>
+					</CompactRowOne>
+					<LinearProgress variant="indeterminate" style={{ marginBottom: '1.25em' }} />
 				</StyledBox>
-
 
 				<RowContainer>
 					<StyledFullBox>
 						<Title>
-							Tier
-							<EmojiEventsOutlined fontSize="xsmall" style={{ marginLeft: '7.25em' }}/>
+							{typeof usersUserTier === 'object' ? (
+								<>Tier: {usersUserTier.projectedTier || 'N/A'}</>
+							) : (	usersUserTier || 'N/A' )}
+							<EmojiEventsOutlined fontSize="xsmall" style={{ marginLeft: '7.25em' }} />
 						</Title>
 						<CompactRow>
 							<LargeRowValue>Gold</LargeRowValue>
 						</CompactRow>
 						<CompactRow>
-							<RowSubValue>Rank #453</RowSubValue>
+							<RowSubValue>
+								Rank # {referralLeaderboard.length > 0 ? Number(referralLeaderboard[0].rank) : 'N/A'}
+							</RowSubValue>
 						</CompactRow>
 					</StyledFullBox>
 
 					<StyledFullBox>
 						<Title>
 							Loyalty Score
-							<BookmarkAddedOutlined fontSize="xsmall" style={{ marginLeft: '3.25em' }}/>
+							<BookmarkAddedOutlined fontSize="xsmall" style={{ marginLeft: '3.25em' }} />
 						</Title>
 						<Row>
-							<LargeRowValue>236</LargeRowValue>
-						</Row>
-						<Row>
-
-							<RowSubValue><TrendingUp fontSize="small" /> +25 / 24 h</RowSubValue>
+							<RowOne >
+								<RowValue style={{ fontSize: '20px' }}>{referralLeaderboard.length > 0 ? Number(referralLeaderboard[0].points) : 'N/A'}</RowValue>
+							</RowOne>
+							<RowSubValueOne>
+								<TrendingUp fontSize="small" /> +25/ 24
+							</RowSubValueOne>
 						</Row>
 					</StyledFullBox>
 				</RowContainer>
 
 				<StyledBox>
-					<Title>Blocks <HexagonOutlined fontSize="small" style={{  marginLeft: '12em', color: 'grey' }}/></Title>
+					<Title>Blocks <HexagonOutlined fontSize="small" style={{ marginLeft: '12em', color: 'grey' }} /></Title>
 					<ButtonsRow>
 						<StyledButton variant="contained" color="secondary">
 							Bounty Board
@@ -130,6 +180,7 @@ class Structure extends Base<Props, State> {
 			</StyledContainer>
 		);
 	}
+
 
 	async initialize() {
 		try {
@@ -144,18 +195,19 @@ class Structure extends Base<Props, State> {
 
 			const message = 'An error has occurred while performing this operation.'
 
-			this.setState({ error: message });
+			this.setState({error: message});
 			toast.error(message);
 		} finally {
-			this.setState({ isLoading: false });
+			this.setState({isLoading: false});
 		}
 	}
 
 	async doRecurrently() {
 		const recurrentFunction = async () => {
-			try {
+			try	 {
 				const responses = await Promise.all([
-					/*apiGetIridiumPrivateUsersLootBoxes(
+
+					apiGetIridiumPrivateUsersLootBoxes(
 						{
 						},
 						this.props.handleUnAuthorized
@@ -180,47 +232,56 @@ class Structure extends Base<Props, State> {
 						},
 						this.props.handleUnAuthorized
 					),
+
 					apiGetIridiumPrivateUsersUserTier(
-						{
-						},
+						{},
 						this.props.handleUnAuthorized
 					),
-					 apiGetIridiumPrivateUsersInfo(
-					{
-					},
-					 	this.props.handleUnAuthorized
-					 ),
+					//  apiGetIridiumPrivateUsersInfo(
+					// {
+					// },
+					//  	this.props.handleUnAuthorized
+					//  ),
 					apiGetIridiumPublicPointsBlocksLeaderboard(
 						{
 						},
 						this.props.handleUnAuthorized
-					),*/
+					),
 				]);
 
 				responses.forEach((response: any) => {
-					if (response.status !== 200) {
+
+					if (response.status < 200 || response.status >= 300) {
 						if (response.data?.title) {
 							const message = response.data.title;
-
 							this.setState({ error: message });
 							toast.error(message);
-
-							return;
 						} else {
-							// noinspection ExceptionCaughtLocallyJS
-							throw new Error(response.text);
+							toast.error(response.data?.message || 'Unknown error occurred');
 						}
+						return;
 					}
 
-					let payload: any = {};
-					payload[`${response.data.title.replace(/.*?(public|private)_(get|post|put|delete|patch)_/,'')}`] = response.data.result.result || response.data.result;
+					if (response.data?.title) {
+						const key = response.data.title.replace(/.*?(public|private)_(get|post|put|delete|patch)_/, '');
+						const result = response.data.result?.result || response.data.result;
 
-					this.props.updateRewards(payload);
+						if (result !== undefined) {
+							const payload = { [key]: result };
+							this.props.updateRewards(payload);
+						} else {
+							console.warn('Missing result in API response');
+						}
+					} else {
+						console.warn('Missing title in API response');
+					}
 				});
+
 			} catch (exception) {
 				console.error(exception);
 
 				if (axios.isAxiosError(exception)) {
+					console.error('Resposta da API:', exception.response);
 					if (exception?.response?.status === 401) {
 						return;
 					}
@@ -228,7 +289,7 @@ class Structure extends Base<Props, State> {
 
 				const message = 'An error has occurred while performing this operation.'
 
-				this.setState({ error: message });
+				this.setState({error: message});
 				toast.error(message);
 
 				clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
@@ -269,14 +330,21 @@ const Title = styled('div')`
 	position: absolute;
 	top: 1em;
 	left: 1.3em;
-	padding: 0 0.25em ;
+	padding: 0 0.25em;
 `;
 
 const Row = styled('div')`
 	display: flex;
 	justify-content: space-between;
 	padding: 0.25em;
-	margin-top: 1em;
+	margin-top: 3.2em;
+`;
+
+const RowOne = styled('div')`
+	display: flex;
+	padding: 0.25em;
+	margin-top: 3.2em;
+	justify-content: space-between;
 `;
 
 const CompactRow = styled(Row)`
@@ -310,34 +378,42 @@ const RowTitle = styled('div')`
 
 const RowValue = styled('div')`
 	font-size: 12px;
-	font-weight:normal;
+	font-weight: normal;
 `;
 
 const RowValueNum = styled('div')`
 	right: 2em;
 	font-size: 22px;
 	margin-top: 0.4em;
-	font-weight:normal;
+	font-weight: 300;
 `;
 
 const LargeRowTitle = styled(RowTitle)`
 	left: 0.1em;
 	position: relative;
 	font-size: 20px;
-	font-weight: lighter;
+	font-weight: 300;
 	margin-top: 0.4em;
 `;
 
 const LargeRowValue = styled(RowValue)`
 	font-size: 1.3em;
-	margin-top: 4em;
+	margin-top: 4.4em;
 	font-weight: lighter;
 `;
 
 const RowSubValue = styled('div')`
 	color: rgba(170, 170, 170, 0.55);
 	font-size: 11px;
-	margin-top: -1em;
+	margin-top: -1.6em;
+`;
+
+const RowSubValueOne = styled('div')`
+	right: 6em;
+	color: rgba(170, 170, 170, 0.55);
+	position: relative;
+	font-size: 11px;
+	margin-top: 8.3em;
 `;
 
 const RowContainer = styled(Box)`
