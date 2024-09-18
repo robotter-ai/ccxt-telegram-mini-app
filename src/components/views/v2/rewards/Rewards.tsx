@@ -174,7 +174,7 @@ class Structure extends Base<Props, State> {
 						</Title>
 						<Row>
 							<RowOne >
-								<RowValue style={{ fontSize: '20px' }}>{referralLeaderboard.length > 0 ? Number(referralLeaderboard[0].points) : 'N/A'}</RowValue>
+								<RowValue style={{ fontSize: '20px' }}>{usersInfo.length > 0 ? Number(usersInfo[0].points) : 'N/A'}</RowValue>
 							</RowOne>
 							<RowSubValueOne>
 								<TrendingUp fontSize="small" /> +25/ 24
