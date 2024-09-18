@@ -1,6 +1,8 @@
 import {
+	CandlestickData,
 	createChart,
-	IChartApi
+	IChartApi,
+	UTCTimestamp
 } from 'lightweight-charts';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 
@@ -30,4 +32,54 @@ export const candlesSeriesConfig = (chart: IChartApi) => {
 		wickUpColor: MaterialUITheme.palette.success.main,
 		wickDownColor: MaterialUITheme.palette.error.main,
 	});
+}
+
+
+export const transformCandlesInCandlesticks = (candles: number[][]): CandlestickData[] => {
+	if (!candles || !Array.isArray(candles)) {
+		return [];
+	}
+
+	const formattedCandles = candles.map((candle, index) => {
+		if (index === 0) {
+			return {
+				time: Number(candle[0]) as UTCTimestamp,
+				open: Number(candle[1]),
+				close: Number(candle[2]),
+				high: Number(candle[3]),
+				low: Number(candle[4]),
+				volume: Number(candle[5]),
+			}
+		}
+
+		const lastCandle = {
+			open: Number(candles[index - 1][1]),
+			close: Number(candles[index - 1][2]),
+			high: Number(candles[index - 1][3]),
+			low: Number(candles[index - 1][4]),
+		};
+
+		const newCandle = {
+			open: Number(candle[1]),
+			close: Number(candle[2]),
+			high: Number(candle[3]),
+			low: Number(candle[4]),
+		};
+
+		if (JSON.stringify(newCandle) === JSON.stringify(lastCandle)) {
+			return;
+		}
+
+		return {
+			time: Number(candle[0]) as UTCTimestamp,
+			open: Number(candle[1]),
+			close: Number(candle[2]),
+			high: Number(candle[3]),
+			low: Number(candle[4]),
+			volume: Number(candle[5]),
+		};
+
+	}).filter(candle => candle !== undefined);
+
+	return formattedCandles;
 }
