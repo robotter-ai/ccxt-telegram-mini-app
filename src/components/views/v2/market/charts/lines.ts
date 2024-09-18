@@ -3,7 +3,8 @@ import {
 	createChart,
 	IChartApi,
 	LastPriceAnimationMode,
-	LineStyle
+	LineStyle,
+	UTCTimestamp
 } from 'lightweight-charts';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 
@@ -75,4 +76,22 @@ export const linesSeriesConfig = (
 			minMove: 0.1 ** valueMinMove,
 		},
 	});
+}
+
+export const transformCandlesInLines = (candles: number[][]) => {
+	if (!candles || !Array.isArray(candles)) {
+		return [];
+	}
+
+	const formattedLines = candles.map((candle, index) => {
+		const isLastCandle = index === candles.length - 1;
+
+		return {
+			time: Number(candle[0]) as UTCTimestamp,
+			value: Number(candle[4]), // "low" or candle[2] "close"?
+			...(isLastCandle && { volume: Number(candle[5]) }),
+		};
+	});
+
+	return formattedLines;
 }
