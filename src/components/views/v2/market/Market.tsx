@@ -12,8 +12,7 @@ import {
 	IChartApi,
 	LastPriceAnimationMode,
 	LineData,
-	LineStyle,
-	UTCTimestamp
+	LineStyle
 } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -26,8 +25,8 @@ import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
-import { candlesChartConfig, candlesSeriesConfig } from './charts/candles';
-import { linesChartConfig, linesSeriesConfig } from './charts/lines';
+import { candlesChartConfig, candlesSeriesConfig, transformCandlesInCandlesticks } from './charts/candles';
+import { linesChartConfig, linesSeriesConfig, transformCandlesInLines } from './charts/lines';
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -193,13 +192,29 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	async initialize() {
 		const payload = await this.fetchOhlcvData(this.marketId);
 
-		const lines = this.transformCandlesInLines(payload);
+		const lines = transformCandlesInLines(payload);
+		if (lines.length) {
+			const lastCandle = lines[lines.length - 1];
 
-		const lastMarketPrecision = lines[lines.length - 1]?.value?.toString().split('.')[1]?.length || 0
-		const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
+			this.setState({
+				price: formatPrice(lastCandle.value, this.marketPrecision),
+				volume: lastCandle.volume ? lastCandle.volume : null,
+			});
 
-		this.createMarketChart(setLastMarketPrecision, lines);
-		this.createMarketBook(setLastMarketPrecision, lines);
+			const lastMarketPrecision = lastCandle?.value?.toString().split('.')[1]?.length || 0
+			const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
+
+			this.createMarketChart(setLastMarketPrecision, lines);
+			this.createMarketBook(setLastMarketPrecision, lines);
+		}
+
+		// const payload = await this.fetchOhlcvData(this.marketId);
+
+		// const candles = transformCandlesInCandlesticks(payload);
+		// if (candles.length) {
+		// 	this.createMarketCandleChart(candles);
+		// }
+
 		this.setState({ isLoading: false });
 	}
 
@@ -422,7 +437,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
-	createMarketCandleChart(candles: CandlestickData[]){
+	createMarketCandleChart(candles: CandlestickData[]) {
 		try {
 			if (!this.chartReference.current) {
 				console.warn('The chart reference has not been found');
@@ -438,81 +453,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		} catch (exception) {
 			console.error(`chart: ${exception}`);
 		}
-	}
-
-	transformCandlesInLines(candles: number[][]): LineData[] {
-		if (!candles || !Array.isArray(candles)) {
-			return [];
-		}
-
-		const formattedLines = candles.map((candle, index) => {
-			const isLastCandle = index === candles.length - 1;
-
-			return {
-				time: Number(candle[0]) as UTCTimestamp,
-				value: Number(candle[4]), // "low" or candle[2] "close"?
-				...(isLastCandle && { volume: Number(candle[5]) }),
-			};
-		});
-
-		if (formattedLines.length) {
-			const lastCandle = formattedLines[formattedLines.length - 1];
-			this.setState({
-				price: formatPrice(lastCandle.value, this.marketPrecision),
-				volume: lastCandle.volume ? lastCandle.volume : null,
-			});
-		}
-
-		return formattedLines;
-	}
-
-	transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] {
-		if (!candles || !Array.isArray(candles)) {
-			return [];
-		}
-
-		const formattedCandles = candles.map((candle, index) => {
-			if (index === 0) {
-				return {
-					time: Number(candle[0]) as UTCTimestamp,
-					open: Number(candle[1]),
-					close: Number(candle[2]),
-					high: Number(candle[3]),
-					low: Number(candle[4]),
-					volume: Number(candle[5]),
-				}
-			}
-
-			const lastCandle = {
-				open: Number(candles[index - 1][1]),
-				close: Number(candles[index - 1][2]),
-				high: Number(candles[index - 1][3]),
-				low: Number(candles[index - 1][4]),
-			};
-
-			const newCandle = {
-				open: Number(candle[1]),
-				close: Number(candle[2]),
-				high: Number(candle[3]),
-				low: Number(candle[4]),
-			};
-
-			if (JSON.stringify(newCandle) === JSON.stringify(lastCandle)) {
-				return;
-			}
-
-			return {
-				time: Number(candle[0]) as UTCTimestamp,
-				open: Number(candle[1]),
-				close: Number(candle[2]),
-				high: Number(candle[3]),
-				low: Number(candle[4]),
-				volume: Number(candle[5]),
-			};
-
-		}).filter(candle => candle !== undefined);
-
-		return formattedCandles;
 	}
 
 	handleChartResize = () => {
