@@ -23,7 +23,8 @@ const map = new Map({
 		},
 		market: {
 			id: null,
-			candles: []
+			candles: [],
+			orderBook: {}
 		},
 		rewards: {},
 	},
