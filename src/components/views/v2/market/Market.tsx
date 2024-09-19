@@ -6,13 +6,13 @@ import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
 import {
-	CandlestickData,
 	ColorType,
 	createChart,
 	IChartApi,
 	LastPriceAnimationMode,
 	LineData,
-	LineStyle
+	LineStyle,
+	UTCTimestamp
 } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
@@ -25,8 +25,8 @@ import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
-import { candlesChartConfig, candlesSeriesConfig, transformCandlesInCandlesticks } from './charts/candles';
-import { linesChartConfig, linesSeriesConfig, transformCandlesInLines } from './charts/lines';
+import CandleChart from './CandleChart';
+import LineChart from './LineChart';
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -35,10 +35,11 @@ interface MarketProps extends BaseProps {
 interface MarketState extends BaseState {
 	isLoading: boolean;
 	error?: string;
-	price: string | number | null;
+	price: number | null;
 	volume: number | null;
 	priceChartMode: 'CANDLE' | 'LINE';
 	chartType: 'CHART' | 'BOOK';
+	chartProps: any;
 }
 
 const ChartTypeToggleContainer = styled(Box)({
@@ -93,8 +94,6 @@ const ChartDetailItem = styled(Box, {
 	},
 }));
 
-// @ts-ignore
-// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -124,6 +123,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			volume: null,
 			priceChartMode: 'LINE',
 			chartType: 'CHART',
+			chartProps: {},
 		} as Readonly<MarketState>;
 
 		this.marketId = this.props.queryParams.get('marketId');
@@ -149,7 +149,14 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	render() {
-		const { isLoading, price, volume, chartType } = this.state;
+		const {
+			isLoading,
+			price,
+			volume,
+			chartType,
+			priceChartMode,
+			chartProps,
+		} = this.state;
 
 		const chartTypeButtons = [
 			{
@@ -165,11 +172,13 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		return (
 			<Container>
 				{isLoading && <Spinner />}
+
 				<ChartTypeToggleContainer>
 					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0} />
 				</ChartTypeToggleContainer>
 
-				<ChartContainer id="chart" ref={this.chartReference} hidden={chartType === 'BOOK'} />
+				{priceChartMode === 'LINE' && <LineChart {...chartProps} hidden={chartType === 'BOOK'} />}
+				{priceChartMode === 'CANDLE' && <CandleChart {...chartProps} isHidden={chartType === 'BOOK'} />}
 				<ChartContainer id='book' ref={this.bookReference} hidden={chartType === 'CHART'} />
 
 				<ChartDetails>
@@ -179,7 +188,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					</ChartDetailItem>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
 						<SubTitle>PRICE</SubTitle>
-						<Box>{price ?? '-'}</Box>
+						<Box>{price ? formatPrice(price, this.marketPrecision) : '-'}</Box>
 					</ChartDetailItem>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
 						<SubTitle>24H VOL ({this.market.base})</SubTitle>
@@ -194,69 +203,73 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	async initialize() {
-		if (this.state.priceChartMode == 'LINE') {
-			const payload = await this.fetchOhlcvData(this.marketId);
+		const candles = await this.fetchOhlcvData(this.marketId);
 
-			const lines = transformCandlesInLines(payload);
-			if (lines.length) {
-				const lastCandle = lines[lines.length - 1];
+		if (candles.length) {
+			const lastCandle = candles[candles.length - 1];
 
-				this.setState({
-					price: formatPrice(lastCandle.value, this.marketPrecision),
-					volume: lastCandle.volume ? lastCandle.volume : null,
-				});
+			const price = lastCandle[4];
+			const volume = lastCandle[5];
 
-				const lastMarketPrecision = lastCandle?.value?.toString()
-					.split('.')[1]?.length || 0
-				const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
+			const lastMarketPrecision = price.toString().split('.')[1]?.length || 0
+			const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
-				this.createMarketChart(setLastMarketPrecision, lines);
-				this.createMarketBook(setLastMarketPrecision, lines);
-			}
-		} else if (this.state.priceChartMode == 'CANDLE') {
-			const payload = await this.fetchOhlcvData(this.marketId);
+			this.setState({
+				price: price ? price : null,
+				volume: volume ? volume : null,
+				chartProps: {
+					candles,
+					precision: setLastMarketPrecision,
+					minMove: 10,
+				},
+			});
 
-			const candles = transformCandlesInCandlesticks(payload);
-			if (candles.length) {
-				this.createMarketCandleChart(candles);
-			}
-		} else {
-			throw new Error(`Invalid chart type: "${this.state.priceChartMode}".`);
+			this.createMarketBook(setLastMarketPrecision, this.transformCandlesInLines(candles));
 		}
 
 		this.setState({ isLoading: false });
 	}
 
 	async doRecurrently() {
-		try {
-			const recurrentFunction = async () => {
-				// const close = Number((Math.random() * (100000 - 10) + 10).toFixed(this.precision));
-				const { timestamp, close } = await this.fetchTickerData(this.marketId);
+		const recurrentFunction = async () => {
+			// const { close, high, info, low, open, timestamp } = generateMarketMockData(this.marketPrecision);
+			const { close, high, info, low, open, timestamp } = await this.fetchTickerData(this.marketId);
 
-				if (this.chartSeries) {
-					const currentSeries = this.chartSeries.dataByIndex(this.chartSeries.data().length - 1);
-
-					if (currentSeries?.value !== close && close !== null) {
-						this.chartSeries.update({
-							time: timestamp / 1000,
+			const { priceChartMode } = this.state;
+			if (priceChartMode === 'LINE') {
+				this.setState(prevState => ({
+					price: close,
+					chartProps: {
+						...prevState.chartProps,
+						candle: {
+							time: timestamp,
 							value: close,
-						});
+						},
+					},
+				}))
+			} else if (priceChartMode === 'CANDLE') {
+				this.setState(prevState => ({
+					price: close,
+					chartProps: {
+						...prevState.chartProps,
+						candle: {
+							time: timestamp ?? info.timestamp,
+							open: open ?? info.open,
+							close: close ?? info.last_price,
+							high: high ?? info.high,
+							low: low ?? info.low,
+						},
+					},
+				}));
+			} else {
+				throw new Error(`Invalid chart type: "${this.state.priceChartMode}".`);
+			}
+		};
 
-						const formattedPrice = formatPrice(close, this.marketPrecision);
-						this.setState({ price: formattedPrice });
-
-						return;
-					}
-				}
-			};
-
-			this.properties.setIn(
-				'recurrent.5s.intervalId',
-				executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
-			);
-		} catch (exception) {
-			console.error(`chart: ${exception}`);
-		}
+		this.properties.setIn(
+			'recurrent.5s.intervalId',
+			executeAndSetInterval(recurrentFunction, this.properties.getIn<number>('recurrent.5s.delay'))
+		);
 	}
 
 	async fetchOhlcvData(marketId: string): Promise<any> {
@@ -342,29 +355,6 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
-	createMarketChart(precision: number, lines: LineData[]) {
-		try {
-			if (!this.chartReference.current) {
-				console.warn('The chart reference has not been found');
-				return;
-			}
-
-			this.chart = linesChartConfig(this.chartReference.current);
-
-			const valueMinMove = 10;
-			this.chartSeries = linesSeriesConfig(this.chart, precision, valueMinMove);
-
-			window.addEventListener('resize', this.handleChartResize);
-
-			this.chartSeries.setData(lines);
-
-			this.chart.timeScale().fitContent();
-			this.chart.timeScale().scrollToRealTime();
-		} catch (exception) {
-			console.error(`chart: ${exception}`);
-		}
-	}
-
 	createMarketBook(precision: number, lines: LineData[]) {
 		try {
 			if (!this.bookReference.current) {
@@ -446,22 +436,22 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
-	createMarketCandleChart(candles: CandlestickData[]) {
-		try {
-			if (!this.chartReference.current) {
-				console.warn('The chart reference has not been found');
-				return;
-			}
-
-			this.chart = candlesChartConfig(this.chartReference.current);
-			this.chartSeries = candlesSeriesConfig(this.chart);
-
-
-			this.chartSeries.setData(candles);
-			this.chart.timeScale().fitContent();
-		} catch (exception) {
-			console.error(`chart: ${exception}`);
+	transformCandlesInLines(candles: number[][]) {
+		if (!candles || !Array.isArray(candles)) {
+			return [];
 		}
+
+		const formattedLines = candles.map((candle, index) => {
+			const isLastCandle = index === candles.length - 1;
+
+			return {
+				time: Number(candle[0]) as UTCTimestamp,
+				value: Number(candle[4]),
+				...(isLastCandle && { volume: Number(candle[5]) }),
+			};
+		});
+
+		return formattedLines;
 	}
 
 	handleChartResize = () => {
