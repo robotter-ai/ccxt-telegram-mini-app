@@ -33,7 +33,7 @@ const WhereToGetIt: React.FC = () => {
 						How to Get Your API Credentials
 					</Typography>
 					<Typography variant="body1" paragraph>
-						Follow these steps to get your API Key, API Secret Key, and Sub Account ID:
+						Follow these steps to get your API Key, API Secret, and Sub Account ID:
 					</Typography>
 					<ol style={{ paddingLeft: '20px', margin: 0 }}>
 						<li>
@@ -43,12 +43,12 @@ const WhereToGetIt: React.FC = () => {
 						</li>
 						<li>
 							<Typography variant="body2" paragraph>
-								2. Click on your avatar and navigate to "Settings".
+								2. Click on the avatar that corresponds to the previously obtained subaccount ID and navigate to "Settings".
 							</Typography>
 						</li>
 						<li>
 							<Typography variant="body2" paragraph>
-								3. In the "Subaccounts" tab, locate your SubAccount ID. It's the number enclosed in parentheses.
+								3. In the 'Subaccounts' tab, locate your SubAccount ID (the number enclosed in parentheses) and copy the generated keys (API Key and API Secret).
 							</Typography>
 						</li>
 						<li>
