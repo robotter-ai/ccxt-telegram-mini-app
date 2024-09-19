@@ -27,9 +27,11 @@ import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
+import MarketBook from "components/views/v2/market/MarketBook.tsx";
 
 interface MarketProps extends BaseProps {
 	markets: any;
+	height?: string | number;
 }
 
 interface MarketState extends BaseState {
@@ -145,7 +147,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 		}
 
-		window.removeEventListener('resize', this.handleChartResize);
+		// window.removeEventListener('resize', this.handleChartResize);
 	}
 
 	render() {
@@ -177,9 +179,14 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0} />
 				</ChartTypeToggleContainer>
 
-				{priceChartMode === 'LINE' && <LineChart {...chartProps} hidden={chartType === 'BOOK'} />}
-				{priceChartMode === 'CANDLE' && <CandleChart {...chartProps} isHidden={chartType === 'BOOK'} />}
-				<ChartContainer id='book' ref={this.bookReference} hidden={chartType === 'CHART'} />
+				<ChartContainer hidden={chartType !== 'CHART'}>
+					{priceChartMode === 'LINE' && <LineChart {...chartProps} />}
+					{priceChartMode === 'CANDLE' && <CandleChart {...chartProps} />}
+				</ChartContainer>
+
+				<ChartContainer hidden={chartType !== 'BOOK'}>
+					<MarketBook marketId={this.marketId} height="100%" />
+				</ChartContainer>
 
 				<ChartDetails>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
@@ -224,7 +231,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				},
 			});
 
-			this.createMarketBook(setLastMarketPrecision, this.transformCandlesInLines(candles));
+			// this.createMarketBook(setLastMarketPrecision, this.transformCandlesInLines(candles));
 		}
 
 		this.setState({ isLoading: false });
@@ -355,86 +362,86 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
-	createMarketBook(precision: number, lines: LineData[]) {
-		try {
-			if (!this.bookReference.current) {
-				console.warn('The chart reference has not been found');
-				return;
-			}
-
-			this.book = createChart(this.bookReference.current, {
-				autoSize: true,
-				layout: {
-					background: {
-						type: ColorType.Solid,
-						color: MaterialUITheme.palette.background.default,
-					},
-					textColor: MaterialUITheme.palette.text.primary,
-					fontSize: 11,
-				},
-				grid: {
-					vertLines: {
-						visible: false,
-					},
-					horzLines: {
-						visible: false,
-					},
-				},
-				timeScale: {
-					visible: true,
-					borderVisible: true,
-					timeVisible: true,
-					borderColor: MaterialUITheme.palette.text.secondary,
-					secondsVisible: true,
-					fixLeftEdge: true,
-					fixRightEdge: true,
-				},
-				rightPriceScale: {
-					visible: true,
-					borderVisible: true,
-					alignLabels: true,
-					borderColor: MaterialUITheme.palette.text.secondary,
-					autoScale: true,
-					scaleMargins: {
-						top: 0.1,
-						bottom: 0.1,
-					},
-				},
-				leftPriceScale: {
-					visible: false,
-				},
-				handleScale: false,
-				handleScroll: false,
-			});
-
-			const valueMinMove = 10;
-			this.chartSeries = this.book.addLineSeries({
-				color: MaterialUITheme.palette.error.main,
-				lineWidth: 1,
-				priceLineWidth: 1,
-				priceLineVisible: true,
-				lastValueVisible: true,
-				lineStyle: LineStyle.Solid,
-				priceLineStyle: LineStyle.Dashed,
-				priceLineColor: MaterialUITheme.palette.error.main,
-				lastPriceAnimation: LastPriceAnimationMode.Continuous,
-				priceFormat: {
-					type: 'custom',
-					formatter: (price: number) => price.toFixed(precision),
-					minMove: 0.1 ** valueMinMove,
-				},
-			});
-
-			window.addEventListener('resize', this.handleChartResize);
-
-			this.chartSeries.setData(lines);
-
-			this.book.timeScale().fitContent();
-			this.book.timeScale().scrollToRealTime();
-		} catch (exception) {
-			console.error(`chart: ${exception}`);
-		}
-	}
+	// createMarketBook(precision: number, lines: LineData[]) {
+	// 	try {
+	// 		if (!this.bookReference.current) {
+	// 			console.warn('The chart reference has not been found');
+	// 			return;
+	// 		}
+	//
+	// 		this.book = createChart(this.bookReference.current, {
+	// 			autoSize: true,
+	// 			layout: {
+	// 				background: {
+	// 					type: ColorType.Solid,
+	// 					color: MaterialUITheme.palette.background.default,
+	// 				},
+	// 				textColor: MaterialUITheme.palette.text.primary,
+	// 				fontSize: 11,
+	// 			},
+	// 			grid: {
+	// 				vertLines: {
+	// 					visible: false,
+	// 				},
+	// 				horzLines: {
+	// 					visible: false,
+	// 				},
+	// 			},
+	// 			timeScale: {
+	// 				visible: true,
+	// 				borderVisible: true,
+	// 				timeVisible: true,
+	// 				borderColor: MaterialUITheme.palette.text.secondary,
+	// 				secondsVisible: true,
+	// 				fixLeftEdge: true,
+	// 				fixRightEdge: true,
+	// 			},
+	// 			rightPriceScale: {
+	// 				visible: true,
+	// 				borderVisible: true,
+	// 				alignLabels: true,
+	// 				borderColor: MaterialUITheme.palette.text.secondary,
+	// 				autoScale: true,
+	// 				scaleMargins: {
+	// 					top: 0.1,
+	// 					bottom: 0.1,
+	// 				},
+	// 			},
+	// 			leftPriceScale: {
+	// 				visible: false,
+	// 			},
+	// 			handleScale: false,
+	// 			handleScroll: false,
+	// 		});
+	//
+	// 		const valueMinMove = 10;
+	// 		this.chartSeries = this.book.addLineSeries({
+	// 			color: MaterialUITheme.palette.error.main,
+	// 			lineWidth: 1,
+	// 			priceLineWidth: 1,
+	// 			priceLineVisible: true,
+	// 			lastValueVisible: true,
+	// 			lineStyle: LineStyle.Solid,
+	// 			priceLineStyle: LineStyle.Dashed,
+	// 			priceLineColor: MaterialUITheme.palette.error.main,
+	// 			lastPriceAnimation: LastPriceAnimationMode.Continuous,
+	// 			priceFormat: {
+	// 				type: 'custom',
+	// 				formatter: (price: number) => price.toFixed(precision),
+	// 				minMove: 0.1 ** valueMinMove,
+	// 			},
+	// 		});
+	//
+	// 		window.addEventListener('resize', this.handleChartResize);
+	//
+	// 		this.chartSeries.setData(lines);
+	//
+	// 		this.book.timeScale().fitContent();
+	// 		this.book.timeScale().scrollToRealTime();
+	// 	} catch (exception) {
+	// 		console.error(`chart: ${exception}`);
+	// 	}
+	// }
 
 	transformCandlesInLines(candles: number[][]) {
 		if (!candles || !Array.isArray(candles)) {
