@@ -1,19 +1,17 @@
 import { Box, styled } from '@mui/material';
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base';
+import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
 import ButtonGroupToggle from 'components/general/ButtonGroupToggle';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
 import { IChartApi, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
-import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { createRef } from 'react';
 import { connect } from 'react-redux';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
@@ -21,12 +19,14 @@ import LineChart from './LineChart';
 import MarketBook from 'components/views/v2/market/MarketBook';
 import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
 
-interface MarketProps extends BaseProps {
+interface Props extends BaseProps {
 	markets: any;
 	height?: string | number;
+	updateMarketCandles: (data: any) => void;
+	updateMarketOrderBook: (data: any) => void;
 }
 
-interface MarketState extends BaseState {
+interface State extends BaseState {
 	isLoading: boolean;
 	error?: string;
 	price: number | null;
@@ -91,11 +91,24 @@ const ChartDetailItem = styled(Box, {
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
+const mapStateToProps = (state: State | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
+	ohlcvCandles: state.api.market.candles,
+	orderBook: state.api.market.orderBook,
 });
 
-class MarketStructure extends Base<MarketProps, MarketState> {
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+const mapDispatchToProps = (reduxDispatch: any) => ({
+	updateMarketCandles(data: any) {
+		dispatch('api.updateMarketCandles', data);
+	},
+	updateMarketOrderBook(data: any) {
+		dispatch('api.updateMarketOrderBook', data);
+	},
+});
+
+class Structure extends Base<Props, State> {
 	properties: Map = new Map();
 
 	market: any;
@@ -110,7 +123,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	chartReference = createRef<HTMLDivElement>();
 	bookReference = createRef<HTMLDivElement>();
 
-	constructor(props: MarketProps) {
+	constructor(props: Props) {
 		super(props);
 
 		this.state = {
@@ -122,7 +135,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			priceChartMode: 'LINE',
 			priceChartGranularity: '1h',
 			chartProps: {},
-		} as Readonly<MarketState>;
+		} as Readonly<State>;
 
 		this.marketId = this.props.queryParams.get('marketId');
 		this.market = this.props.markets.find((market: any) => market.id === this.marketId);
@@ -301,7 +314,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				}
 			}
 
-			dispatch('api.updateMarketCandles', response.data.result);
+			this.props.updateMarketCandles(response.data.result);
 
 			return response.data.result;
 		} catch (exception) {
@@ -472,22 +485,12 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 }
 
-const MarketBehavior = (props: any) => {
-	const handleUnAuthorized = useHandleUnauthorized();
-	const location = useLocation();
-	const queryParams = new URLSearchParams(location.search);
-	const params = useParams();
-	const [searchParams] = useSearchParams();
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled(Structure)(({ theme }) => `
+	background-color: green;
+`);
 
-	return (
-		<MarketStructure
-			{...props}
-			queryParams={queryParams}
-			params={params}
-			searchParams={searchParams}
-			handleUnAuthorized={handleUnAuthorized}
-		/>
-	);
-};
+const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));
 
-export const Market = connect(mapStateToProps)(MarketBehavior);
+export const Market = Behavior;
