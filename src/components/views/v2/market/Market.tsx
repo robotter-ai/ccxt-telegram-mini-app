@@ -5,21 +5,12 @@ import ButtonGroupToggle from 'components/general/ButtonGroupToggle';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
-import {
-	ColorType,
-	createChart,
-	IChartApi,
-	LastPriceAnimationMode,
-	LineData,
-	LineStyle,
-	UTCTimestamp
-} from 'lightweight-charts';
+import { IChartApi, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
-import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
@@ -27,7 +18,8 @@ import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
-import MarketBook from "components/views/v2/market/MarketBook.tsx";
+import MarketBook from 'components/views/v2/market/MarketBook';
+import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
 
 interface MarketProps extends BaseProps {
 	markets: any;
@@ -39,9 +31,10 @@ interface MarketState extends BaseState {
 	error?: string;
 	price: number | null;
 	volume: number | null;
-	priceChartMode: 'CANDLE' | 'LINE';
 	chartType: 'CHART' | 'BOOK';
 	chartProps: any;
+	priceChartMode: 'CANDLE' | 'LINE';
+	priceChartGranularity: string;
 }
 
 const ChartTypeToggleContainer = styled(Box)({
@@ -96,6 +89,8 @@ const ChartDetailItem = styled(Box, {
 	},
 }));
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -123,8 +118,9 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			error: undefined,
 			price: null,
 			volume: null,
-			priceChartMode: 'LINE',
 			chartType: 'CHART',
+			priceChartMode: 'LINE',
+			priceChartGranularity: '1h',
 			chartProps: {},
 		} as Readonly<MarketState>;
 
@@ -135,6 +131,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
+
+		this.properties.setIn('chart.defaultGranularity', '1h');
 	}
 
 	async componentDidMount() {
@@ -178,6 +176,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				<ChartTypeToggleContainer>
 					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0} />
 				</ChartTypeToggleContainer>
+				<TimeSwitch defaultGranularity={this.properties.getIn('chart.defaultGranularity')} onGranularityChange={this.onChartGranularityChange} />
 
 				<ChartContainer hidden={chartType !== 'CHART'}>
 					{priceChartMode === 'LINE' && <LineChart {...chartProps} />}
@@ -284,7 +283,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			const response = await apiGetFetchOHLCV(
 				{
 					symbol: marketId,
-					timeframe: '1h',
+					timeframe: this.state.priceChartGranularity,
 				},
 				this.props.handleUnAuthorized
 			);
@@ -466,6 +465,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			this.chart!.applyOptions({ width: this.chartReference.current.clientWidth });
 		}
 	};
+
+	onChartGranularityChange = async (time: string) => {
+		await this.setState({ priceChartGranularity: time });
+		await this.initialize();
+	}
 }
 
 const MarketBehavior = (props: any) => {
