@@ -24,7 +24,10 @@ const map = new Map({
 		market: {
 			id: null,
 			candles: [],
-			orderBook: {}
+			orderBook: {
+				raw: {},
+				chart: {}
+			}
 		},
 		rewards: {},
 	},

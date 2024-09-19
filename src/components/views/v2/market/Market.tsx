@@ -16,7 +16,7 @@ import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
-import MarketBook from 'components/views/v2/market/MarketBook';
+import { BookChart } from 'components/views/v2/market/BookChart.tsx';
 import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
 
 interface Props extends BaseProps {
@@ -201,7 +201,7 @@ class Structure extends Base<Props, State> {
 				</ChartContainer>
 
 				<ChartContainer hidden={chartType !== 'BOOK'}>
-					<MarketBook marketId={this.marketId} height="100%" />
+					<BookChart marketId={this.marketId} height="100%" />
 				</ChartContainer>
 
 				<ChartDetails>
@@ -538,7 +538,6 @@ class Structure extends Base<Props, State> {
 	}
 
 	processOrderBookData = (data: any) => {
-		console.log(data);
 		this.props.updateMarketOrderBookChartData(data);
 	}
 }

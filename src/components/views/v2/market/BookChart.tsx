@@ -1,30 +1,15 @@
 import { Box, styled, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { apiGetFetchOrderBook } from 'model/service/api';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import { formatPrice } from 'components/views/v2/utils/utils.tsx';
-
-interface MarketBookProps {
-	marketId: string;
-	height?: string | number;
-}
-
-interface OrderBookData {
-	symbol: string;
-	bids: [string, string][];
-	asks: [string, string][];
-	timestamp: number;
-	datetime: string;
-	nonce: null;
-}
+import { connect } from 'react-redux';
+import { withHooks } from 'components/base/Base.tsx';
 
 interface TableContainerProps {
-	$height?: string | number;
+	height?: string | number;
 }
 
 const TableContainer = styled(Box)<TableContainerProps>`
   width: 100%;
-  height: ${props => props.$height || '400px'};
+  height: ${props => props.height || '400px'};
   overflow-y: auto;
   padding: 10px;
 `;
@@ -52,32 +37,28 @@ const RedText = styled(Typography)({
 	fontSize: '12px',
 });
 
-const MarketBook = ({ marketId, height }: MarketBookProps) => {
-const [orderBookData, setOrderBookData] = useState<OrderBookData | null>(null);
+interface Props {
+	marketId: string;
+	orderBook: any;
+	height?: string | number;
+}
 
-	useEffect(() => {
-		const fetchOrderBookData = async () => {
-			try {
-				const response = await apiGetFetchOrderBook({ symbol: marketId });
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const mapStateToProps = (state: State | any, props: Props | any) => ({
+	orderBook: state.api.market.orderBook.chart,
+});
 
-				if (response.status !== 200) {
-					throw new Error(response.data?.title || 'Failed to fetch order book data');
-				}
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
+const mapDispatchToProps = (reduxDispatch: any) => ({
+});
 
-				setOrderBookData(response.data.result);
-			} catch (exception) {
-				console.error(exception);
-				toast.error('An error has occurred while fetching order book data');
-			}
-		};
-
-		fetchOrderBookData();
-	}, [marketId]);
-
+const Structure = ({ orderBook, height }: Props) => {
 	const renderTable = () => {
-		if (!orderBookData) return null;
+		if (!orderBook) return null;
 
-		const maxRows = Math.max(orderBookData.bids.length, orderBookData.asks.length);
+		const maxRows = Math.max(orderBook.bids.length, orderBook.asks.length);
 
 		return (
 			<StyledTable>
@@ -91,8 +72,8 @@ const [orderBookData, setOrderBookData] = useState<OrderBookData | null>(null);
 				</TableHead>
 				<TableBody>
 					{Array.from({ length: maxRows }).map((_, index) => {
-						const bid = orderBookData.bids[index];
-						const ask = orderBookData.asks[index];
+						const bid = orderBook.bids[index];
+						const ask = orderBook.asks[index];
 
 						return (
 							<TableRow key={index}>
@@ -113,10 +94,17 @@ const [orderBookData, setOrderBookData] = useState<OrderBookData | null>(null);
 	};
 
 	return (
-		<TableContainer $height={height}>
-			{orderBookData ? renderTable() : <p>Loading order book data...</p>}
+		<TableContainer height={height}>
+			{orderBook ? renderTable() : <p>Loading order book data...</p>}
 		</TableContainer>
 	);
 };
 
-export default MarketBook;
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
+const Style = styled(Structure)(({ theme }) => `
+`);
+
+const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));
+
+export const BookChart = Behavior;
