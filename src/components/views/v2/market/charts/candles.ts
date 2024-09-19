@@ -1,9 +1,4 @@
-import {
-	CandlestickData,
-	createChart,
-	IChartApi,
-	UTCTimestamp
-} from 'lightweight-charts';
+import { CandlestickData, createChart, IChartApi, UTCTimestamp } from 'lightweight-charts';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 
 export const candlesChartConfig = (chartReference: HTMLDivElement) => {
@@ -37,7 +32,7 @@ export const candlesSeriesConfig = (chart: IChartApi) => {
 
 export const transformCandlesInCandlesticks = (candles: number[][]): CandlestickData[] => {
 	if (!candles || !Array.isArray(candles)) {
-		return [];
+		return [] as CandlestickData[];
 	}
 
 	const formattedCandles = candles.map((candle, index) => {
@@ -49,7 +44,7 @@ export const transformCandlesInCandlesticks = (candles: number[][]): Candlestick
 				low: Number(candle[3]),
 				close: Number(candle[4]),
 				volume: Number(candle[5]),
-			}
+			} as CandlestickData;
 		}
 
 		const lastCandle = {
@@ -77,9 +72,9 @@ export const transformCandlesInCandlesticks = (candles: number[][]): Candlestick
 			low: Number(candle[3]),
 			close: Number(candle[4]),
 			volume: Number(candle[5]),
-		};
+		} as CandlestickData;
 
 	}).filter(candle => candle !== undefined);
 
-	return formattedCandles;
+	return formattedCandles as CandlestickData[];
 }
