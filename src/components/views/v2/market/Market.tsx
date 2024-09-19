@@ -255,7 +255,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			const response = await apiGetFetchOHLCV(
 				{
 					symbol: marketId,
-					timeframe: '1s',
+					timeframe: '1h',
 				},
 				this.props.handleUnAuthorized
 			);
