@@ -6,6 +6,7 @@ import { Spinner } from 'components/views/v1/spinner/Spinner';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Constant } from 'model/enum/constant';
+import { formatPriceAmount} from "components/views/v2/utils/utils";
 
 interface Props extends BaseProps {
 	currenciesBySymbols: any;
@@ -130,7 +131,7 @@ class Structure extends Base<Props, State> {
 			: 0;
 
 		return (
-			<div className="flex flex-col h-full px-4 md:px-8">
+			<div className="flex flex-col h-full px-3 md:px-8">
 				<div className="flex-grow overflow-scroll">
 					<div className="mb-4 ml-4 text-left">
 						<div style={{ fontFamily: '"GT America Light", sans-serif' }} className="text-left text-sm font-extralight text-neutral-400">
@@ -191,7 +192,7 @@ class Structure extends Base<Props, State> {
 												<div className="flex flex-col items-end">
 													<span className="text-lg leading-none">{`$${usdAmount.toFixed(2)}`}</span>
 													<div className="flex items-center">
-														<span className="text-xs text-gray-400 mr-2">{`${amount.toFixed(2)}`}</span>
+														<span className="text-xs text-gray-400 mr-2">{formatPriceAmount(amount)}</span>
 														<span className="text-xs text-gray-400">{name}</span>
 													</div>
 												</div>
