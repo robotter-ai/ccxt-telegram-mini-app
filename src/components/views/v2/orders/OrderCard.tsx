@@ -38,11 +38,12 @@ const StyledModal = styled(Modal)(({theme}) => ({
 }));
 
 const StyledModalContent = styled(Box)(({theme}) => ({
-	backgroundColor: theme.palette.background.paper,
 	width: '100%',
 	height: '360px',
+	border: '1px solid red',
 	borderTopLeftRadius: '16px',
 	borderTopRightRadius: '16px',
+	backgroundColor: theme.palette.background.paper,
 }));
 
 const StyledModalTitle = styled(Typography)(({theme}) => ({
