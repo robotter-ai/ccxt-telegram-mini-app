@@ -40,6 +40,7 @@ const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
 interface TextInputProps {
 	label: string;
 	value: string;
+	placeholder?: string;
 	icon?: React.ReactNode;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -66,7 +67,7 @@ const FocusableIcon: React.FC<{ icon: React.ReactNode }> = ({ icon }) => {
 	);
 };
 
-const TextInput: React.FC<TextInputProps> = ({ label, value, icon, onChange }) => {
+const TextInput: React.FC<TextInputProps> = ({placeholder, label, value, icon, onChange }) => {
 	const inputLabelRef = useRef<HTMLLabelElement>(null);
 
 	const handleFocus = () => {
@@ -86,6 +87,7 @@ const TextInput: React.FC<TextInputProps> = ({ label, value, icon, onChange }) =
 			<StyledInputLabel ref={inputLabelRef} shrink={true}>{label}</StyledInputLabel>
 			<StyledTextField
 				variant="outlined"
+				placeholder={placeholder}
 				value={value}
 				onChange={onChange}
 				onFocus={handleFocus}
