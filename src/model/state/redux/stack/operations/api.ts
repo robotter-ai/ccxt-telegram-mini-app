@@ -313,6 +313,26 @@ pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
 	return nextState;
 });
 
+pushStack('api.updateMarketOrderBook', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.market.orderBook',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.market.orderBook', nextState.api.market.orderBook);
+
+	return nextState;
+});
+
 // noinspection JSUnusedLocalSymbols
 pushStack('api.updateRewards', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);

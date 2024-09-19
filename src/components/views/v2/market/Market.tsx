@@ -5,21 +5,12 @@ import ButtonGroupToggle from 'components/general/ButtonGroupToggle';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
-import {
-	ColorType,
-	createChart,
-	IChartApi,
-	LastPriceAnimationMode,
-	LineData,
-	LineStyle,
-	UTCTimestamp
-} from 'lightweight-charts';
+import { IChartApi, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
-import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { createRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
@@ -27,9 +18,12 @@ import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
+import MarketBook from 'components/views/v2/market/MarketBook';
+import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
 
 interface MarketProps extends BaseProps {
 	markets: any;
+	height?: string | number;
 }
 
 interface MarketState extends BaseState {
@@ -37,9 +31,10 @@ interface MarketState extends BaseState {
 	error?: string;
 	price: number | null;
 	volume: number | null;
-	priceChartMode: 'CANDLE' | 'LINE';
 	chartType: 'CHART' | 'BOOK';
 	chartProps: any;
+	priceChartMode: 'CANDLE' | 'LINE';
+	priceChartGranularity: string;
 }
 
 const ChartTypeToggleContainer = styled(Box)({
@@ -94,6 +89,8 @@ const ChartDetailItem = styled(Box, {
 	},
 }));
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -121,8 +118,9 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			error: undefined,
 			price: null,
 			volume: null,
-			priceChartMode: 'LINE',
 			chartType: 'CHART',
+			priceChartMode: 'LINE',
+			priceChartGranularity: '1h',
 			chartProps: {},
 		} as Readonly<MarketState>;
 
@@ -133,6 +131,8 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
 		this.properties.setIn('recurrent.5s.delay', 5 * 1000);
+
+		this.properties.setIn('chart.defaultGranularity', '1h');
 	}
 
 	async componentDidMount() {
@@ -145,7 +145,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
 		}
 
-		window.removeEventListener('resize', this.handleChartResize);
+		// window.removeEventListener('resize', this.handleChartResize);
 	}
 
 	render() {
@@ -176,10 +176,16 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				<ChartTypeToggleContainer>
 					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0} />
 				</ChartTypeToggleContainer>
+				<TimeSwitch defaultGranularity={this.properties.getIn('chart.defaultGranularity')} onGranularityChange={this.onChartGranularityChange} />
 
-				{priceChartMode === 'LINE' && <LineChart {...chartProps} hidden={chartType === 'BOOK'} />}
-				{priceChartMode === 'CANDLE' && <CandleChart {...chartProps} isHidden={chartType === 'BOOK'} />}
-				<ChartContainer id='book' ref={this.bookReference} hidden={chartType === 'CHART'} />
+				<ChartContainer hidden={chartType !== 'CHART'}>
+					{priceChartMode === 'LINE' && <LineChart {...chartProps} />}
+					{priceChartMode === 'CANDLE' && <CandleChart {...chartProps} />}
+				</ChartContainer>
+
+				<ChartContainer hidden={chartType !== 'BOOK'}>
+					<MarketBook marketId={this.marketId} height="100%" />
+				</ChartContainer>
 
 				<ChartDetails>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
@@ -224,7 +230,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 				},
 			});
 
-			this.createMarketBook(setLastMarketPrecision, this.transformCandlesInLines(candles));
+			// this.createMarketBook(setLastMarketPrecision, this.transformCandlesInLines(candles));
 		}
 
 		this.setState({ isLoading: false });
@@ -277,7 +283,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			const response = await apiGetFetchOHLCV(
 				{
 					symbol: marketId,
-					timeframe: '1h',
+					timeframe: this.state.priceChartGranularity,
 				},
 				this.props.handleUnAuthorized
 			);
@@ -355,86 +361,86 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 		}
 	}
 
-	createMarketBook(precision: number, lines: LineData[]) {
-		try {
-			if (!this.bookReference.current) {
-				console.warn('The chart reference has not been found');
-				return;
-			}
-
-			this.book = createChart(this.bookReference.current, {
-				autoSize: true,
-				layout: {
-					background: {
-						type: ColorType.Solid,
-						color: MaterialUITheme.palette.background.default,
-					},
-					textColor: MaterialUITheme.palette.text.primary,
-					fontSize: 11,
-				},
-				grid: {
-					vertLines: {
-						visible: false,
-					},
-					horzLines: {
-						visible: false,
-					},
-				},
-				timeScale: {
-					visible: true,
-					borderVisible: true,
-					timeVisible: true,
-					borderColor: MaterialUITheme.palette.text.secondary,
-					secondsVisible: true,
-					fixLeftEdge: true,
-					fixRightEdge: true,
-				},
-				rightPriceScale: {
-					visible: true,
-					borderVisible: true,
-					alignLabels: true,
-					borderColor: MaterialUITheme.palette.text.secondary,
-					autoScale: true,
-					scaleMargins: {
-						top: 0.1,
-						bottom: 0.1,
-					},
-				},
-				leftPriceScale: {
-					visible: false,
-				},
-				handleScale: false,
-				handleScroll: false,
-			});
-
-			const valueMinMove = 10;
-			this.chartSeries = this.book.addLineSeries({
-				color: MaterialUITheme.palette.error.main,
-				lineWidth: 1,
-				priceLineWidth: 1,
-				priceLineVisible: true,
-				lastValueVisible: true,
-				lineStyle: LineStyle.Solid,
-				priceLineStyle: LineStyle.Dashed,
-				priceLineColor: MaterialUITheme.palette.error.main,
-				lastPriceAnimation: LastPriceAnimationMode.Continuous,
-				priceFormat: {
-					type: 'custom',
-					formatter: (price: number) => price.toFixed(precision),
-					minMove: 0.1 ** valueMinMove,
-				},
-			});
-
-			window.addEventListener('resize', this.handleChartResize);
-
-			this.chartSeries.setData(lines);
-
-			this.book.timeScale().fitContent();
-			this.book.timeScale().scrollToRealTime();
-		} catch (exception) {
-			console.error(`chart: ${exception}`);
-		}
-	}
+	// createMarketBook(precision: number, lines: LineData[]) {
+	// 	try {
+	// 		if (!this.bookReference.current) {
+	// 			console.warn('The chart reference has not been found');
+	// 			return;
+	// 		}
+	//
+	// 		this.book = createChart(this.bookReference.current, {
+	// 			autoSize: true,
+	// 			layout: {
+	// 				background: {
+	// 					type: ColorType.Solid,
+	// 					color: MaterialUITheme.palette.background.default,
+	// 				},
+	// 				textColor: MaterialUITheme.palette.text.primary,
+	// 				fontSize: 11,
+	// 			},
+	// 			grid: {
+	// 				vertLines: {
+	// 					visible: false,
+	// 				},
+	// 				horzLines: {
+	// 					visible: false,
+	// 				},
+	// 			},
+	// 			timeScale: {
+	// 				visible: true,
+	// 				borderVisible: true,
+	// 				timeVisible: true,
+	// 				borderColor: MaterialUITheme.palette.text.secondary,
+	// 				secondsVisible: true,
+	// 				fixLeftEdge: true,
+	// 				fixRightEdge: true,
+	// 			},
+	// 			rightPriceScale: {
+	// 				visible: true,
+	// 				borderVisible: true,
+	// 				alignLabels: true,
+	// 				borderColor: MaterialUITheme.palette.text.secondary,
+	// 				autoScale: true,
+	// 				scaleMargins: {
+	// 					top: 0.1,
+	// 					bottom: 0.1,
+	// 				},
+	// 			},
+	// 			leftPriceScale: {
+	// 				visible: false,
+	// 			},
+	// 			handleScale: false,
+	// 			handleScroll: false,
+	// 		});
+	//
+	// 		const valueMinMove = 10;
+	// 		this.chartSeries = this.book.addLineSeries({
+	// 			color: MaterialUITheme.palette.error.main,
+	// 			lineWidth: 1,
+	// 			priceLineWidth: 1,
+	// 			priceLineVisible: true,
+	// 			lastValueVisible: true,
+	// 			lineStyle: LineStyle.Solid,
+	// 			priceLineStyle: LineStyle.Dashed,
+	// 			priceLineColor: MaterialUITheme.palette.error.main,
+	// 			lastPriceAnimation: LastPriceAnimationMode.Continuous,
+	// 			priceFormat: {
+	// 				type: 'custom',
+	// 				formatter: (price: number) => price.toFixed(precision),
+	// 				minMove: 0.1 ** valueMinMove,
+	// 			},
+	// 		});
+	//
+	// 		window.addEventListener('resize', this.handleChartResize);
+	//
+	// 		this.chartSeries.setData(lines);
+	//
+	// 		this.book.timeScale().fitContent();
+	// 		this.book.timeScale().scrollToRealTime();
+	// 	} catch (exception) {
+	// 		console.error(`chart: ${exception}`);
+	// 	}
+	// }
 
 	transformCandlesInLines(candles: number[][]) {
 		if (!candles || !Array.isArray(candles)) {
@@ -459,6 +465,11 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			this.chart!.applyOptions({ width: this.chartReference.current.clientWidth });
 		}
 	};
+
+	onChartGranularityChange = async (time: string) => {
+		await this.setState({ priceChartGranularity: time });
+		await this.initialize();
+	}
 }
 
 const MarketBehavior = (props: any) => {
