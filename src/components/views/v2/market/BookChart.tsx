@@ -58,7 +58,7 @@ const Structure = ({ orderBook, height }: Props) => {
 	const renderTable = () => {
 		if (!orderBook) return null;
 
-		const maxRows = Math.max(orderBook.bids.length, orderBook.asks.length);
+		const maxRows = Math.max(orderBook.bids?.length, orderBook.asks?.length, 0);
 
 		return (
 			<StyledTable>
