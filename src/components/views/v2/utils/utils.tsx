@@ -106,3 +106,23 @@ export const formatVolume = (value: number) => {
 export const getPrecision = (price: number | string) => {
 	return String(price).replace('$', '').split('.')[1]?.length
 }
+
+export const generateMarketMockData = (marketPrecision: number) => {
+	const generateValue =
+		() => Number((Math.random() * (100000 - 10) + 10).toFixed(marketPrecision));
+
+	return {
+		close: generateValue(),
+		high: generateValue(),
+		low: generateValue(),
+		open: generateValue(),
+		info: {
+			timestamp: Date.now(),
+			open: generateValue(),
+			last_price: generateValue(),
+			high: generateValue(),
+			low: generateValue(),
+		},
+		timestamp: Date.now(),
+	};
+}
