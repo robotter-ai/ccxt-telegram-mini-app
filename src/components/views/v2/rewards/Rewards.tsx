@@ -23,6 +23,7 @@ import {
 	apiGetIridiumPublicPointsLoyaltyLeaderboard,
 	apiGetIridiumPublicPointsReferralLeaderboard,
 } from "model/service/api";
+import { formatPrice } from "components/views/v2/utils/utils";
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -108,8 +109,6 @@ class Structure extends Base<Props, State> {
 		const usersDailyLoyalty = data?.users_daily_loyalty || [];
 		const progress = this.state.progress;
 
-		const formatNumber = (num: any) =>
-			new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(num));
 
 		return (
 			<StyledContainer>
@@ -131,19 +130,19 @@ class Structure extends Base<Props, State> {
 					<CompactRowOne>
 						<RowTitle>Deposits</RowTitle>
 						<RowValue>
-							${referralLeaderboard.length > 0 ? formatNumber(referralLeaderboard[0].points) : 'N/A'}
+							{referralLeaderboard.length > 0 ? formatPrice(referralLeaderboard[0].points) : 'N/A'}
 						</RowValue>
 					</CompactRowOne>
 					<CompactRowOne>
 						<RowTitle>Wtd Vol</RowTitle>
 						<RowValue>
-							${usersDailyLoyalty && usersDailyLoyalty.dailyVolume !== undefined ? formatNumber(usersDailyLoyalty.dailyVolume) : 'N/A'}
+							{usersDailyLoyalty && usersDailyLoyalty.dailyVolume !== undefined ? formatPrice(usersDailyLoyalty.dailyVolume) : 'N/A'}
 						</RowValue>
 					</CompactRowOne>
 					<CompactRowOne>
 						<RowTitle>Volume</RowTitle>
 						<RowValue>
-							${loyaltyLeaderboard.length > 0 ? formatNumber(loyaltyLeaderboard[0].points) : 'N/A'}
+							{loyaltyLeaderboard.length > 0 ? formatPrice(loyaltyLeaderboard[0].points) : 'N/A'}
 						</RowValue>
 					</CompactRowOne>
 					<LinearProgress variant="determinate" value={progress} style={{ marginBottom: '1.25em' }} />
