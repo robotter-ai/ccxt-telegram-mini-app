@@ -95,6 +95,36 @@ export const formatPrice = (price: number | string, precision?: number): string 
 };
 
 
+export const formatPriceAmount
+	= (price: number | string, precision?: number): string => {
+	const priceString = typeof price === 'string' ? price : price.toString();
+	const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
+	const finalPrecision = Math.max(actualPrecision, precision ?? 2);
+
+	const formattedPrice = new Intl.NumberFormat('en-US', {
+		// style: 'currency',
+		currency: 'USD',
+		minimumFractionDigits: finalPrecision,
+		maximumFractionDigits: finalPrecision,
+	}).format(typeof price === 'string' ? Number(price) : price);
+
+	const cleanedPrice = formattedPrice.replace(/(\.\d*?[1-9])0+$/, '$1');
+
+	if (cleanedPrice.includes('.')) {
+		const decimalPart = cleanedPrice.split('.')[1];
+
+		if (decimalPart.length < 2) {
+			return cleanedPrice + '0';
+		} else if (/^0+$/.test(decimalPart)) {
+			return cleanedPrice.split('.')[0] + '.00';
+		} else {
+			return cleanedPrice;
+		}
+	} else {
+		return cleanedPrice + '.00';
+	}
+};
+
 export const removeLeadingZeroes = (value: string) => {
 	return value.replace(/^0+(?=\d)/, '');
 };

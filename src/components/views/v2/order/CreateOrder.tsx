@@ -226,7 +226,6 @@ class Structure extends Base<Props, State> {
 
 			toast.error(errorMessage, {
 				style: { whiteSpace: 'pre-line', wordWrap: 'break-word' },
-				autoClose: false,
 			});
 		} finally {
 			this.setState({ isSubmitting: false });
