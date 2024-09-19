@@ -131,6 +131,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 	return (
 		<TextInput
 			label='SEARCH'
+			placeholder="BTC..."
 			value={props.filterText}
 			onChange={props.onFilterTextChange}
 			icon={
