@@ -54,16 +54,16 @@ export const transformCandlesInCandlesticks = (candles: number[][]): Candlestick
 
 		const lastCandle = {
 			open: Number(candles[index - 1][1]),
-			close: Number(candles[index - 1][2]),
-			high: Number(candles[index - 1][3]),
-			low: Number(candles[index - 1][4]),
+			high: Number(candles[index - 1][2]),
+			low: Number(candles[index - 1][3]),
+			close: Number(candles[index - 1][4]),
 		};
 
 		const newCandle = {
 			open: Number(candle[1]),
-			close: Number(candle[2]),
-			high: Number(candle[3]),
-			low: Number(candle[4]),
+			high: Number(candle[2]),
+			low: Number(candle[3]),
+			close: Number(candle[4]),
 		};
 
 		if (JSON.stringify(newCandle) === JSON.stringify(lastCandle)) {
@@ -73,9 +73,9 @@ export const transformCandlesInCandlesticks = (candles: number[][]): Candlestick
 		return {
 			time: Number(candle[0]) as UTCTimestamp,
 			open: Number(candle[1]),
-			close: Number(candle[2]),
-			high: Number(candle[3]),
-			low: Number(candle[4]),
+			high: Number(candle[2]),
+			low: Number(candle[3]),
+			close: Number(candle[4]),
 			volume: Number(candle[5]),
 		};
 
