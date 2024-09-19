@@ -630,6 +630,22 @@ export const apiGetIridiumPrivateUsersUserTier = async (data?: any, handleUnAuth
 };
 
 // noinspection JSUnusedGlobalSymbols
+export const apiGetPrivateUserInfo = async (data?: any, handleUnAuthorized?: () => void) => {
+	return callAPIorMockAPI({
+		method: 'POST',
+		url: '/run',
+		data: {
+			exchangeId: import.meta.env.VITE_EXCHANGE_ID,
+			environment: import.meta.env.VITE_EXCHANGE_ENVIRONMENT,
+			method: 'rest_private_get_user_info',
+			parameters: {
+				...data
+			}
+		},
+	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
 export const apiGetIridiumPrivateUsersInfo = async (data?: any, handleUnAuthorized?: () => void) => {
 	return callAPIorMockAPI({
 		method: 'POST',
