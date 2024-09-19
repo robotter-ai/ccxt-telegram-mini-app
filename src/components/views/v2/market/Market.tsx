@@ -1,7 +1,7 @@
 import { Box, styled } from '@mui/material';
 import axios from 'axios';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
-import ButtonGroupToggle from "components/general/ButtonGroupToggle";
+import ButtonGroupToggle from 'components/general/ButtonGroupToggle';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
@@ -37,6 +37,7 @@ interface MarketState extends BaseState {
 	error?: string;
 	price: string | number | null;
 	volume: number | null;
+	priceChartMode: 'CANDLE' | 'LINE';
 	chartType: 'CHART' | 'BOOK';
 }
 
@@ -92,6 +93,8 @@ const ChartDetailItem = styled(Box, {
 	},
 }));
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: MarketState | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 });
@@ -119,6 +122,7 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 			error: undefined,
 			price: null,
 			volume: null,
+			priceChartMode: 'LINE',
 			chartType: 'CHART',
 		} as Readonly<MarketState>;
 
@@ -190,30 +194,35 @@ class MarketStructure extends Base<MarketProps, MarketState> {
 	}
 
 	async initialize() {
-		const payload = await this.fetchOhlcvData(this.marketId);
+		if (this.state.priceChartMode == 'LINE') {
+			const payload = await this.fetchOhlcvData(this.marketId);
 
-		const lines = transformCandlesInLines(payload);
-		if (lines.length) {
-			const lastCandle = lines[lines.length - 1];
+			const lines = transformCandlesInLines(payload);
+			if (lines.length) {
+				const lastCandle = lines[lines.length - 1];
 
-			this.setState({
-				price: formatPrice(lastCandle.value, this.marketPrecision),
-				volume: lastCandle.volume ? lastCandle.volume : null,
-			});
+				this.setState({
+					price: formatPrice(lastCandle.value, this.marketPrecision),
+					volume: lastCandle.volume ? lastCandle.volume : null,
+				});
 
-			const lastMarketPrecision = lastCandle?.value?.toString().split('.')[1]?.length || 0
-			const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
+				const lastMarketPrecision = lastCandle?.value?.toString()
+					.split('.')[1]?.length || 0
+				const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
-			this.createMarketChart(setLastMarketPrecision, lines);
-			this.createMarketBook(setLastMarketPrecision, lines);
+				this.createMarketChart(setLastMarketPrecision, lines);
+				this.createMarketBook(setLastMarketPrecision, lines);
+			}
+		} else if (this.state.priceChartMode == 'CANDLE') {
+			const payload = await this.fetchOhlcvData(this.marketId);
+
+			const candles = transformCandlesInCandlesticks(payload);
+			if (candles.length) {
+				this.createMarketCandleChart(candles);
+			}
+		} else {
+			throw new Error(`Invalid chart type: "${this.state.priceChartMode}".`);
 		}
-
-		// const payload = await this.fetchOhlcvData(this.marketId);
-
-		// const candles = transformCandlesInCandlesticks(payload);
-		// if (candles.length) {
-		// 	this.createMarketCandleChart(candles);
-		// }
 
 		this.setState({ isLoading: false });
 	}
