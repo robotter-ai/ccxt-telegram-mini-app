@@ -65,48 +65,35 @@ export const getCurrentRouteTitle = () => {
 	}
 };
 
-export const formatPrice = (price: number | string, precision?: number): string => {
+/**
+ * Usage:
+ * 	formatPrice('123456.789') => 123,456.789
+ * 	formatPrice('123456.789', 2, true) => $123,456.79
+ * 	formatPrice(123456.789, 2, true) => $123,456.79
+ * 	formatPrice(123456.789, 2) => 123,456.79
+ * 	formatPrice(123456.7) => 123,456.70
+ * 	formatPrice(123456, null, true) => $123,456.00
+ *
+ * @param price
+ * @param precision
+ * @param shouldDisplayCurrency
+ */
+export const formatPrice = (price: number | string, precision?: number, shouldDisplayCurrency: boolean = false): string => {
 	const priceString = typeof price === 'string' ? price : price.toString();
 	const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
 	const finalPrecision = Math.max(actualPrecision, precision ?? 2);
 
-	const formattedPrice = new Intl.NumberFormat('en-US', {
-		style: 'currency',
+	const options: any = {
 		currency: 'USD',
 		minimumFractionDigits: finalPrecision,
 		maximumFractionDigits: finalPrecision,
-	}).format(typeof price === 'string' ? Number(price) : price);
+	};
 
-	const cleanedPrice = formattedPrice.replace(/(\.\d*?[1-9])0+$/, '$1');
-
-	if (cleanedPrice.includes('.')) {
-		const decimalPart = cleanedPrice.split('.')[1];
-
-		if (decimalPart.length < 2) {
-			return cleanedPrice + '0';
-		} else if (/^0+$/.test(decimalPart)) {
-			return cleanedPrice.split('.')[0] + '.00';
-		} else {
-			return cleanedPrice;
-		}
-	} else {
-		return cleanedPrice + '.00';
+	if (shouldDisplayCurrency) {
+		options['style'] = 'currency';
 	}
-};
 
-
-export const formatPriceAmount
-	= (price: number | string, precision?: number): string => {
-	const priceString = typeof price === 'string' ? price : price.toString();
-	const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
-	const finalPrecision = Math.max(actualPrecision, precision ?? 2);
-
-	const formattedPrice = new Intl.NumberFormat('en-US', {
-		// style: 'currency',
-		currency: 'USD',
-		minimumFractionDigits: finalPrecision,
-		maximumFractionDigits: finalPrecision,
-	}).format(typeof price === 'string' ? Number(price) : price);
+	const formattedPrice = new Intl.NumberFormat('en-US', options).format(typeof price === 'string' ? Number(price) : price);
 
 	const cleanedPrice = formattedPrice.replace(/(\.\d*?[1-9])0+$/, '$1');
 
