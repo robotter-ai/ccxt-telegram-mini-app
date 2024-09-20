@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Slider, styled, TextField } from '@mui/material';
 import { connect } from 'react-redux';
 import { BaseProps, withHooks } from 'components/base/Base.tsx';
@@ -35,52 +35,75 @@ const mapDispatchToProps = (reduxDispatch: any) => ({
 	}
 });
 
-const Structure: React.FC<Props> = (props: Props) => {
-	props.step = roundWithPrecision(Math.pow(10, -props.precision), props.precision);
-	props.min = props.step || 0;
-	props.defaultValue = 1;
-	props.value = props.defaultValue;
+const Structure: React.FC<Props> = ({
+	min,
+	max,
+	value: reduxValue,
+	defaultValue,
+	precision,
+	step,
+	updateValue,
+	onValueChange = () => {}
+}) => {
+	step = roundWithPrecision(Math.pow(10, -precision), precision);
+	min = min || step || 0;
+	max = max || 1000;
+	defaultValue = 1;
+
+	const [localValue, setLocalValue] = useState<number>(defaultValue);
+
+	useEffect(() => {
+		if (reduxValue !== localValue) {
+			setLocalValue(reduxValue);
+		}
+	}, [reduxValue]);
 
 	const handleSliderChange = (_: Event, newValue: number | number[]) => {
-		props.updateValue(newValue as number);
-		props.onValueChange(props.value);
+		const newLocalValue = newValue as number;
+		setLocalValue(newLocalValue);
+		updateValue(newLocalValue);
+		onValueChange(newLocalValue);
 	};
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = event.target.value === '' ? 0 : Number(event.target.value);
-		if (newValue >= 0 && newValue >= props.min && newValue <= props.max) {
-			props.updateValue(newValue as number);
-			props.onValueChange(props.value);
+		if (newValue >= 0 && newValue >= min && newValue <= max) {
+			setLocalValue(newValue);
+			updateValue(newValue);
+			onValueChange(newValue);
 		}
 	};
 
 	const handleBlur = () => {
-		if (props.value < props.min) {
-			props.updateValue(props.min as number);
-		} else if (props.value > props.max) {
-			props.updateValue(props.max as number);
+		let newValue = localValue;
+		if (newValue < min) {
+			newValue = min as number;
+		} else if (newValue > max) {
+			newValue = max as number;
 		}
 
-		props.onValueChange(props.value);
+		setLocalValue(newValue);
+		updateValue(newValue);
+		onValueChange(newValue);
 	};
 
 	return (
 		<Box className="flex w-full items-center gap-4">
 			<Slider
-				value={props.value}
-				min={props.min}
-				max={props.max}
+				value={localValue}
+				min={min}
+				max={max}
 				onChange={handleSliderChange}
 				className="flex-grow slider"
 			/>
 			<TextField
-				value={props.value}
+				value={localValue}
 				onChange={handleInputChange}
 				onBlur={handleBlur}
 				inputProps={{
-					step: props.step,
-					min: props.min,
-					max: props.max,
+					step: step,
+					min: min,
+					max: max,
 					type: 'number',
 					'aria-labelledby': 'input-slider',
 				}}

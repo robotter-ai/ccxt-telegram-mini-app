@@ -19,28 +19,7 @@ import LineChart from './LineChart';
 import { BookChart } from 'components/views/v2/market/BookChart';
 import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
 import { DepthChart } from "components/views/v2/market/DepthChart";
-
-interface Props extends BaseProps {
-	markets: any;
-	height?: string | number;
-	updateMarket: (data: any) => void;
-	updateMarketCandlesData: (data: any) => void;
-	updateMarketOrderBookData: (data: any) => void;
-	updateMarketOrderBookChartData: (data: any) => void;
-}
-
-interface State extends BaseState {
-	isLoading: boolean;
-	error?: string;
-	price: number | null;
-	volume: number | null;
-	chartType: 'CHART' | 'BOOK';
-	chartProps: any;
-	priceChartMode: 'CANDLE' | 'LINE';
-	bookChartMode: 'TABLE' | 'DEPTH';
-	priceChartGranularity: string;
-	orderBookChartGranularity: number;
-}
+import { SliderWithInput } from 'components/views/v2/market/charts/SliderWithInput';
 
 const ChartTypeToggleContainer = styled(Box)({
 	width: '100%',
@@ -94,12 +73,35 @@ const ChartDetailItem = styled(Box, {
 	},
 }));
 
+interface Props extends BaseProps {
+	markets: any;
+	height?: string | number;
+	orderBookGranularity: number;
+	updateMarket: (data: any) => void;
+	updateMarketCandlesData: (data: any) => void;
+	updateMarketOrderBookData: (data: any) => void;
+	updateMarketOrderBookChartData: (data: any) => void;
+}
+
+interface State extends BaseState {
+	isLoading: boolean;
+	error?: string;
+	price: number | null;
+	volume: number | null;
+	chartType: 'CHART' | 'BOOK';
+	chartProps: any;
+	priceChartMode: 'CANDLE' | 'LINE';
+	bookChartMode: 'TABLE' | 'DEPTH';
+	priceChartGranularity: string;
+}
+
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State | any, props: BaseProps | any) => ({
 	markets: state.api.markets,
 	ohlcvCandles: state.api.market.candles,
 	orderBook: state.api.market.orderBook,
+	orderBookGranularity: state.api.market.orderBook.granularity,
 });
 
 // @ts-ignore
@@ -212,6 +214,7 @@ class Structure extends Base<Props, State> {
 				</ChartContainer>
 
 				<ChartContainer hidden={chartType !== 'BOOK'}>
+					{ bookChartMode === 'TABLE' && <SliderWithInput /> }
 					{ bookChartMode === 'TABLE' && <BookChart marketId={this.marketId} height="100%" /> }
 					{ bookChartMode === 'DEPTH' && <DepthChart/> }
 				</ChartContainer>
@@ -530,7 +533,7 @@ class Structure extends Base<Props, State> {
 
 			this.props.updateMarketOrderBookData(payload);
 
-			const aggregatedOrderBook = this.aggregateOrderBookData(payload, this.state.orderBookChartGranularity);
+			const aggregatedOrderBook = this.aggregateOrderBookData(payload, this.props.orderBookGranularity);
 			this.props.updateMarketOrderBookChartData(aggregatedOrderBook);
 		} catch (exception) {
 			console.error(exception);
