@@ -16,8 +16,9 @@ import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
-import { BookChart } from 'components/views/v2/market/BookChart.tsx';
+import { BookChart } from 'components/views/v2/market/BookChart';
 import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
+import { DepthChart } from "components/views/v2/market/DepthChart";
 
 interface Props extends BaseProps {
 	markets: any;
@@ -35,6 +36,7 @@ interface State extends BaseState {
 	chartType: 'CHART' | 'BOOK';
 	chartProps: any;
 	priceChartMode: 'CANDLE' | 'LINE';
+	bookChartMode: 'TABLE' | 'DEPTH';
 	priceChartGranularity: string;
 }
 
@@ -137,6 +139,7 @@ class Structure extends Base<Props, State> {
 			volume: null,
 			chartType: 'CHART',
 			priceChartMode: 'LINE',
+			bookChartMode: 'DEPTH',
 			priceChartGranularity: '1h',
 			chartProps: {},
 		} as Readonly<State>;
@@ -172,6 +175,7 @@ class Structure extends Base<Props, State> {
 			volume,
 			chartType,
 			priceChartMode,
+			bookChartMode,
 			chartProps,
 		} = this.state;
 
@@ -201,7 +205,8 @@ class Structure extends Base<Props, State> {
 				</ChartContainer>
 
 				<ChartContainer hidden={chartType !== 'BOOK'}>
-					<BookChart marketId={this.marketId} height="100%" />
+					{ bookChartMode === 'TABLE' && <BookChart marketId={this.marketId} height="100%" /> }
+					{ bookChartMode === 'DEPTH' && <DepthChart/> }
 				</ChartContainer>
 
 				<ChartDetails>
