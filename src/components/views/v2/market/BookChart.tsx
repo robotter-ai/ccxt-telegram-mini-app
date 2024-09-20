@@ -81,14 +81,14 @@ const Structure = ({ orderBook, height }: Props) => {
 
 						return (
 							<TableRow key={index}>
-								<CompactTableCell align="left">{bid ? bid[1] : '-'}</CompactTableCell>
+								<CompactTableCell align="left">{bid ? formatPrice(bid[1]) : '-'}</CompactTableCell>
 								<CompactTableCell align="left">
 									{bid ? <GreenText>{formatPrice(bid[0])}</GreenText> : '-'}
 								</CompactTableCell>
 								<CompactTableCell align="left">
 									{ask ? <RedText>{formatPrice(ask[0])}</RedText> : '-'}
 								</CompactTableCell>
-								<CompactTableCell align="left">{ask ? ask[1] : '-'}</CompactTableCell>
+								<CompactTableCell align="left">{ask ? formatPrice(ask[1]) : '-'}</CompactTableCell>
 							</TableRow>
 						);
 					})}
