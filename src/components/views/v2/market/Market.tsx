@@ -38,6 +38,7 @@ interface State extends BaseState {
 	priceChartMode: 'CANDLE' | 'LINE';
 	bookChartMode: 'TABLE' | 'DEPTH';
 	priceChartGranularity: string;
+	orderBookChartGranularity: number;
 }
 
 const ChartTypeToggleContainer = styled(Box)({
@@ -139,8 +140,9 @@ class Structure extends Base<Props, State> {
 			volume: null,
 			chartType: 'CHART',
 			priceChartMode: 'LINE',
-			bookChartMode: 'DEPTH',
+			bookChartMode: 'TABLE',
 			priceChartGranularity: '1h',
+			orderBookChartGranularity: 1,
 			chartProps: {},
 		} as Readonly<State>;
 
@@ -523,7 +525,8 @@ class Structure extends Base<Props, State> {
 
 			this.props.updateMarketOrderBookData(payload);
 
-			this.processOrderBookData(payload);
+			const aggregatedOrderBook = this.aggregateOrderBookData(payload, this.state.orderBookChartGranularity);
+			this.props.updateMarketOrderBookChartData(aggregatedOrderBook);
 		} catch (exception) {
 			console.error(exception);
 
@@ -542,8 +545,34 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
-	processOrderBookData = (data: any) => {
-		this.props.updateMarketOrderBookChartData(data);
+	aggregateOrderBookData(data: { bids: string[][], asks: string[][] }, granularity: number) {
+		const roundPrice = (price: number, granularity: number): number => {
+			return Math.floor(price / granularity) * granularity;
+		};
+
+		const aggregateOrders = (orders: string[][], granularity: number) => {
+			const aggregated: { [price: number]: number } = {};
+
+			orders.forEach(order => {
+				const price = parseFloat(order[0]);
+				const amount = parseFloat(order[1]);
+
+				const roundedPrice = roundPrice(price, granularity);
+
+				if (aggregated[roundedPrice]) {
+					aggregated[roundedPrice] += amount;
+				} else {
+					aggregated[roundedPrice] = amount;
+				}
+			});
+
+			return Object.entries(aggregated).map(([price, amount]) => [parseFloat(price), amount]);
+		};
+
+		return {
+			bids: aggregateOrders(data.bids, granularity),
+			asks: aggregateOrders(data.asks, granularity)
+		};
 	}
 }
 
