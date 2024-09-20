@@ -1,7 +1,7 @@
 import { Box, styled, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { formatPrice } from 'components/views/v2/utils/utils.tsx';
+import { formatPrice } from 'components/views/v2/utils/utils';
 import { connect } from 'react-redux';
-import { withHooks } from 'components/base/Base.tsx';
+import { withHooks } from 'components/base/Base';
 import { OrderBook } from 'api/types/orderBook';
 
 interface TableContainerProps {
@@ -65,35 +65,37 @@ const Structure = ({ orderBook, height }: Props) => {
 		const maxRows = Math.max(orderBook.bids.length, orderBook.asks.length, 0);
 
 		return (
-			<StyledTable>
-				<TableHead>
-					<TableRow>
-						<CompactTableCell align="left">Amount</CompactTableCell>
-						<CompactTableCell align="left">Bid</CompactTableCell>
-						<CompactTableCell align="left">Ask</CompactTableCell>
-						<CompactTableCell align="left">Amount</CompactTableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{Array.from({ length: maxRows }).map((_, index) => {
-						const bid = orderBook.bids ? orderBook.bids[index] : null;
-						const ask = orderBook.asks ? orderBook.asks[index] : null;
+			<Box>
+				<StyledTable>
+					<TableHead>
+						<TableRow>
+							<CompactTableCell align="left">Amount</CompactTableCell>
+							<CompactTableCell align="left">Bid</CompactTableCell>
+							<CompactTableCell align="left">Ask</CompactTableCell>
+							<CompactTableCell align="left">Amount</CompactTableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{Array.from({ length: maxRows }).map((_, index) => {
+							const bid = orderBook.bids ? orderBook.bids[index] : null;
+							const ask = orderBook.asks ? orderBook.asks[index] : null;
 
-						return (
-							<TableRow key={index}>
-								<CompactTableCell align="left">{bid ? formatPrice(bid[1]) : '-'}</CompactTableCell>
-								<CompactTableCell align="left">
-									{bid ? <GreenText>{formatPrice(bid[0])}</GreenText> : '-'}
-								</CompactTableCell>
-								<CompactTableCell align="left">
-									{ask ? <RedText>{formatPrice(ask[0])}</RedText> : '-'}
-								</CompactTableCell>
-								<CompactTableCell align="left">{ask ? formatPrice(ask[1]) : '-'}</CompactTableCell>
-							</TableRow>
-						);
-					})}
-				</TableBody>
-			</StyledTable>
+							return (
+								<TableRow key={index}>
+									<CompactTableCell align="left">{bid ? formatPrice(bid[1]) : '-'}</CompactTableCell>
+									<CompactTableCell align="left">
+										{bid ? <GreenText>{formatPrice(bid[0])}</GreenText> : '-'}
+									</CompactTableCell>
+									<CompactTableCell align="left">
+										{ask ? <RedText>{formatPrice(ask[0])}</RedText> : '-'}
+									</CompactTableCell>
+									<CompactTableCell align="left">{ask ? formatPrice(ask[1]) : '-'}</CompactTableCell>
+								</TableRow>
+							);
+						})}
+					</TableBody>
+				</StyledTable>
+			</Box>
 		);
 	};
 
