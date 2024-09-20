@@ -11,7 +11,7 @@ import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { useEffect, useRef } from 'react';
 
 interface LineChartProps {
-	hidden: boolean;
+	hidden?: boolean;
 	candles: number[][];
 	precision: number;
 	minMove: number;
@@ -137,7 +137,7 @@ function transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] 
 }
 
 
-function CandleChart({ candles, precision, minMove, candle, hidden }: LineChartProps) {
+function CandleChart({ hidden, candles, precision, minMove, candle }: LineChartProps) {
 	const chartContainerRef = useRef<HTMLDivElement>(null);
 	const chartRef = useRef<IChartApi | null>(null);
 	const seriesRef = useRef<any>(null);
@@ -172,9 +172,9 @@ function CandleChart({ candles, precision, minMove, candle, hidden }: LineChartP
 			const lastData = seriesRef.current.dataByIndex(seriesRef.current.data().length - 1);
 
 			if (
-				lastData?.close !== close &&
-				lastData?.high !== high &&
-				lastData?.low !== low &&
+				lastData?.close !== close ||
+				lastData?.high !== high ||
+				lastData?.low !== low ||
 				lastData?.open !== open
 			) {
 				seriesRef.current.update({

@@ -11,7 +11,7 @@ import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { useEffect, useRef } from 'react';
 
 interface LineChartProps {
-	hidden: boolean;
+	hidden?: boolean;
 	candles: number[][];
 	precision: number;
 	minMove: number;
@@ -124,7 +124,7 @@ function transformCandlesInLines(candles: number[][]) {
 	return formattedLines;
 }
 
-function LineChart({ candles, precision, minMove, candle, hidden }: LineChartProps) {
+function LineChart({ hidden, candles, precision, minMove, candle }: LineChartProps) {
 	const chartContainerRef = useRef<HTMLDivElement>(null);
 	const chartRef = useRef<IChartApi | null>(null);
 	const seriesRef = useRef<any>(null);
