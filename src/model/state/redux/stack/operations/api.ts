@@ -293,6 +293,27 @@ pushStack('api.updateOpenOrders', (currentState: any, payload: any) => {
 });
 
 // noinspection JSUnusedLocalSymbols
+pushStack('api.updateMarket', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.market.market',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.updateMarket', nextState.api.market.market);
+
+	return nextState;
+});
+
+// noinspection JSUnusedLocalSymbols
 pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
 
@@ -349,6 +370,26 @@ pushStack('api.updateMarketOrderBookChartData', (currentState: any, payload: any
 	// noinspection TypeScriptUnresolvedReference
 	// @ts-ignore
 	console.log('api.market.orderBook.chart', nextState.api.market.orderBook.chart);
+
+	return nextState;
+});
+
+pushStack('api.updateMarketOrderBookGranularity', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.market.orderBook.granularity',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.market.orderBook.granularity', nextState.api.market.orderBook.granularity);
 
 	return nextState;
 });

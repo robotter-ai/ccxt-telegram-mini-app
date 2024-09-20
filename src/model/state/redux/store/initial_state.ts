@@ -23,10 +23,12 @@ const map = new Map({
 		},
 		market: {
 			id: null,
+			market: {},
 			candles: [],
 			orderBook: {
 				raw: {},
-				chart: {}
+				chart: {},
+				granularity: 0,
 			}
 		},
 		rewards: {},
