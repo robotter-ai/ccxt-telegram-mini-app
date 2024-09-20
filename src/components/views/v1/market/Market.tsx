@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { Base, BaseProps, BaseState } from 'components/base/Base.tsx';
+import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 // import { executeAndSetInterval } from 'model/service/recurrent';
 import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
