@@ -5,8 +5,8 @@ export interface OrderBook {
 	nonce: unknown;
 	symbol: string;
 	timestamp: number;
-	asks: [Price, Amount][];
-	bids: [Price, Amount][];
+	asks?: [Price, Amount][];
+	bids?: [Price, Amount][];
 }
 
 type Price = string;

@@ -26,19 +26,19 @@ function transformOrderBookData(orderBookData: OrderBook) {
 	type DataType = { price: number, bidAmount: number | null, askAmount: number | null, operation: string };
 	let data: DataType[] = [];
 
-	const bids = orderBookData.bids.map((bid: [string, string]) => ({
+	const bids = orderBookData.bids?.map((bid: [string, string]) => ({
 		price: parseFloat(bid[0]),
 		bidAmount: parseFloat(bid[1]),
 		askAmount: null,
 		operation: 'bid'
-	}));
+	})) || [];
 
-	const asks = orderBookData.asks.map((ask: [string, string]) => ({
+	const asks = orderBookData.asks?.map((ask: [string, string]) => ({
 		price: parseFloat(ask[0]),
 		bidAmount: null,
 		askAmount: parseFloat(ask[1]),
 		operation: 'ask'
-	}));
+	})) || [];
 
 	bids.sort((a: DataType, b: DataType) => a.price - b.price);
 	asks.sort((a: DataType, b: DataType) => a.price - b.price);
