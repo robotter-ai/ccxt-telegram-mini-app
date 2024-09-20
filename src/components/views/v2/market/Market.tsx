@@ -23,6 +23,7 @@ import { DepthChart } from "components/views/v2/market/DepthChart";
 interface Props extends BaseProps {
 	markets: any;
 	height?: string | number;
+	updateMarket: (data: any) => void;
 	updateMarketCandlesData: (data: any) => void;
 	updateMarketOrderBookData: (data: any) => void;
 	updateMarketOrderBookChartData: (data: any) => void;
@@ -104,6 +105,9 @@ const mapStateToProps = (state: State | any, props: BaseProps | any) => ({
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 const mapDispatchToProps = (reduxDispatch: any) => ({
+	updateMarket(data: any) {
+		dispatch('api.updateMarket', data);
+	},
 	updateMarketCandlesData(data: any) {
 		dispatch('api.updateMarketCandles', data);
 	},
@@ -148,6 +152,7 @@ class Structure extends Base<Props, State> {
 
 		this.marketId = this.props.queryParams.get('marketId');
 		this.market = this.props.markets.find((market: any) => market.id === this.marketId);
+		this.props.updateMarket(this.market);
 
 		this.marketPrecision = this.market.precision.amount ?? this.market.precision;
 
