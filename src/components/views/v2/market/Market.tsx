@@ -7,7 +7,7 @@ import { Orders } from 'components/views/v2/orders/Orders';
 import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
 import { IChartApi, UTCTimestamp } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
-import { apiGetFetchOHLCV, apiGetFetchTicker } from 'model/service/api';
+import { apiGetFetchOHLCV, apiGetFetchOrderBook, apiGetFetchTicker } from 'model/service/api';
 import { executeAndSetInterval } from 'model/service/recurrent';
 import { dispatch } from 'model/state/redux/store';
 import { createRef } from 'react';
@@ -16,14 +16,16 @@ import { toast } from 'react-toastify';
 import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
-import MarketBook from 'components/views/v2/market/MarketBook';
+import { BookChart } from 'components/views/v2/market/BookChart';
 import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
+import { DepthChart } from "components/views/v2/market/DepthChart";
 
 interface Props extends BaseProps {
 	markets: any;
 	height?: string | number;
-	updateMarketCandles: (data: any) => void;
-	updateMarketOrderBook: (data: any) => void;
+	updateMarketCandlesData: (data: any) => void;
+	updateMarketOrderBookData: (data: any) => void;
+	updateMarketOrderBookChartData: (data: any) => void;
 }
 
 interface State extends BaseState {
@@ -34,6 +36,7 @@ interface State extends BaseState {
 	chartType: 'CHART' | 'BOOK';
 	chartProps: any;
 	priceChartMode: 'CANDLE' | 'LINE';
+	bookChartMode: 'TABLE' | 'DEPTH';
 	priceChartGranularity: string;
 }
 
@@ -100,11 +103,14 @@ const mapStateToProps = (state: State | any, props: BaseProps | any) => ({
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 const mapDispatchToProps = (reduxDispatch: any) => ({
-	updateMarketCandles(data: any) {
+	updateMarketCandlesData(data: any) {
 		dispatch('api.updateMarketCandles', data);
 	},
-	updateMarketOrderBook(data: any) {
-		dispatch('api.updateMarketOrderBook', data);
+	updateMarketOrderBookData(data: any) {
+		dispatch('api.updateMarketOrderBookData', data);
+	},
+	updateMarketOrderBookChartData(data: any) {
+		dispatch('api.updateMarketOrderBookChartData', data);
 	},
 });
 
@@ -133,6 +139,7 @@ class Structure extends Base<Props, State> {
 			volume: null,
 			chartType: 'CHART',
 			priceChartMode: 'LINE',
+			bookChartMode: 'DEPTH',
 			priceChartGranularity: '1h',
 			chartProps: {},
 		} as Readonly<State>;
@@ -168,6 +175,7 @@ class Structure extends Base<Props, State> {
 			volume,
 			chartType,
 			priceChartMode,
+			bookChartMode,
 			chartProps,
 		} = this.state;
 
@@ -197,7 +205,8 @@ class Structure extends Base<Props, State> {
 				</ChartContainer>
 
 				<ChartContainer hidden={chartType !== 'BOOK'}>
-					<MarketBook marketId={this.marketId} height="100%" />
+					{ bookChartMode === 'TABLE' && <BookChart marketId={this.marketId} height="100%" /> }
+					{ bookChartMode === 'DEPTH' && <DepthChart/> }
 				</ChartContainer>
 
 				<ChartDetails>
@@ -251,6 +260,8 @@ class Structure extends Base<Props, State> {
 
 	async doRecurrently() {
 		const recurrentFunction = async () => {
+			await this.updateOrderBook();
+
 			// const { close, high, info, low, open, timestamp } = generateMarketMockData(this.marketPrecision);
 			const { close, high, info, low, open, timestamp } = await this.fetchTickerData(this.marketId);
 
@@ -310,11 +321,12 @@ class Structure extends Base<Props, State> {
 
 					return;
 				} else {
+					// noinspection ExceptionCaughtLocallyJS
 					throw new Error(response.text);
 				}
 			}
 
-			this.props.updateMarketCandles(response.data.result);
+			this.props.updateMarketCandlesData(response.data.result);
 
 			return response.data.result;
 		} catch (exception) {
@@ -482,6 +494,56 @@ class Structure extends Base<Props, State> {
 	onChartGranularityChange = async (time: string) => {
 		await this.setState({ priceChartGranularity: time });
 		await this.initialize();
+	}
+
+	updateOrderBook = async () => {
+		try {
+			const response = await apiGetFetchOrderBook(
+				{
+					symbol: this.marketId,
+				},
+				this.props.handleUnAuthorized
+			);
+
+			if (response.status !== 200) {
+				if (response.data?.title) {
+					const message = response.data.title;
+
+					this.setState({ error: message });
+					toast.error(message);
+
+					return;
+				} else {
+					// noinspection ExceptionCaughtLocallyJS
+					throw new Error(response.text);
+				}
+			}
+
+			const payload = response.data.result;
+
+			this.props.updateMarketOrderBookData(payload);
+
+			this.processOrderBookData(payload);
+		} catch (exception) {
+			console.error(exception);
+
+			if (axios.isAxiosError(exception)) {
+				if (exception?.response?.status === 401) {
+					return;
+				}
+			}
+
+			const message = 'An error has occurred while performing this operation.'
+
+			this.setState({ error: message });
+			toast.error(message);
+
+			clearInterval(this.properties.getIn<number>('recurrent.5s.intervalId'));
+		}
+	}
+
+	processOrderBookData = (data: any) => {
+		this.props.updateMarketOrderBookChartData(data);
 	}
 }
 

@@ -313,12 +313,12 @@ pushStack('api.updateMarketCandles', (currentState: any, payload: any) => {
 	return nextState;
 });
 
-pushStack('api.updateMarketOrderBook', (currentState: any, payload: any) => {
+pushStack('api.updateMarketOrderBookData', (currentState: any, payload: any) => {
 	let nextState = new Map(currentState);
 
 	if (payload) {
 		nextState = nextState.setIn(
-			'api.market.orderBook',
+			'api.market.orderBook.raw',
 			payload
 		);
 	}
@@ -328,7 +328,27 @@ pushStack('api.updateMarketOrderBook', (currentState: any, payload: any) => {
 
 	// noinspection TypeScriptUnresolvedReference
 	// @ts-ignore
-	console.log('api.market.orderBook', nextState.api.market.orderBook);
+	console.log('api.market.orderBook.raw', nextState.api.market.orderBook.raw);
+
+	return nextState;
+});
+
+pushStack('api.updateMarketOrderBookChartData', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.market.orderBook.chart',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.market.orderBook.chart', nextState.api.market.orderBook.chart);
 
 	return nextState;
 });
