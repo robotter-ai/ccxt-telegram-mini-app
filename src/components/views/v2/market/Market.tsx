@@ -1,31 +1,45 @@
-import { Box, styled } from '@mui/material';
+import {Box, IconButton, styled} from '@mui/material';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
 import axios from 'axios';
-import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
-import ButtonGroupToggle from 'components/general/ButtonGroupToggle';
-import { CreateOrder } from 'components/views/v2/order/CreateOrder';
-import { Orders } from 'components/views/v2/orders/Orders';
-import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
-import { IChartApi, UTCTimestamp } from 'lightweight-charts';
-import { Map } from 'model/helper/extendable-immutable/map';
-import { apiGetFetchOHLCV, apiGetFetchOrderBook, apiGetFetchTicker } from 'model/service/api';
-import { executeAndSetInterval } from 'model/service/recurrent';
-import { dispatch } from 'model/state/redux/store';
-import { createRef } from 'react';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { Spinner } from '../layout/spinner/Spinner';
+import {Base, BaseProps, BaseState, withHooks} from 'components/base/Base';
+import {CreateOrder} from 'components/views/v2/order/CreateOrder';
+import {Orders} from 'components/views/v2/orders/Orders';
+import {formatPrice, formatVolume, getPrecision} from 'components/views/v2/utils/utils';
+import {IChartApi, UTCTimestamp} from 'lightweight-charts';
+import {Map} from 'model/helper/extendable-immutable/map';
+import {apiGetFetchOHLCV, apiGetFetchOrderBook, apiGetFetchTicker} from 'model/service/api';
+import {executeAndSetInterval} from 'model/service/recurrent';
+import {dispatch} from 'model/state/redux/store';
+import {createRef} from 'react';
+import {connect} from 'react-redux';
+import {toast} from 'react-toastify';
+import {Spinner} from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
 import LineChart from './LineChart';
-import { BookChart } from 'components/views/v2/market/BookChart';
-import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
-import { DepthChart } from "components/views/v2/market/DepthChart";
-import { SliderWithInput } from 'components/views/v2/market/charts/SliderWithInput';
+import {BookChart} from 'components/views/v2/market/BookChart';
+import {TimeSwitch} from 'components/views/v2/market/charts/TimeSwitch';
+import {DepthChart} from "components/views/v2/market/DepthChart";
+import {SliderWithInput} from 'components/views/v2/market/charts/SliderWithInput';
 
-const ChartTypeToggleContainer = styled(Box)({
-	width: '100%',
+const ChartModeContainer = styled(Box)({
 	display: 'flex',
+	justifyContent: 'center',
 	margin: '10px 0',
-})
+});
+
+const StyledIconButton = styled(IconButton)<{ isSelected: boolean }>(({ isSelected, theme }) => ({
+	backgroundColor: isSelected ? theme.palette.background.paper : theme.palette.background.default,
+	color: isSelected ? theme.palette.text.primary : theme.palette.text.secondary,
+	borderRadius: '50%',
+	minWidth: '3rem',
+	height: '3rem',
+	'&:hover': {
+		backgroundColor: isSelected ? theme.palette.background.paper : theme.palette.action.hover,
+	},
+}));
 
 const Container = styled(Box)({
 	padding: '0 22px',
@@ -88,10 +102,8 @@ interface State extends BaseState {
 	error?: string;
 	price: number | null;
 	volume: number | null;
-	chartType: 'CHART' | 'BOOK';
+	chartMode: 'LINE_CHART' | 'ORDER_BOOK_TABLE' | 'ORDER_BOOK_GRAPHIC' | 'CANDLE_CHART';
 	chartProps: any;
-	priceChartMode: 'CANDLE' | 'LINE';
-	bookChartMode: 'TABLE' | 'DEPTH';
 	priceChartGranularity: string;
 }
 
@@ -144,11 +156,8 @@ class Structure extends Base<Props, State> {
 			error: undefined,
 			price: null,
 			volume: null,
-			chartType: 'CHART',
-			priceChartMode: 'LINE',
-			bookChartMode: 'TABLE',
+			chartMode: 'LINE_CHART',
 			priceChartGranularity: '1h',
-			orderBookChartGranularity: 1,
 			chartProps: {},
 		} as Readonly<State>;
 
@@ -164,6 +173,10 @@ class Structure extends Base<Props, State> {
 		this.properties.setIn('chart.defaultGranularity', '1h');
 	}
 
+	handleChartModeSwitch = (mode: State['chartMode']) => {
+		this.setState({ chartMode: mode });
+	};
+
 	async componentDidMount() {
 		await this.initialize();
 		await this.doRecurrently();
@@ -178,45 +191,66 @@ class Structure extends Base<Props, State> {
 	}
 
 	render() {
-		const {
-			isLoading,
-			price,
-			volume,
-			chartType,
-			priceChartMode,
-			bookChartMode,
-			chartProps,
-		} = this.state;
-
-		const chartTypeButtons = [
-			{
-				label: 'CHART',
-				onClick: () => this.setState({ chartType: 'CHART' }),
-			},
-			{
-				label: 'BOOK',
-				onClick: () => this.setState({ chartType: 'BOOK' }),
-			},
-		];
+		const { isLoading, price, volume, chartMode, chartProps, priceChartGranularity } = this.state;
 
 		return (
 			<Container>
 				{isLoading && <Spinner />}
 
-				<ChartTypeToggleContainer>
-					<ButtonGroupToggle buttons={chartTypeButtons} defaultButton={0} />
-				</ChartTypeToggleContainer>
-				<TimeSwitch defaultGranularity={this.properties.getIn('chart.defaultGranularity')} onGranularityChange={this.onChartGranularityChange} />
+				<ChartModeContainer>
+					<StyledIconButton
+						onClick={() => this.handleChartModeSwitch('LINE_CHART')}
+						isSelected={chartMode === 'LINE_CHART'}
+						title="Line Chart"
+					>
+						<ShowChartIcon />
+					</StyledIconButton>
+					<StyledIconButton
+						onClick={() => this.handleChartModeSwitch('CANDLE_CHART')}
+						isSelected={chartMode === 'CANDLE_CHART'}
+						title="Candle Chart"
+					>
+						<CandlestickChartIcon />
+					</StyledIconButton>
+					<StyledIconButton
+						onClick={() => this.handleChartModeSwitch('ORDER_BOOK_GRAPHIC')}
+						isSelected={chartMode === 'ORDER_BOOK_GRAPHIC'}
+						title="Order Book Graphic"
+					>
+						<BarChartIcon />
+					</StyledIconButton>
+					<StyledIconButton
+						onClick={() => this.handleChartModeSwitch('ORDER_BOOK_TABLE')}
+						isSelected={chartMode === 'ORDER_BOOK_TABLE'}
+						title="Order Book Table"
+					>
+						<TableChartIcon />
+					</StyledIconButton>
+				</ChartModeContainer>
 
-				<ChartContainer hidden={chartType !== 'CHART'}>
-					{priceChartMode === 'LINE' && <LineChart {...chartProps} />}
-					{priceChartMode === 'CANDLE' && <CandleChart {...chartProps} />}
+				<ChartContainer hidden={chartMode !== 'LINE_CHART'}>
+					<TimeSwitch
+						defaultGranularity={priceChartGranularity}
+						onGranularityChange={this.onChartGranularityChange}
+					/>
+					<LineChart {...chartProps} />
 				</ChartContainer>
 
-				<ChartContainer hidden={chartType !== 'BOOK'}>
-					{ bookChartMode === 'TABLE' && <SliderWithInput /> }
-					{ bookChartMode === 'TABLE' && <BookChart marketId={this.marketId} height="100%" /> }
-					{ bookChartMode === 'DEPTH' && <DepthChart/> }
+				<ChartContainer hidden={chartMode !== 'CANDLE_CHART'}>
+					<TimeSwitch
+						defaultGranularity={priceChartGranularity}
+						onGranularityChange={this.onChartGranularityChange}
+					/>
+					<CandleChart {...chartProps} />
+				</ChartContainer>
+
+				<ChartContainer hidden={chartMode !== 'ORDER_BOOK_TABLE'}>
+					<SliderWithInput />
+					<BookChart marketId={this.marketId} height="100%" />
+				</ChartContainer>
+
+				<ChartContainer hidden={chartMode !== 'ORDER_BOOK_GRAPHIC'}>
+					<DepthChart />
 				</ChartContainer>
 
 				<ChartDetails>
@@ -245,11 +279,9 @@ class Structure extends Base<Props, State> {
 
 		if (candles.length) {
 			const lastCandle = candles[candles.length - 1];
-
 			const price = lastCandle[4];
 			const volume = lastCandle[5];
-
-			const lastMarketPrecision = price.toString().split('.')[1]?.length || 0
+			const lastMarketPrecision = price.toString().split('.')[1]?.length || 0;
 			const setLastMarketPrecision = lastMarketPrecision > 1 ? lastMarketPrecision : 2;
 
 			this.setState({
@@ -261,8 +293,6 @@ class Structure extends Base<Props, State> {
 					minMove: 10,
 				},
 			});
-
-			// this.createMarketBook(setLastMarketPrecision, this.transformCandlesInLines(candles));
 		}
 
 		this.setState({ isLoading: false });
@@ -271,39 +301,17 @@ class Structure extends Base<Props, State> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			await this.updateOrderBook();
-
-			// const { close, high, info, low, open, timestamp } = generateMarketMockData(this.marketPrecision);
-			const { close, high, info, low, open, timestamp } = await this.fetchTickerData(this.marketId);
-
-			const { priceChartMode } = this.state;
-			if (priceChartMode === 'LINE') {
-				this.setState(prevState => ({
-					price: close,
-					chartProps: {
-						...prevState.chartProps,
-						candle: {
-							time: timestamp,
-							value: close,
-						},
+			const { close, timestamp } = await this.fetchTickerData(this.marketId);
+			this.setState((prevState) => ({
+				price: close,
+				chartProps: {
+					...prevState.chartProps,
+					candle: {
+						time: timestamp,
+						value: close,
 					},
-				}))
-			} else if (priceChartMode === 'CANDLE') {
-				this.setState(prevState => ({
-					price: close,
-					chartProps: {
-						...prevState.chartProps,
-						candle: {
-							time: timestamp ?? info.timestamp,
-							open: open ?? info.open,
-							close: close ?? info.last_price,
-							high: high ?? info.high,
-							low: low ?? info.low,
-						},
-					},
-				}));
-			} else {
-				throw new Error(`Invalid chart type: "${this.state.priceChartMode}".`);
-			}
+				},
+			}));
 		};
 
 		this.properties.setIn(
