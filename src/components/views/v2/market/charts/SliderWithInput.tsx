@@ -53,7 +53,7 @@ const Structure: React.FC<Props> = ({
 	const [localValue, setLocalValue] = useState<number>(defaultValue);
 
 	useEffect(() => {
-		if (reduxValue !== localValue) {
+		if (reduxValue !== localValue && reduxValue > 0) {
 			setLocalValue(reduxValue);
 		}
 	}, [reduxValue]);

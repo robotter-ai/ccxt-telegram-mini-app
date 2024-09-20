@@ -30,7 +30,7 @@ const GranularityButton = styled(GranularityButtonStructure)<{ isSelected: boole
 );
 
 interface TimeSwitchProps {
-	defaultGranularity: '1s' | '1m' | '1h' | '4h' | '1d';
+	defaultGranularity: any;
 	onGranularityChange: (time: string) => void;
 }
 

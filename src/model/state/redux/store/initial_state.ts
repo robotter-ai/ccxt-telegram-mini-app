@@ -28,7 +28,7 @@ const map = new Map({
 			orderBook: {
 				raw: {},
 				chart: {},
-				granularity: 0,
+				granularity: 1,
 			}
 		},
 		rewards: {},
