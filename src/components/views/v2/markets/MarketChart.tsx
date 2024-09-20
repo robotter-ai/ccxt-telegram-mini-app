@@ -26,7 +26,7 @@ const ChartContainer = styled(Box)({
 function movingAverage(data: LineData[], windowSize: number) {
 	const averages = [];
 
-	for (let i = 0; i < data.length; i++) {
+	for (let i = 0; i < data.length - windowSize; i++) {
 		const end = Math.min(data.length, i + windowSize);
 		const window = data.slice(i, end);
 		const sum = window.reduce((acc, point) => acc + point.value, 0);
@@ -134,10 +134,10 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 					lineStyle: LineStyle.Solid,
 				});
 
-				const smoothedData = movingAverage(lines, 3);
+				const smoothedData = movingAverage(lines, 28);
 
 				newChartSeries.setData(smoothedData);
-				newChartSeries.setData(lines);
+				// newChartSeries.setData(lines);
 
 				newChart.timeScale().fitContent();
 				newChart.timeScale().scrollToRealTime();
@@ -146,7 +146,7 @@ const MarketChart = ({ market, colorChart }: MarketChartProps) => {
 				setChartSeries(newChartSeries);
 
 			} catch (exception) {
-				console.error(`chart: ${exception}`);
+				console.log(exception);
 			}
 		};
 
