@@ -1,8 +1,9 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
-import { BaseProps, BaseState, withHooks } from "components/base/Base";
-import { connect } from "react-redux";
-import { OrderBook } from "api/types/orderBook";
+import { BaseProps, BaseState, withHooks } from 'components/base/Base';
+import { connect } from 'react-redux';
+import { OrderBook } from 'api/types/orderBook';
+import { styled } from '@mui/material';
 
 interface Props extends BaseProps {
 	orderBook: OrderBook;
@@ -14,8 +15,11 @@ interface State extends BaseState {
 	api: { market: { orderBook: { chart: OrderBook } } };
 }
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: State, props: Props | any) => ({
 	orderBook: state.api.market.orderBook.chart,
+});
+
+const mapDispatchToProps = (reduxDispatch: any) => ({
 });
 
 function transformOrderBookData(orderBookData: OrderBook) {
@@ -63,8 +67,7 @@ function transformOrderBookData(orderBookData: OrderBook) {
 	return data;
 }
 
-
-const Structure = ({orderBook}: Props) => {
+const Structure = ({ orderBook }: Props) => {
 	// const orderBookMock = {
 	// 		"symbol": "BTCUSDC",
 	// 		"bids": [
@@ -316,6 +319,9 @@ const Structure = ({orderBook}: Props) => {
 	);
 };
 
-const Behavior = connect(mapStateToProps)(withHooks(Structure));
+const Style = styled(Structure)(({ theme }) => `
+`);
+
+const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));
 
 export const DepthChart = Behavior;
