@@ -15,10 +15,14 @@ interface State extends BaseState {
 	api: { market: { orderBook: { chart: OrderBook } } };
 }
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State, props: Props | any) => ({
 	orderBook: state.api.market.orderBook.chart,
 });
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const mapDispatchToProps = (reduxDispatch: any) => ({
 });
 
@@ -319,6 +323,8 @@ const Structure = ({ orderBook }: Props) => {
 	);
 };
 
+// @ts-ignore
+// noinspection JSUnusedLocalSymbols
 const Style = styled(Structure)(({ theme }) => `
 `);
 

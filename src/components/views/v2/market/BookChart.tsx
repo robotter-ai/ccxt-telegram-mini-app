@@ -2,6 +2,7 @@ import { Box, styled, Table, TableBody, TableCell, TableHead, TableRow, Typograp
 import { formatPrice } from 'components/views/v2/utils/utils.tsx';
 import { connect } from 'react-redux';
 import { withHooks } from 'components/base/Base.tsx';
+import { OrderBook } from 'api/types/orderBook';
 
 interface TableContainerProps {
 	height?: string | number;
@@ -39,7 +40,7 @@ const RedText = styled(Typography)({
 
 interface Props {
 	marketId: string;
-	orderBook: any;
+	orderBook: OrderBook;
 	height?: string | number;
 }
 
@@ -58,7 +59,10 @@ const Structure = ({ orderBook, height }: Props) => {
 	const renderTable = () => {
 		if (!orderBook) return null;
 
-		const maxRows = Math.max(orderBook.bids?.length, orderBook.asks?.length, 0);
+		if (!orderBook.bids) orderBook.bids = [];
+		if (!orderBook.asks) orderBook.asks = [];
+
+		const maxRows = Math.max(orderBook.bids.length, orderBook.asks.length, 0);
 
 		return (
 			<StyledTable>
@@ -72,8 +76,8 @@ const Structure = ({ orderBook, height }: Props) => {
 				</TableHead>
 				<TableBody>
 					{Array.from({ length: maxRows }).map((_, index) => {
-						const bid = orderBook.bids[index];
-						const ask = orderBook.asks[index];
+						const bid = orderBook.bids ? orderBook.bids[index] : null;
+						const ask = orderBook.asks ? orderBook.asks[index] : null;
 
 						return (
 							<TableRow key={index}>
