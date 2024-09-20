@@ -1,16 +1,8 @@
-import {
-	ResponsiveContainer,
-	CartesianGrid,
-	XAxis,
-	YAxis,
-	Tooltip,
-	AreaChart,
-	Area
-} from 'recharts';
-import {MaterialUITheme} from 'model/theme/MaterialUI';
-import {BaseProps, BaseState, withHooks} from "components/base/Base";
-import {connect} from "react-redux";
-import {OrderBook} from "api/types/orderBook";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
+import { BaseProps, BaseState, withHooks } from "components/base/Base";
+import { connect } from "react-redux";
+import { OrderBook } from "api/types/orderBook";
 
 interface Props extends BaseProps {
 	orderBook: OrderBook;
@@ -19,7 +11,7 @@ interface Props extends BaseProps {
 interface State extends BaseState {
 	isLoading: boolean;
 	error?: string;
-	api: { market: {orderBook: {chart: OrderBook}} };
+	api: { market: { orderBook: { chart: OrderBook } } };
 }
 
 const mapStateToProps = (state: State) => ({
@@ -72,7 +64,7 @@ function transformOrderBookData(orderBookData: OrderBook) {
 }
 
 
-const Structure = ({ orderBook }: Props) => {
+const Structure = ({orderBook}: Props) => {
 	// const orderBookMock = {
 	// 		"symbol": "BTCUSDC",
 	// 		"bids": [
@@ -311,12 +303,14 @@ const Structure = ({ orderBook }: Props) => {
 					bottom: 0,
 				}}
 			>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="price" />
-				<YAxis />
-				<Tooltip />
-				<Area type="step" dataKey="bidAmount" stroke={MaterialUITheme.palette.success.main} fill={MaterialUITheme.palette.success.main} />
-				<Area type="step" dataKey="askAmount" stroke={MaterialUITheme.palette.error.main} fill={MaterialUITheme.palette.error.main} />
+				<CartesianGrid strokeDasharray="3 3"/>
+				<XAxis dataKey="price"/>
+				<YAxis/>
+				<Tooltip/>
+				<Area type="step" dataKey="bidAmount" stroke={MaterialUITheme.palette.success.main}
+							fill={MaterialUITheme.palette.success.main}/>
+				<Area type="step" dataKey="askAmount" stroke={MaterialUITheme.palette.error.main}
+							fill={MaterialUITheme.palette.error.main}/>
 			</AreaChart>
 		</ResponsiveContainer>
 	);
