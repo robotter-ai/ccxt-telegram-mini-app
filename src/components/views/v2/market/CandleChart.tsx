@@ -1,4 +1,5 @@
 import { Box, styled } from '@mui/material';
+import { Ticker } from 'api/types/tickers';
 import {
 	CandlestickData,
 	ColorType,
@@ -15,13 +16,7 @@ interface LineChartProps {
 	candles: number[][];
 	precision: number;
 	minMove: number;
-	candle: {
-		time: UTCTimestamp;
-		open: number;
-		close: number;
-		high: number;
-		low: number;
-	},
+	candle: Ticker;
 }
 
 const ChartContainer = styled(Box)<{ hidden?: boolean }>(({ hidden }) => ({
@@ -64,7 +59,6 @@ function candleChartConfig(chartReference: HTMLDivElement) {
 		rightPriceScale: {
 			borderColor: MaterialUITheme.palette.text.secondary,
 			scaleMargins: {
-				top: 0.1,
 				bottom: 0.1,
 			},
 		},
@@ -137,7 +131,7 @@ function transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] 
 }
 
 
-function CandleChart({ hidden, candles, precision, minMove, candle }: LineChartProps) {
+function CandleChart({ hidden, candles, precision, minMove = 10, candle }: LineChartProps) {
 	const chartContainerRef = useRef<HTMLDivElement>(null);
 	const chartRef = useRef<IChartApi | null>(null);
 	const seriesRef = useRef<any>(null);
@@ -149,9 +143,8 @@ function CandleChart({ hidden, candles, precision, minMove, candle }: LineChartP
 		}
 
 		if (chartRef.current && seriesRef.current) {
-			const formattedLines = transformCandlesInCandlesticks(candles);
-
-			seriesRef.current.setData(formattedLines);
+			const formattedCandles = transformCandlesInCandlesticks(candles);
+			seriesRef.current.setData(formattedCandles);
 
 			chartRef.current.timeScale().fitContent();
 			chartRef.current.timeScale().scrollToRealTime();
@@ -167,22 +160,26 @@ function CandleChart({ hidden, candles, precision, minMove, candle }: LineChartP
 
 	useEffect(() => {
 		if (seriesRef.current && candle) {
-			const { close, high, low, open, time } = candle;
+			const time = candle.timestamp ?? candle.info.timestamp;
+			const open = candle.open ?? candle.info.open;
+			const high = candle.high ?? candle.info.high;
+			const low = candle.low ?? candle.info.low;
+			const close = candle.close ?? candle.info.last_price;
 
 			const lastData = seriesRef.current.dataByIndex(seriesRef.current.data().length - 1);
 
 			if (
-				lastData?.close !== close ||
+				lastData?.open !== open ||
 				lastData?.high !== high ||
 				lastData?.low !== low ||
-				lastData?.open !== open
+				lastData?.close !== close
 			) {
 				seriesRef.current.update({
-					time: time / 1000,
-					close,
+					time: time / 1000 as UTCTimestamp,
+					open,
 					high,
 					low,
-					open,
+					close,
 				});
 			}
 		}

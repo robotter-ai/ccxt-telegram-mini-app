@@ -1,9 +1,9 @@
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { MaterialUITheme } from 'model/theme/MaterialUI';
-import { BaseProps, BaseState, withHooks } from 'components/base/Base';
-import { connect } from 'react-redux';
-import { OrderBook } from 'api/types/orderBook';
 import { styled } from '@mui/material';
+import { OrderBook } from 'api/types/orderBook';
+import { BaseProps, BaseState, withHooks } from 'components/base/Base';
+import { MaterialUITheme } from 'model/theme/MaterialUI';
+import { connect } from 'react-redux';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface Props extends BaseProps {
 	orderBook: OrderBook;
@@ -310,14 +310,14 @@ const Structure = ({ orderBook }: Props) => {
 					bottom: 0,
 				}}
 			>
-				<CartesianGrid strokeDasharray="3 3"/>
-				<XAxis dataKey="price"/>
-				<YAxis/>
-				<Tooltip/>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="price" />
+				<YAxis />
+				<Tooltip />
 				<Area type="step" dataKey="bidAmount" stroke={MaterialUITheme.palette.success.main}
-							fill={MaterialUITheme.palette.success.main}/>
+					fill={MaterialUITheme.palette.success.main} />
 				<Area type="step" dataKey="askAmount" stroke={MaterialUITheme.palette.error.main}
-							fill={MaterialUITheme.palette.error.main}/>
+					fill={MaterialUITheme.palette.error.main} />
 			</AreaChart>
 		</ResponsiveContainer>
 	);

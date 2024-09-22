@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import { Box, Slider, styled, TextField } from '@mui/material';
-import { connect } from 'react-redux';
 import { BaseProps, withHooks } from 'components/base/Base.tsx';
 import { dispatch } from 'model/state/redux/store';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 
 const roundWithPrecision = (value: number, precision: number) => {
 	const factor = Math.pow(10, precision);
@@ -45,7 +45,7 @@ const Structure: React.FC<Props> = ({
 	updateValue,
 	onValueChange = () => {}
 }) => {
-	step = roundWithPrecision(Math.pow(10, -precision), precision);
+	step = roundWithPrecision(Math.pow(10, -precision), precision) || 0;
 	min = min || step || 0;
 	max = max || 1000;
 	defaultValue = 1;

@@ -1,28 +1,29 @@
-import {Box, IconButton, styled} from '@mui/material';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
-import TableChartIcon from '@mui/icons-material/TableChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import { Box, IconButton, styled } from '@mui/material';
+import { Ticker } from 'api/types/tickers';
 import axios from 'axios';
-import {Base, BaseProps, BaseState, withHooks} from 'components/base/Base';
-import {CreateOrder} from 'components/views/v2/order/CreateOrder';
-import {Orders} from 'components/views/v2/orders/Orders';
-import {formatPrice, formatVolume, getPrecision} from 'components/views/v2/utils/utils';
-import {IChartApi, UTCTimestamp} from 'lightweight-charts';
-import {Map} from 'model/helper/extendable-immutable/map';
-import {apiGetFetchOHLCV, apiGetFetchOrderBook, apiGetFetchTicker} from 'model/service/api';
-import {executeAndSetInterval} from 'model/service/recurrent';
-import {dispatch} from 'model/state/redux/store';
-import {createRef} from 'react';
-import {connect} from 'react-redux';
-import {toast} from 'react-toastify';
-import {Spinner} from '../layout/spinner/Spinner';
+import { Base, BaseProps, BaseState, withHooks } from 'components/base/Base';
+import { BookChart } from 'components/views/v2/market/BookChart';
+import { SliderWithInput } from 'components/views/v2/market/charts/SliderWithInput';
+import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
+import { CreateOrder } from 'components/views/v2/order/CreateOrder';
+import { Orders } from 'components/views/v2/orders/Orders';
+import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
+import { IChartApi } from 'lightweight-charts';
+import { Map } from 'model/helper/extendable-immutable/map';
+import { apiGetFetchOHLCV, apiGetFetchOrderBook, apiGetFetchTicker } from 'model/service/api';
+import { executeAndSetInterval } from 'model/service/recurrent';
+import { dispatch } from 'model/state/redux/store';
+import { createRef } from 'react';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Spinner } from '../layout/spinner/Spinner';
 import CandleChart from './CandleChart';
+import { DepthChart } from './DepthChart';
 import LineChart from './LineChart';
-import {BookChart} from 'components/views/v2/market/BookChart';
-import {TimeSwitch} from 'components/views/v2/market/charts/TimeSwitch';
-import {DepthChart} from "components/views/v2/market/DepthChart";
-import {SliderWithInput} from 'components/views/v2/market/charts/SliderWithInput';
 
 const ChartModeContainer = styled(Box)({
 	display: 'flex',
@@ -30,7 +31,9 @@ const ChartModeContainer = styled(Box)({
 	margin: '10px 0',
 });
 
-const StyledIconButton = styled(IconButton)<{ isSelected: boolean }>(({ isSelected, theme }) => ({
+const StyledIconButton = styled(IconButton, {
+	shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ isSelected, theme }) => ({
 	backgroundColor: isSelected ? theme.palette.background.paper : theme.palette.background.default,
 	color: isSelected ? theme.palette.text.primary : theme.palette.text.secondary,
 	borderRadius: '50%',
@@ -50,11 +53,10 @@ const Container = styled(Box)({
 	alignItems: 'center',
 });
 
-const ChartContainer = styled(Box)<{ hidden?: boolean }>(({ hidden }) => ({
+const ChartContainer = styled(Box)({
 	width: '100%',
 	minHeight: '400px',
-	display: hidden ? 'none' : 'block',
-}));
+});
 
 const ChartDetails = styled(Box)({
 	marginTop: '16px',
@@ -228,30 +230,38 @@ class Structure extends Base<Props, State> {
 					</StyledIconButton>
 				</ChartModeContainer>
 
-				<ChartContainer hidden={chartMode !== 'LINE_CHART'}>
-					<TimeSwitch
-						defaultGranularity={priceChartGranularity}
-						onGranularityChange={this.onChartGranularityChange}
-					/>
-					<LineChart {...chartProps} />
-				</ChartContainer>
+				{chartMode === 'LINE_CHART' && (
+					<>
+						<TimeSwitch
+							defaultGranularity={priceChartGranularity}
+							onGranularityChange={this.onChartGranularityChange}
+						/>
+						<LineChart {...chartProps} />
+					</>
+				)}
 
-				<ChartContainer hidden={chartMode !== 'CANDLE_CHART'}>
-					<TimeSwitch
-						defaultGranularity={priceChartGranularity}
-						onGranularityChange={this.onChartGranularityChange}
-					/>
-					<CandleChart {...chartProps} />
-				</ChartContainer>
+				{chartMode === 'CANDLE_CHART' && (
+					<>
+						<TimeSwitch
+							defaultGranularity={priceChartGranularity}
+							onGranularityChange={this.onChartGranularityChange}
+						/>
+						<CandleChart {...chartProps} />
+					</>
+				)}
 
-				<ChartContainer hidden={chartMode !== 'ORDER_BOOK_TABLE'}>
-					<SliderWithInput />
-					<BookChart marketId={this.marketId} height="100%" />
-				</ChartContainer>
+				{chartMode === 'ORDER_BOOK_TABLE' && (
+					<ChartContainer>
+						<SliderWithInput />
+						<BookChart marketId={this.marketId} height="100%" />
+					</ChartContainer>
+				)}
 
-				<ChartContainer hidden={chartMode !== 'ORDER_BOOK_GRAPHIC'}>
-					<DepthChart />
-				</ChartContainer>
+				{chartMode === 'ORDER_BOOK_GRAPHIC' && (
+					<ChartContainer>
+						<DepthChart />
+					</ChartContainer>
+				)}
 
 				<ChartDetails>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
@@ -290,7 +300,6 @@ class Structure extends Base<Props, State> {
 				chartProps: {
 					candles,
 					precision: setLastMarketPrecision,
-					minMove: 10,
 				},
 			});
 		}
@@ -301,15 +310,13 @@ class Structure extends Base<Props, State> {
 	async doRecurrently() {
 		const recurrentFunction = async () => {
 			await this.updateOrderBook();
-			const { close, timestamp } = await this.fetchTickerData(this.marketId);
+
+			const ticker = await this.fetchTickerData(this.marketId) as Ticker;
 			this.setState((prevState) => ({
-				price: close,
+				price: ticker.close ?? ticker.info.last_price,
 				chartProps: {
 					...prevState.chartProps,
-					candle: {
-						time: timestamp,
-						value: close,
-					},
+					candle: ticker,
 				},
 			}));
 		};
@@ -404,105 +411,6 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
-	// createMarketBook(precision: number, lines: LineData[]) {
-	// 	try {
-	// 		if (!this.bookReference.current) {
-	// 			console.warn('The chart reference has not been found');
-	// 			return;
-	// 		}
-	//
-	// 		this.book = createChart(this.bookReference.current, {
-	// 			autoSize: true,
-	// 			layout: {
-	// 				background: {
-	// 					type: ColorType.Solid,
-	// 					color: MaterialUITheme.palette.background.default,
-	// 				},
-	// 				textColor: MaterialUITheme.palette.text.primary,
-	// 				fontSize: 11,
-	// 			},
-	// 			grid: {
-	// 				vertLines: {
-	// 					visible: false,
-	// 				},
-	// 				horzLines: {
-	// 					visible: false,
-	// 				},
-	// 			},
-	// 			timeScale: {
-	// 				visible: true,
-	// 				borderVisible: true,
-	// 				timeVisible: true,
-	// 				borderColor: MaterialUITheme.palette.text.secondary,
-	// 				secondsVisible: true,
-	// 				fixLeftEdge: true,
-	// 				fixRightEdge: true,
-	// 			},
-	// 			rightPriceScale: {
-	// 				visible: true,
-	// 				borderVisible: true,
-	// 				alignLabels: true,
-	// 				borderColor: MaterialUITheme.palette.text.secondary,
-	// 				autoScale: true,
-	// 				scaleMargins: {
-	// 					top: 0.1,
-	// 					bottom: 0.1,
-	// 				},
-	// 			},
-	// 			leftPriceScale: {
-	// 				visible: false,
-	// 			},
-	// 			handleScale: false,
-	// 			handleScroll: false,
-	// 		});
-	//
-	// 		const valueMinMove = 10;
-	// 		this.chartSeries = this.book.addLineSeries({
-	// 			color: MaterialUITheme.palette.error.main,
-	// 			lineWidth: 1,
-	// 			priceLineWidth: 1,
-	// 			priceLineVisible: true,
-	// 			lastValueVisible: true,
-	// 			lineStyle: LineStyle.Solid,
-	// 			priceLineStyle: LineStyle.Dashed,
-	// 			priceLineColor: MaterialUITheme.palette.error.main,
-	// 			lastPriceAnimation: LastPriceAnimationMode.Continuous,
-	// 			priceFormat: {
-	// 				type: 'custom',
-	// 				formatter: (price: number) => price.toFixed(precision),
-	// 				minMove: 0.1 ** valueMinMove,
-	// 			},
-	// 		});
-	//
-	// 		window.addEventListener('resize', this.handleChartResize);
-	//
-	// 		this.chartSeries.setData(lines);
-	//
-	// 		this.book.timeScale().fitContent();
-	// 		this.book.timeScale().scrollToRealTime();
-	// 	} catch (exception) {
-	// 		console.error(`chart: ${exception}`);
-	// 	}
-	// }
-
-	transformCandlesInLines(candles: number[][]) {
-		if (!candles || !Array.isArray(candles)) {
-			return [];
-		}
-
-		const formattedLines = candles.map((candle, index) => {
-			const isLastCandle = index === candles.length - 1;
-
-			return {
-				time: Number(candle[0]) as UTCTimestamp,
-				value: Number(candle[4]),
-				...(isLastCandle && { volume: Number(candle[5]) }),
-			};
-		});
-
-		return formattedLines;
-	}
-
 	handleChartResize = () => {
 		if (this.chartReference.current) {
 			this.chart!.applyOptions({ width: this.chartReference.current.clientWidth });
@@ -595,7 +503,6 @@ class Structure extends Base<Props, State> {
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 const Style = styled(Structure)(({ theme }) => `
-	background-color: green;
 `);
 
 const Behavior = connect(mapStateToProps, mapDispatchToProps)(withHooks(Style));

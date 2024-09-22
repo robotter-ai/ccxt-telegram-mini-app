@@ -1,4 +1,6 @@
 import { Box, styled } from '@mui/material';
+import { Ticker } from 'api/types/tickers';
+
 import {
 	ColorType,
 	createChart,
@@ -15,10 +17,7 @@ interface LineChartProps {
 	candles: number[][];
 	precision: number;
 	minMove: number;
-	candle: {
-		time: UTCTimestamp;
-		value: number;
-	},
+	candle: Ticker;
 }
 
 const ChartContainer = styled(Box)<{ hidden?: boolean }>(({ hidden }) => ({
@@ -71,7 +70,6 @@ function lineChartConfig(chartReference: HTMLDivElement) {
 			borderColor: MaterialUITheme.palette.text.secondary,
 			autoScale: true,
 			scaleMargins: {
-				top: 0.1,
 				bottom: 0.1,
 			},
 		},
@@ -111,20 +109,17 @@ function transformCandlesInLines(candles: number[][]) {
 		return [];
 	}
 
-	const formattedLines = candles.map((candle, index) => {
-		const isLastCandle = index === candles.length - 1;
-
+	const formattedLines = candles.map(candle => {
 		return {
 			time: Number(candle[0]) as UTCTimestamp,
 			value: Number(candle[4]),
-			...(isLastCandle && { volume: Number(candle[5]) }),
 		};
 	});
 
 	return formattedLines;
 }
 
-function LineChart({ hidden, candles, precision, minMove, candle }: LineChartProps) {
+function LineChart({ hidden, candles, precision, minMove = 10, candle }: LineChartProps) {
 	const chartContainerRef = useRef<HTMLDivElement>(null);
 	const chartRef = useRef<IChartApi | null>(null);
 	const seriesRef = useRef<any>(null);
@@ -154,13 +149,13 @@ function LineChart({ hidden, candles, precision, minMove, candle }: LineChartPro
 
 	useEffect(() => {
 		if (seriesRef.current && candle) {
-			const { value, time } = candle;
+			const { timestamp, close, info } = candle;
 			const lastData = seriesRef.current.dataByIndex(seriesRef.current.data().length - 1);
 
-			if (lastData?.value !== value) {
+			if (lastData?.value !== close) {
 				seriesRef.current.update({
-					time: time / 1000,
-					value: value,
+					time: (timestamp ?? info.timestamp) / 1000 as UTCTimestamp,
+					value: close ?? info.last_price,
 				});
 			}
 		}
