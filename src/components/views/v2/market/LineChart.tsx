@@ -13,18 +13,16 @@ import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { useEffect, useRef } from 'react';
 
 interface LineChartProps {
-	hidden?: boolean;
 	candles: number[][];
 	precision: number;
 	minMove: number;
 	candle: Ticker;
 }
 
-const ChartContainer = styled(Box)<{ hidden?: boolean }>(({ hidden }) => ({
+const ChartContainer = styled(Box)({
 	width: '100%',
 	minHeight: '400px',
-	display: hidden ? 'none' : 'block',
-}));
+});
 
 const StyledSeriesEmpty = styled(Box)(({ theme }) => ({
 	fontSize: '17px',
@@ -119,7 +117,7 @@ function transformCandlesInLines(candles: number[][]) {
 	return formattedLines;
 }
 
-function LineChart({ hidden, candles, precision, minMove = 10, candle }: LineChartProps) {
+function LineChart({ candles, precision, minMove = 10, candle }: LineChartProps) {
 	const chartContainerRef = useRef<HTMLDivElement>(null);
 	const chartRef = useRef<IChartApi | null>(null);
 	const seriesRef = useRef<any>(null);
@@ -168,9 +166,10 @@ function LineChart({ hidden, candles, precision, minMove = 10, candle }: LineCha
 					<ChartContainer
 						id='line-chart'
 						ref={chartContainerRef}
-						hidden={hidden}
 					/> :
-					<></>
+					<StyledSeriesEmpty>
+						No data available.
+					</StyledSeriesEmpty>
 			)}
 		</>
 

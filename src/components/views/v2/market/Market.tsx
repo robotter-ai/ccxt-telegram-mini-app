@@ -258,9 +258,9 @@ class Structure extends Base<Props, State> {
 				)}
 
 				{chartMode === 'ORDER_BOOK_GRAPHIC' && (
-					<ChartContainer>
+					<>
 						<DepthChart />
-					</ChartContainer>
+					</>
 				)}
 
 				<ChartDetails>

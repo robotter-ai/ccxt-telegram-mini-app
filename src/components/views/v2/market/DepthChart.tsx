@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { OrderBook } from 'api/types/orderBook';
 import { BaseProps, BaseState, withHooks } from 'components/base/Base';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
@@ -14,6 +14,20 @@ interface State extends BaseState {
 	error?: string;
 	api: { market: { orderBook: { chart: OrderBook } } };
 }
+
+const StyledSeriesEmpty = styled(Box)(({ theme }) => ({
+	fontSize: '17px',
+	fontWeight: '300',
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	fontFamily: theme.fonts.primary,
+}));
+
+const ChartContainer = styled(Box)({
+	width: '100%',
+	minHeight: '400px',
+});
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
@@ -295,31 +309,43 @@ const Structure = ({ orderBook }: Props) => {
 	// 		"nonce": null
 	// }
 
+	const CHART_AREA_DATA_MIN = 2;
+
 	const data = transformOrderBookData(orderBook);
 
+	if (!data || data.length < CHART_AREA_DATA_MIN) {
+		return (
+			<StyledSeriesEmpty>
+				No data available.
+			</StyledSeriesEmpty>
+		);
+	}
+
 	return (
-		<ResponsiveContainer width="100%" height="100%">
-			<AreaChart
-				width={500}
-				height={400}
-				data={data}
-				margin={{
-					top: 10,
-					right: 30,
-					left: 0,
-					bottom: 0,
-				}}
-			>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="price" />
-				<YAxis />
-				<Tooltip />
-				<Area type="step" dataKey="bidAmount" stroke={MaterialUITheme.palette.success.main}
-					fill={MaterialUITheme.palette.success.main} />
-				<Area type="step" dataKey="askAmount" stroke={MaterialUITheme.palette.error.main}
-					fill={MaterialUITheme.palette.error.main} />
-			</AreaChart>
-		</ResponsiveContainer>
+		<ChartContainer>
+			<ResponsiveContainer width="100%" height="100%">
+				<AreaChart
+					width={500}
+					height={400}
+					data={data}
+					margin={{
+						top: 10,
+						right: 30,
+						left: 0,
+						bottom: 0,
+					}}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="price" />
+					<YAxis />
+					<Tooltip />
+					<Area type="step" dataKey="bidAmount" stroke={MaterialUITheme.palette.success.main}
+						fill={MaterialUITheme.palette.success.main} />
+					<Area type="step" dataKey="askAmount" stroke={MaterialUITheme.palette.error.main}
+						fill={MaterialUITheme.palette.error.main} />
+				</AreaChart>
+			</ResponsiveContainer>
+		</ChartContainer>
 	);
 };
 

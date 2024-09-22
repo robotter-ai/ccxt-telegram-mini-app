@@ -104,7 +104,7 @@ function OrdersList(props: OrderListProps) {
 			<div>
 				{(!props.orders || props.orders.length === 0) ? (
 					<StyledOrdersEmpty>
-						You have no orders...
+						You have no orders.
 					</StyledOrdersEmpty>
 				) : (
 					<div>
