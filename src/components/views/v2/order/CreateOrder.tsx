@@ -13,13 +13,19 @@ import { formatPrice } from 'components/views/v2/utils/utils';
 import Decimal from 'decimal.js';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
-import { apiGetFetchOpenOrders, apiGetFetchTicker, apiPostCreateOrder } from 'model/service/api';
+import {
+	apiGetFetchBalance,
+	apiGetFetchOpenOrders,
+	apiGetFetchTicker, apiGetFetchTickers,
+	apiPostCreateOrder
+} from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
 import { ChangeEvent } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {Constant} from "model/enum/constant";
 
 const OrderSideLabelMapper = {[OrderSide.BUY]: 'Buy', [OrderSide.SELL]: 'Sell'};
 const OrderTypeLabelMapper = {[OrderType.MARKET]: 'Market', [OrderType.LIMIT]: 'Limit'};
@@ -27,6 +33,7 @@ const OrderTypeLabelMapper = {[OrderType.MARKET]: 'Market', [OrderType.LIMIT]: '
 interface Props extends BaseProps {
 	marketId?: string;
 	markets: Market[];
+	balanceData: any;
 	marketPrecision: number;
 }
 
@@ -41,13 +48,20 @@ interface State extends BaseState {
 	amount: string;
 	price?: string;
 	isSubmitting?: boolean;
+	balanceData: any;
+	tickers: { [key: string]: any };
 }
 
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state: State | any, props: Props | any) => ({
-	markets: state.api.markets,
-});
+const mapStateToProps = (state: State | any, props: Props | any) => {
+	console.log('balanceData from state:', state.api.balanceData);
+	return {
+		markets: state.api.markets,
+		balanceData: state.api.balanceData,
+	};
+};
+
 
 const Style = styled(Box)({
 	width: '100%',
@@ -116,6 +130,8 @@ class Structure extends Base<Props, State> {
 			amount: '0',
 			price: '0',
 			isSubmitting: false,
+			balanceData: null,
+			tickers: {},
 		} as Readonly<State>;
 
 		this.properties.setIn('recurrent.5s.intervalId', undefined);
@@ -138,7 +154,55 @@ class Structure extends Base<Props, State> {
 		}
 	}
 
+	componentDidUpdate(prevProps: Props) {
+		if (prevProps.balanceData !== this.props.balanceData) {
+			this.setState({ balanceData: this.props.balanceData });
+			console.log('Balance data updated:', this.props.balanceData);
+		}
+	}
+
 	async initialize() {
+
+		try {
+			const balanceResponse = await apiGetFetchBalance(
+				{},
+				this.props.handleUnAuthorized
+			);
+
+			if (balanceResponse.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
+				throw new Error('Failed to fetch balance');
+			}
+
+			const balanceData = balanceResponse.data.result;
+			console.log('Fetched balance data:', balanceData);
+			this.setState({ balanceData });
+
+			const tickersResponse = await apiGetFetchTickers(
+				{},
+				this.props.handleUnAuthorized
+			);
+
+			if (tickersResponse.status !== 200) {
+				// noinspection ExceptionCaughtLocallyJS
+				throw new Error('Failed to fetch tickers');
+			}
+
+			const allTickers = tickersResponse.data.result;
+
+			console.log('tickers:', allTickers);
+			this.setState({ tickers: allTickers });
+
+		} catch (error) {
+			console.error('Error fetching balance or tickers:', error);
+			this.setState({ error: 'Failed to load balance' });
+			toast.error('Failed to load balance');
+		} finally {
+			this.setState({ isLoading: false });
+		}
+
+
+
 		if (this.props.marketId) {
 			const market = this.props.markets.find((m) => m.symbol.toUpperCase() === this.props.marketId);
 			const precision = market?.precision?.amount ?? (market?.precision as unknown as number);
@@ -165,7 +229,33 @@ class Structure extends Base<Props, State> {
 		this.setState({ orderType: event.target.value as OrderType });
 	}
 
+
 	handleAmountChange(event: ChangeEvent<HTMLInputElement>) {
+
+		const { balanceData, tickers } = this.state;
+
+		let totalBalanceUSDC = 0;
+
+		if (balanceData) {
+			totalBalanceUSDC = Object.entries(balanceData.total).reduce((acc, balance: any) => {
+				const asset = balance[0];
+				const market = `${asset}${Constant.currentUSDCurrency.value}`.toUpperCase();
+				const amount = balance[1];
+				const ticker = Object.values(tickers).find((ticker: any) => ticker.symbol.toUpperCase() === market);
+				const price = Constant.usdCurrencies.value.includes(asset) ? 1 : (ticker?.last || 0);
+
+				return acc + price * amount;
+			}, 0);
+		}
+
+		if (parseFloat(event.target.value) > totalBalanceUSDC) {
+			toast.error('Insufficient funds');
+			this.setState({ amount: '0' });
+		} else {
+			const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
+			this.setState({ amount: isValidAmount ? event.target.value : '0' });
+		}
+
 		if (this.props.marketId) {
 			this.getTotalPrice(this.props.marketId).catch((error) => {
 				console.error('GetTotalPrice Error: ', error);
@@ -206,7 +296,7 @@ class Structure extends Base<Props, State> {
 					side: orderSide,
 					type: orderType,
 					amount: new Decimal(amount).toNumber(),
-					price: orderType === OrderType.MARKET ? null : new Decimal(price).toNumber(),
+					price: orderType === OrderType.MARKET || price === undefined ? null : new Decimal(price).toNumber(),
 				},
 				this.props.handleUnAuthorized
 			);
@@ -333,7 +423,6 @@ class Structure extends Base<Props, State> {
 			},
 		];
 
-
 		const orderTypeButtons = [
 			{ label: OrderTypeLabelMapper[OrderType.MARKET], onClick: () => this.setState({ orderType: OrderType.MARKET }) },
 			{ label: OrderTypeLabelMapper[OrderType.LIMIT], onClick: () => this.setState({ orderType: OrderType.LIMIT }) },
@@ -360,6 +449,7 @@ class Structure extends Base<Props, State> {
 			return total.toFixed();
 		};
 
+
 		return (
 			<Style>
 				{isLoading ? <Spinner /> : null}
@@ -375,10 +465,11 @@ class Structure extends Base<Props, State> {
 
 					<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0} />
 					<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0} />
-					<NumberInput label={'AMOUNT'} value={amount ?? '0'} precision={marketPrecision} onChange={this.handleAmountChange} />
+					<NumberInput label={'AMOUNT'} value={amount ?? '0'} precision={marketPrecision} onChange={(event) => {
+						this.handleAmountChange(event);
+					}} />
 					{orderType === OrderType.LIMIT &&
-						<NumberInput label={'SET PRICE'} value={price ?? '0'} precision={marketPrecision}
-							onChange={this.handlePriceChange} />}
+					<NumberInput label={'SET PRICE'} value={price ?? '0'} precision={marketPrecision} onChange={this.handlePriceChange} />}
 				</InputsContainer>
 				<Divider />
 				<TotalContainer>
