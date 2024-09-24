@@ -22,20 +22,20 @@ const StyledTable = styled(Table)({
 
 const CompactTableCell = styled(TableCell)({
 	padding: '0.6em 0.0725em',
-	fontSize: '0.6875em',
+	fontSize: '0.7875em',
 	whiteSpace: 'nowrap',
 });
 
 const GreenText = styled(Typography)({
 	color: 'green',
 	fontWeight: 'bold',
-	fontSize: '1.1em',
+	fontSize: '0.9875em',
 });
 
 const RedText = styled(Typography)({
 	color: 'red',
 	fontWeight: 'bold',
-	fontSize: '1.1em',
+	fontSize: '0.9875em',
 });
 
 interface Props {
@@ -70,7 +70,7 @@ const Structure = ({ orderBook, height }: Props) => {
 					<TableHead>
 						<TableRow>
 							<CompactTableCell align="left">Amount</CompactTableCell>
-							<CompactTableCell sx={{px: 2}} align="left">Bid</CompactTableCell>
+							<CompactTableCell align="left">Bid</CompactTableCell>
 							<CompactTableCell align="left">Ask</CompactTableCell>
 							<CompactTableCell sx={{px: -2}} align="left">Amount</CompactTableCell>
 						</TableRow>
@@ -83,7 +83,7 @@ const Structure = ({ orderBook, height }: Props) => {
 							return (
 								<TableRow key={index}>
 									<CompactTableCell align="left">{bid ? formatPrice(bid[1]) : '-'}</CompactTableCell>
-									<CompactTableCell sx={{px: 2}} align="left">
+									<CompactTableCell align="left">
 										{bid ? <GreenText>{formatPrice(bid[0])}</GreenText> : '-'}
 									</CompactTableCell>
 									<CompactTableCell align="left">
