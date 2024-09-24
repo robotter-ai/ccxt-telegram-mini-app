@@ -1,5 +1,5 @@
 import { Box, Slider, styled, TextField } from '@mui/material';
-import { BaseProps, withHooks } from 'components/base/Base.tsx';
+import { BaseProps, withHooks } from 'components/base/Base';
 import { dispatch } from 'model/state/redux/store';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -88,7 +88,7 @@ const Structure: React.FC<Props> = ({
 	};
 
 	return (
-		<Box className="flex w-full items-center gap-4">
+		<Box className="flex px-4 w-full items-center gap-3 ">
 			<Slider
 				value={localValue}
 				min={min}
@@ -107,7 +107,7 @@ const Structure: React.FC<Props> = ({
 					type: 'number',
 					'aria-labelledby': 'input-slider',
 				}}
-				className="text-field"
+				className="text-field w-16"
 			/>
 		</Box>
 	);
