@@ -11,7 +11,7 @@ import { SliderWithInput } from 'components/views/v2/market/charts/SliderWithInp
 import { TimeSwitch } from 'components/views/v2/market/charts/TimeSwitch';
 import { CreateOrder } from 'components/views/v2/order/CreateOrder';
 import { Orders } from 'components/views/v2/orders/Orders';
-import { formatPrice, formatVolume, getPrecision } from 'components/views/v2/utils/utils';
+import { formatPrice, getPrecision } from 'components/views/v2/utils/utils';
 import { IChartApi } from 'lightweight-charts';
 import { Map } from 'model/helper/extendable-immutable/map';
 import { apiGetFetchOHLCV, apiGetFetchOrderBook, apiGetFetchTicker } from 'model/service/api';
@@ -59,11 +59,11 @@ const ChartContainer = styled(Box)({
 });
 
 const ChartDetails = styled(Box)({
-	marginTop: '16px',
-	marginBottom: '30px',
+	marginTop: '4em',
+	marginBottom: '1.2em',
 	display: 'flex',
 	flexDirection: 'row',
-	gap: '20px',
+	gap: '1.25em',
 });
 
 const SubTitle = styled(Box)(({ theme }) => ({
@@ -274,7 +274,7 @@ class Structure extends Base<Props, State> {
 					</ChartDetailItem>
 					<ChartDetailItem dataPrecision={this.marketPrecision}>
 						<SubTitle>24H VOL ({this.market.base})</SubTitle>
-						<Box>{volume ? formatVolume(volume) : '-'}</Box>
+						<Box>{volume ? formatPrice(volume) : '-'}</Box>
 					</ChartDetailItem>
 				</ChartDetails>
 
