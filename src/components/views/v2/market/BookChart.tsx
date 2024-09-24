@@ -10,9 +10,9 @@ interface TableContainerProps {
 
 const TableContainer = styled(Box)<TableContainerProps>`
   width: 100%;
-  height: ${props => props.height || '400px'};
+  height: ${props => props.height || '25em'};
   overflow-y: auto;
-  padding: 10px;
+  padding: 0.625em;
 `;
 
 const StyledTable = styled(Table)({
@@ -21,21 +21,21 @@ const StyledTable = styled(Table)({
 });
 
 const CompactTableCell = styled(TableCell)({
-	padding: '6px 8px',
-	fontSize: '12px',
+	padding: '0.6em 0.0725em',
+	fontSize: '0.6875em',
 	whiteSpace: 'nowrap',
 });
 
 const GreenText = styled(Typography)({
 	color: 'green',
 	fontWeight: 'bold',
-	fontSize: '12px',
+	fontSize: '1.1em',
 });
 
 const RedText = styled(Typography)({
 	color: 'red',
 	fontWeight: 'bold',
-	fontSize: '12px',
+	fontSize: '1.1em',
 });
 
 interface Props {
@@ -70,9 +70,9 @@ const Structure = ({ orderBook, height }: Props) => {
 					<TableHead>
 						<TableRow>
 							<CompactTableCell align="left">Amount</CompactTableCell>
-							<CompactTableCell align="left">Bid</CompactTableCell>
+							<CompactTableCell sx={{px: 2}} align="left">Bid</CompactTableCell>
 							<CompactTableCell align="left">Ask</CompactTableCell>
-							<CompactTableCell align="left">Amount</CompactTableCell>
+							<CompactTableCell sx={{px: -2}} align="left">Amount</CompactTableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -83,7 +83,7 @@ const Structure = ({ orderBook, height }: Props) => {
 							return (
 								<TableRow key={index}>
 									<CompactTableCell align="left">{bid ? formatPrice(bid[1]) : '-'}</CompactTableCell>
-									<CompactTableCell align="left">
+									<CompactTableCell sx={{px: 2}} align="left">
 										{bid ? <GreenText>{formatPrice(bid[0])}</GreenText> : '-'}
 									</CompactTableCell>
 									<CompactTableCell align="left">
