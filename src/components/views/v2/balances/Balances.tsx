@@ -182,7 +182,7 @@ class Structure extends Base<Props, State> {
 											</td>
 											<td className="px-3 py-2 w-7/12">
 												<div className="flex flex-col text-right">
-													<span className="leading-none">{`$${price.toFixed(2)}`}</span>
+													<span className="leading-none">${formatPrice(price)}</span>
 													<span className={`text-sm ${percentage.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
 															{percentage}
 														</span>
