@@ -40,6 +40,7 @@ const RedText = styled(Typography)({
 
 interface Props {
 	marketId: string;
+	market: any;
 	orderBook: OrderBook;
 	height?: string | number;
 }
@@ -48,17 +49,18 @@ interface Props {
 // noinspection JSUnusedLocalSymbols
 const mapStateToProps = (state: State | any, props: Props | any) => ({
 	orderBook: state.api.market.orderBook.chart,
+	market: state.api.market.market,
 });
-
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 const mapDispatchToProps = (reduxDispatch: any) => ({
 });
 
-const Structure = ({ orderBook, height }: Props) => {
+const Structure = ({ orderBook, height, market}: Props) => {
 	const renderTable = () => {
-		if (!orderBook) return null;
+		const marketPrecision = market?.precision;
 
+		if (!orderBook) return null;
 		if (!orderBook.bids) orderBook.bids = [];
 		if (!orderBook.asks) orderBook.asks = [];
 
@@ -80,16 +82,17 @@ const Structure = ({ orderBook, height }: Props) => {
 							const bid = orderBook.bids ? orderBook.bids[index] : null;
 							const ask = orderBook.asks ? orderBook.asks[index] : null;
 
+							// @ts-ignore
 							return (
 								<TableRow key={index}>
-									<CompactTableCell align="left">{bid ? formatPrice(bid[1]) : '-'}</CompactTableCell>
-									<CompactTableCell align="left">
-										{bid ? <GreenText>{formatPrice(bid[0])}</GreenText> : '-'}
+									<CompactTableCell align="right">{bid ? formatPrice(bid[1], null, false, marketPrecision) : '-'}</CompactTableCell>
+									<CompactTableCell align="right">
+										{bid ? <GreenText>{formatPrice(bid[0], null, false, marketPrecision)}</GreenText> : '-'}
 									</CompactTableCell>
-									<CompactTableCell align="left">
-										{ask ? <RedText>{formatPrice(ask[0])}</RedText> : '-'}
+									<CompactTableCell align="right">
+										{ask ? <RedText>{formatPrice(ask[0], null, false, marketPrecision)}</RedText> : '-'}
 									</CompactTableCell>
-									<CompactTableCell align="left">{ask ? formatPrice(ask[1]) : '-'}</CompactTableCell>
+									<CompactTableCell align="right">{ask ? formatPrice(ask[1], null, false, marketPrecision) : '-'}</CompactTableCell>
 								</TableRow>
 							);
 						})}
