@@ -122,12 +122,9 @@ function transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] 
 			low: Number(candle[3]),
 			close: Number(candle[4]),
 		};
-
-	}).filter(candle => candle !== undefined);
-
+	}).filter(candle => candle !== undefined) as CandlestickData[];
 	return formattedCandles;
 }
-
 
 function CandleChart({ candles, precision, minMove = 10, candle }: LineChartProps) {
 	const chartContainerRef = useRef<HTMLDivElement>(null);
