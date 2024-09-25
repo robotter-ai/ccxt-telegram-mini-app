@@ -71,10 +71,10 @@ const Structure = ({ orderBook, height, market}: Props) => {
 				<StyledTable>
 					<TableHead>
 						<TableRow>
-							<CompactTableCell align="left">Amount</CompactTableCell>
-							<CompactTableCell align="left">Bid</CompactTableCell>
-							<CompactTableCell align="left">Ask</CompactTableCell>
-							<CompactTableCell sx={{px: -2}} align="left">Amount</CompactTableCell>
+							<CompactTableCell align="right">Amount</CompactTableCell>
+							<CompactTableCell sx={{px: 3}} align="right">Bid</CompactTableCell>
+							<CompactTableCell sx={{px: 2}} align="right">Ask</CompactTableCell>
+							<CompactTableCell sx={{px: 3}} align="left">Amount</CompactTableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
