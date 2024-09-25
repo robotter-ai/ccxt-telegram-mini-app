@@ -39,7 +39,7 @@ interface State extends BaseState {
 	orderSide: OrderSide;
 	orderType: OrderType;
 	amount: string;
-	price?: string;
+	price: string;
 	isSubmitting?: boolean;
 }
 
