@@ -414,3 +414,52 @@ pushStack('api.updateRewards', (currentState: any, payload: any) => {
 
 	return nextState;
 });
+
+pushStack('api.updateUserMarketFavorites', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	nextState = nextState.setIn(
+		'api.favorites',
+		payload
+	);
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	console.log('Updated user market favorites', nextState.api.favorites);
+
+	return nextState;
+});
+
+pushStack('api.addUserMarketFavorite', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	nextState = nextState.setIn(
+		'api.favorites',
+		[...nextState.getIn('api.favorites'), payload] // Append new favorite market ID
+	);
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	console.log('Added favorite market', nextState.api.favorites);
+
+	return nextState;
+});
+
+pushStack('api.removeUserMarketFavorite', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	nextState = nextState.setIn(
+		'api.favorites',
+		nextState.getIn('api.favorites').filter((id: number) => id !== payload) // Remove the favorite market ID
+	);
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	console.log('Removed favorite market', nextState.api.favorites);
+
+	return nextState;
+});
+

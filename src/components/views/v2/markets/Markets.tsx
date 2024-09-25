@@ -1,7 +1,7 @@
 import { Box, styled } from '@mui/material';
 import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { Spinner } from 'components/views/v1/spinner/Spinner';
-import { MarketsTable } from 'components/views/v2/markets/MarketsTable';
+import  MarketsTable  from 'components/views/v2/markets/MarketsTable';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { apiGetFetchMarkets, apiGetFetchTickers } from 'model/service/api';
 import { connect } from 'react-redux';
