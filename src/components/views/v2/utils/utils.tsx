@@ -85,6 +85,10 @@ export const formatPrice = (
 	shouldDisplayCurrency: boolean = false,
 	maxPrecision?: number
 ): string => {
+	if (isNaN(Number.parseFloat(price?.toString()))) {
+		return '-';
+	}
+
 	const priceString = typeof price === 'string' ? price : price.toString();
 
 	const actualPrecision = priceString.includes('.') ? priceString.split('.')[1].length : 0;
