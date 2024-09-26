@@ -39,8 +39,37 @@ const callAPIorMockAPI = async (options: Options, handleUnAuthorized?: () => voi
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 async function callMockAPI(options: Options): Promise<any> {
-	throw new Error('Not implemented');
+	const { url, method } = options;
+
+	if (url === '/user/market/favorites' && method === 'GET') {
+		return {
+			status: 200,
+			data: {
+				title:'User favorites',
+				message:'Fetching favorites',
+				result: ["BTCUSDC", "SOLUSDC"]
+			}
+		};
+	}
+
+	if (url === '/user/market/favorites' && method === 'POST') {
+		return {
+			status: 201,
+			message: 'Favorite added successfully',
+		};
+	}
+
+	if (url.startsWith('/user/market/favorites/') && method === 'DELETE') {
+		return {
+			status: 200,
+			message: 'Favorite removed successfully',
+		};
+	}
+
+	throw new Error(`Mock API not implemented for ${method} ${url}`);
 }
+
+
 
 async function callAPI(options: Options): Promise<any> {
 	const {
@@ -685,4 +714,30 @@ export const apiPostDevelopmentExample = async (data?: any, handleUnAuthorized?:
 		url: '/development/example',
 		data: data
 	}, handleUnAuthorized);
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiGetUserMarketFavorites = async (data?: any) => {
+	return await callMockAPI({
+		method: 'GET',
+		url: '/user/market/favorites',
+		data: data,
+	});
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiPostUserMarketFavorite = async (data: { marketId: number }) => {
+	return await callMockAPI({
+		method: 'POST',
+		url: '/user/market/favorites',
+		data: data,
+	});
+};
+
+// noinspection JSUnusedGlobalSymbols
+export const apiDeleteUserMarketFavorite = async (data: { marketId: number }) => {
+	return await callMockAPI({
+		method: 'DELETE',
+		url: `/user/market/favorites/${data.marketId}`,
+	});
 };

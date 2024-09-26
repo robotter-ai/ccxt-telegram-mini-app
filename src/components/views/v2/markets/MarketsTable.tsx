@@ -1,13 +1,20 @@
+import React, {useEffect, useState} from 'react';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import { Box, styled, Table, TableBody, TableCell, TableRow, Typography, TypographyProps } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { Box, styled, Table, TableBody, TableCell, TableRow, Typography, TypographyProps, IconButton, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import TextInput from 'components/general/TextInput';
-import { Constant } from 'model/enum/constant';
 import { MaterialUITheme } from 'model/theme/MaterialUI';
-import * as React from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useNavigate } from 'react-router';
 import { formatPrice } from '../utils/utils';
 import MarketChart from './MarketChart';
+import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
+import { apiGetUserMarketFavorites, apiPostUserMarketFavorite, apiDeleteUserMarketFavorite } from 'model/service/api';
+import { dispatch } from 'model/state/redux/store';
+import { useNavigate } from 'react-router';
+import { Constant } from "model/enum/constant.ts";
 
 interface Data {
 	id: number;
@@ -22,11 +29,10 @@ interface Data {
 
 interface Props {
 	rows: Data[];
-}
-
-interface EnhancedTableToolbarProps {
-	filterText: string;
-	onFilterTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	favorites: Set<number>;
+	updateUserMarketFavorites: (favorites: number[]) => void;
+	addFavorite: (marketId: number) => void;
+	removeFavorite: (marketId: number) => void;
 }
 
 const Container = styled(Box)({
@@ -71,8 +77,18 @@ const StyledTableRow = styled(TableRow)({
 	boxSizing: 'border-box',
 });
 
+const StyledTableCellFavorite = styled(TableCell)({
+	width: '40px',
+	padding: '10px 0',
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'center',
+	border: 'none',
+	boxSizing: 'border-box',
+});
+
 const StyledTableCellLeft = styled(TableCell)({
-	width: 'calc(50% - 30px)',
+	width: 'calc(50% - 60px)',
 	padding: '10px 0',
 	textAlign: 'left',
 	display: 'flex',
@@ -80,7 +96,7 @@ const StyledTableCellLeft = styled(TableCell)({
 	border: 'none',
 	boxSizing: 'border-box',
 	fontWeight: '300',
-	fontSize: '17px',
+	fontSize: '14px',
 	whiteSpace: 'nowrap',
 });
 
@@ -94,11 +110,10 @@ const StyledTableCellRight = styled(TableCell)({
 	border: 'none',
 	boxSizing: 'border-box',
 	fontWeight: '300',
-	fontSize: '17px',
+	fontSize: '14px',
 	whiteSpace: 'nowrap',
 });
 
-// @ts-ignore
 const StyledTableCellChart = styled(TableCell)({
 	width: '100px',
 	padding: '0',
@@ -118,7 +133,7 @@ const FlexEndContainer = styled(Box)({
 
 const getColorForPercentage = (percentage: number) => {
 	return percentage >= 0 ? MaterialUITheme.palette.success.main : MaterialUITheme.palette.error.main;
-}
+};
 
 const PercentageText = styled(Typography)<{ percentage: number }>((props: TypographyProps & { percentage: number }) => ({
 	fontWeight: '300',
@@ -126,22 +141,6 @@ const PercentageText = styled(Typography)<{ percentage: number }>((props: Typogr
 	fontFamily: MaterialUITheme.fonts.monospace,
 	color: getColorForPercentage(props.percentage),
 }));
-
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-	return (
-		<TextInput
-			label='SEARCH'
-			placeholder="BTC..."
-			value={props.filterText}
-			onChange={props.onFilterTextChange}
-			icon={
-				<SearchRoundedIcon
-					sx={{ fontSize: '24px', color: MaterialUITheme.palette.text.secondary }}
-				/>
-			}
-		/>
-	);
-}
 
 function LazyMarketChart({ market }: { market: Data }) {
 	const { ref, inView } = useInView({
@@ -156,61 +155,181 @@ function LazyMarketChart({ market }: { market: Data }) {
 	);
 }
 
-function ListMarkets({ markets }: { markets: Data[] }) {
+function MarketsTable(props: Props) {
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | undefined>(undefined);
+	const [filterText, setFilterText] = useState('');
+	const [filterType, setFilterType] = useState<'ALL' | 'FAVORITES'>('ALL');
+
 	const navigate = useNavigate();
-	const handleClick = (market: Data) => {
-		const url = `${Constant.marketPath.value}?marketId=${market.id}`;
-		navigate(url);
-	};
 
-	return (
-		<StyledTableBody>
-			{markets.map(row => (
-				<StyledTableRow
-					key={`${row.symbol}-${row.base}-${row.quote}`}
-					onClick={() => handleClick(row)}
-				>
-					<StyledTableCellLeft>
-						{`${row.base} / ${row.quote}`}
-					</StyledTableCellLeft>
-					<LazyMarketChart market={row} />
-					<StyledTableCellRight>
-						<FlexEndContainer>
-							{formatPrice(row.price, row.precision)}
-							<PercentageText
-								percentage={row.percentage}
-							>
-								{row.percentage > 0 ? `+${row.percentage.toFixed(2)}` : `${row.percentage.toFixed(2)}`}%
-							</PercentageText>
-						</FlexEndContainer>
-					</StyledTableCellRight>
-				</StyledTableRow>
-			))}
-		</StyledTableBody>
-	);
-}
+	useEffect(() => {
+		const initialize = async () => {
+			try {
+				const response = await apiGetUserMarketFavorites();
+				if (response.status === 200) {
+					props.updateUserMarketFavorites(response.data.result);
+				} else {
+					throw new Error(response.message);
+				}
+			} catch (error) {
+				toast.error('Failed to fetch favorites');
+				setError('Failed to fetch favorites');
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-export function MarketsTable({ rows }: Props) {
-	const [filterText, setFilterText] = React.useState('');
+		initialize();
+	}, []);
 
 	const handleFilterTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setFilterText(event.target.value);
 	};
 
-	const filteredRows = rows.filter(row =>
-		row.symbol.toLowerCase().includes(filterText.toLowerCase())
-	);
+	const handleFilterTypeChange = (_event: React.MouseEvent<HTMLElement>, newFilterType: 'ALL' | 'FAVORITES') => {
+		if (newFilterType !== null) {
+			setFilterType(newFilterType);
+		}
+	};
+
+	const handleToggleFavorite = async (marketId: number) => {
+		if (props.favorites.has(marketId)) {
+			try {
+				const response = await apiDeleteUserMarketFavorite({ marketId });
+				if (response.status === 200) {
+					props.removeFavorite(marketId);
+				} else {
+					throw new Error(response.message);
+				}
+			} catch (error) {
+				toast.error('Failed to remove favorite');
+			}
+		} else {
+			try {
+				const response = await apiPostUserMarketFavorite({ marketId });
+				if (response.status === 201) {
+					props.addFavorite(marketId);
+				} else {
+					throw new Error(response.message);
+				}
+			} catch (error) {
+				toast.error('Failed to add favorite');
+			}
+		}
+	};
+
+	const handleMarketClick = (marketId: number) => {
+		navigate(`${Constant.marketPath.value}?marketId=${marketId}`);
+	};
+
+	const filteredAndSortedRows = () => {
+		let filteredRows = props.rows.filter((row) =>
+			row.symbol.toLowerCase().includes(filterText.toLowerCase())
+		);
+
+		if (filterType === 'FAVORITES') {
+			filteredRows = filteredRows.filter((row) => props.favorites.has(row.id));
+		}
+
+		// return filteredRows.sort((a, b) => {
+		// 	if (props.favorites.has(a.id) === props.favorites.has(b.id)) {
+		// 		return 0;
+		// 	}
+		// 	return props.favorites.has(a.id) ? -1 : 1;
+		// });
+		return filteredRows
+	};
+
+	if (isLoading) {
+		return <Spinner />;
+	}
+
+	if (error) {
+		return <div>Error: {error}</div>;
+	}
+
+	const filteredRows = filteredAndSortedRows();
 
 	return (
-		<>
-			<Container>
-				<EnhancedTableToolbar filterText={filterText} onFilterTextChange={handleFilterTextChange} />
-				<ScrollContainer>
-					<StyledTable>
-						<ListMarkets markets={filteredRows} />
-					</StyledTable>
-				</ScrollContainer>
-			</Container>
-		</>
+		<Container>
+			<TextInput
+				label="SEARCH"
+				placeholder="BTC..."
+				value={filterText}
+				onChange={handleFilterTextChange}
+				icon={<SearchRoundedIcon sx={{ fontSize: '24px', color: '#8e8e8e' }} />}
+			/>
+			<ToggleButtonGroup
+				value={filterType}
+				exclusive
+				onChange={handleFilterTypeChange}
+				aria-label="market filter"
+				sx={{ alignSelf: 'center', mt: 2 }}
+			>
+				<ToggleButton value="ALL" aria-label="all markets">
+					ALL
+				</ToggleButton>
+				<ToggleButton value="FAVORITES" aria-label="favorite markets">
+					FAVORITES
+				</ToggleButton>
+			</ToggleButtonGroup>
+			<ScrollContainer>
+				<StyledTable>
+					<StyledTableBody>
+						{filteredRows.map((row) => (
+							<StyledTableRow
+								key={`${row.symbol}-${row.base}-${row.quote}`}
+								onClick={() => handleMarketClick(row.id)}
+							>
+								<StyledTableCellFavorite>
+									<IconButton
+										size="small"
+										onClick={(e) => {
+											e.stopPropagation();
+											handleToggleFavorite(row.id);
+										}}
+									>
+										{props.favorites.has(row.id) ? (
+											<StarIcon color="primary" fontSize="small" />
+										) : (
+											<StarBorderIcon fontSize="small" />
+										)}
+									</IconButton>
+								</StyledTableCellFavorite>
+								<StyledTableCellLeft>{`${row.base} / ${row.quote}`}</StyledTableCellLeft>
+								<LazyMarketChart market={row} />
+								<StyledTableCellRight>
+									<FlexEndContainer>
+										<Typography variant="body2">{formatPrice(row.price, row.precision)}</Typography>
+										<PercentageText percentage={row.percentage}>
+											{row.percentage > 0 ? `+${row.percentage.toFixed(2)}` : `${row.percentage.toFixed(2)}`}%
+										</PercentageText>
+									</FlexEndContainer>
+								</StyledTableCellRight>
+							</StyledTableRow>
+						))}
+					</StyledTableBody>
+				</StyledTable>
+			</ScrollContainer>
+		</Container>
 	);
 }
+
+const mapStateToProps = (state: any) => ({
+	favorites: new Set(state.api.favorites),
+});
+
+const mapDispatchToProps = (reduxDispatch: any) => ({
+	updateUserMarketFavorites(favorites: number[]) {
+		dispatch('api.updateUserMarketFavorites', favorites);
+	},
+	addFavorite(marketId: number) {
+		dispatch('api.addUserMarketFavorite', marketId);
+	},
+	removeFavorite(marketId: number) {
+		dispatch('api.removeUserMarketFavorite', marketId);
+	},
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MarketsTable);

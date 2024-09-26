@@ -32,6 +32,7 @@ const map = new Map({
 			}
 		},
 		rewards: {},
+		favorites: [],
 	},
 	telegram: {
 		user: null
