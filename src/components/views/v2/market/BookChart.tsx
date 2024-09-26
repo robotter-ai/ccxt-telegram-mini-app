@@ -58,7 +58,7 @@ const mapDispatchToProps = (reduxDispatch: any) => ({
 
 const Structure = ({ orderBook, height, market}: Props) => {
 	const renderTable = () => {
-		const marketPrecision = market?.precision;
+		const marketPrecision = market?.precision.amount;
 
 		if (!orderBook) return null;
 		if (!orderBook.bids) orderBook.bids = [];
