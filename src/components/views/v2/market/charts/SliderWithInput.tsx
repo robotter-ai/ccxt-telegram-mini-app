@@ -88,7 +88,7 @@ const Structure: React.FC<Props> = ({
 	};
 
 	return (
-		<Box className="flex px-4 w-full items-center gap-3 ">
+		<Box className="flex px-4 w-full items-center gap-2 ">
 			<Slider
 				value={localValue}
 				min={min}
@@ -107,7 +107,7 @@ const Structure: React.FC<Props> = ({
 					type: 'number',
 					'aria-labelledby': 'input-slider',
 				}}
-				className="text-field w-16"
+				className="text-field w-2/6"
 			/>
 		</Box>
 	);
