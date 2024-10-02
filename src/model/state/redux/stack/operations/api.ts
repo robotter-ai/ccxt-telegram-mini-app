@@ -23,6 +23,26 @@ pushStack('api.updateTemplateData', (currentState: any, payload: any) => {
 	return nextState;
 });
 
+pushStack('api.updateBalanceData', (currentState: any, payload: any) => {
+	let nextState = new Map(currentState);
+
+	if (payload) {
+		nextState = nextState.setIn(
+			'api.balanceData',
+			payload
+		);
+	}
+
+	// @ts-ignore
+	nextState = nextState.toJS();
+
+	// noinspection TypeScriptUnresolvedReference
+	// @ts-ignore
+	console.log('api.balanceData', nextState.api.balanceData);
+
+	return nextState;
+});
+
 // @ts-ignore
 // noinspection JSUnusedLocalSymbols
 pushStack('app.toggleMenu', (currentState: any, payload: any) => {
@@ -426,6 +446,7 @@ pushStack('api.updateUserMarketFavorites', (currentState: any, payload: any) => 
 	// @ts-ignore
 	nextState = nextState.toJS();
 
+	// @ts-ignore
 	console.log('Updated user market favorites', nextState.api.favorites);
 
 	return nextState;
@@ -441,7 +462,7 @@ pushStack('api.addUserMarketFavorite', (currentState: any, payload: any) => {
 
 	// @ts-ignore
 	nextState = nextState.toJS();
-
+// @ts-ignore
 	console.log('Added favorite market', nextState.api.favorites);
 
 	return nextState;
@@ -457,7 +478,7 @@ pushStack('api.removeUserMarketFavorite', (currentState: any, payload: any) => {
 
 	// @ts-ignore
 	nextState = nextState.toJS();
-
+// @ts-ignore
 	console.log('Removed favorite market', nextState.api.favorites);
 
 	return nextState;
