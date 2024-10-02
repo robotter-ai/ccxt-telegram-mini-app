@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Map } from 'model/helper/extendable-immutable/map';
-import { Status } from 'model/enum/status.ts';
+import { Status } from 'model/enum/status';
 
 const map = new Map({
 	app: {
@@ -18,6 +18,7 @@ const map = new Map({
 		isSignedIn: false,
 		markets: [],
 		currencies: {},
+		balanceData: {},
 		orders: {
 			open: []
 		},
