@@ -107,14 +107,12 @@ function transformCandlesInLines(candles: number[][]) {
 		return [];
 	}
 
-	const formattedLines = candles.map(candle => {
+	return candles.map(candle => {
 		return {
-			time: Number(candle[0]) as UTCTimestamp,
-			value: Number(candle[4]),
+			time: Math.floor(Number(candle[0]) / 1000) as UTCTimestamp, // Convert to seconds for lightweight-charts
+			value: Number(candle[4]), // Assuming the 5th value is the closing price
 		};
 	});
-
-	return formattedLines;
 }
 
 function LineChart({ candles, precision, minMove = 10, candle }: LineChartProps) {
@@ -150,14 +148,18 @@ function LineChart({ candles, precision, minMove = 10, candle }: LineChartProps)
 			const { timestamp, close, info } = candle;
 			const lastData = seriesRef.current.dataByIndex(seriesRef.current.data().length - 1);
 
-			if (lastData?.value !== close) {
+			const newTime = Math.floor((timestamp ?? info.timestamp) / 1000) as UTCTimestamp;
+			const newValue = close ?? info.last_price;
+
+			if (lastData?.value !== newValue) {
 				seriesRef.current.update({
-					time: (timestamp ?? info.timestamp) / 1000 as UTCTimestamp,
-					value: close ?? info.last_price,
+					time: newTime,
+					value: newValue,
 				});
 			}
 		}
 	}, [candle]);
+
 
 	return (
 		<>

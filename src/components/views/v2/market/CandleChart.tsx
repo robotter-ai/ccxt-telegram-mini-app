@@ -87,42 +87,17 @@ function transformCandlesInCandlesticks(candles: number[][]): CandlestickData[] 
 	}
 
 	const formattedCandles = candles.map((candle, index) => {
-		if (index === 0) {
-			return {
-				time: Number(candle[0]) as UTCTimestamp,
-				open: Number(candle[1]),
-				high: Number(candle[2]),
-				low: Number(candle[3]),
-				close: Number(candle[4]),
-			};
-		}
-
-		const lastCandle = {
-			open: Number(candles[index - 1][1]),
-			high: Number(candles[index - 1][2]),
-			low: Number(candles[index - 1][3]),
-			close: Number(candles[index - 1][4]),
-		};
-
-		const newCandle = {
-			open: Number(candle[1]),
-			high: Number(candle[2]),
-			low: Number(candle[3]),
-			close: Number(candle[4]),
-		};
-
-		if (JSON.stringify(newCandle) === JSON.stringify(lastCandle)) {
-			return;
-		}
+		const time = Math.floor(Number(candle[0]) / 1000) as UTCTimestamp;
 
 		return {
-			time: Number(candle[0]) as UTCTimestamp,
+			time,
 			open: Number(candle[1]),
 			high: Number(candle[2]),
 			low: Number(candle[3]),
 			close: Number(candle[4]),
 		};
-	}).filter(candle => candle !== undefined) as CandlestickData[];
+	});
+
 	return formattedCandles;
 }
 
@@ -163,6 +138,8 @@ function CandleChart({ candles, precision, minMove = 10, candle }: LineChartProp
 
 			const lastData = seriesRef.current.dataByIndex(seriesRef.current.data().length - 1);
 
+			const timeInSeconds = Math.floor(time / 1000) as UTCTimestamp;
+
 			if (
 				lastData?.open !== open ||
 				lastData?.high !== high ||
@@ -170,7 +147,7 @@ function CandleChart({ candles, precision, minMove = 10, candle }: LineChartProp
 				lastData?.close !== close
 			) {
 				seriesRef.current.update({
-					time: time / 1000 as UTCTimestamp,
+					time: timeInSeconds,
 					open,
 					high,
 					low,
@@ -179,6 +156,7 @@ function CandleChart({ candles, precision, minMove = 10, candle }: LineChartProp
 			}
 		}
 	}, [candle]);
+
 
 	return (
 		<>

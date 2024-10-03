@@ -350,6 +350,7 @@ class Structure extends Base<Props, State> {
 					throw new Error(response.text);
 				}
 			}
+			console.log('Fetched OHLCV Data:', response.data.result);
 
 			this.props.updateMarketCandlesData(response.data.result);
 
