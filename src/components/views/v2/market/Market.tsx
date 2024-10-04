@@ -287,7 +287,7 @@ class Structure extends Base<Props, State> {
 	async initialize() {
 		const candles = await this.fetchOhlcvData(this.marketId);
 
-		if (candles.length) {
+		if (Array.isArray(candles) && candles.length > 0) {
 			const lastCandle = candles[candles.length - 1];
 			const price = lastCandle[4];
 			const volume = lastCandle[5];
