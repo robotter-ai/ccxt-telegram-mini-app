@@ -114,9 +114,14 @@ export const formatPrice = (
 };
 
 
-export const removeLeadingZeroes = (value: string) => {
-	return value.replace(/^0+(?=\d)/, '');
+export const removeLeadingZeroes = (value: string | number) => {
+	const stringValue = typeof value === 'number' ? value.toString() : value;
+	if (stringValue) {
+		stringValue.replace(/^0+(?=\d)/, '');
+	}
+	return value;
 };
+
 
 export const formatVolume = (value: number) => {
 	return value.toFixed(2);
