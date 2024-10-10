@@ -325,9 +325,10 @@ function MarketsTable(props: Props) {
 }
 
 const mapStateToProps = (state: any) => ({
-	favorites: new Set(state.api.favorites),
+	favorites: new Set<number>(state.api.favorites),
 });
 
+// @ts-ignore
 const mapDispatchToProps = (reduxDispatch: any) => ({
 	updateUserMarketFavorites(favorites: number[]) {
 		dispatch('api.updateUserMarketFavorites', favorites);
