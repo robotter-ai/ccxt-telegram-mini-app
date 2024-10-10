@@ -14,7 +14,7 @@ import { Spinner } from 'components/views/v2/layout/spinner/Spinner';
 import { apiGetUserMarketFavorites, apiPostUserMarketFavorite, apiDeleteUserMarketFavorite } from 'model/service/api';
 import { dispatch } from 'model/state/redux/store';
 import { useNavigate } from 'react-router';
-import { Constant } from "model/enum/constant.ts";
+import { Constant } from "model/enum/constant";
 
 interface Data {
 	id: number;
@@ -265,12 +265,20 @@ function MarketsTable(props: Props) {
 				exclusive
 				onChange={handleFilterTypeChange}
 				aria-label="market filter"
-				sx={{ alignSelf: 'center', mt: 2 }}
+				sx={{
+					alignSelf: 'center',
+					mt: 2,
+					borderRadius: '20px',
+					border: '1.8px solid',
+					backgroundColor: MaterialUITheme.palette.background.paper,
+					overflow: 'hidden',
+					height: '30px'
+				}}
 			>
-				<ToggleButton value="ALL" aria-label="all markets">
+				<ToggleButton  value="ALL" aria-label="all markets">
 					ALL
 				</ToggleButton>
-				<ToggleButton value="FAVORITES" aria-label="favorite markets">
+				<ToggleButton  value="FAVORITES" aria-label="favorite markets">
 					FAVORITES
 				</ToggleButton>
 			</ToggleButtonGroup>
