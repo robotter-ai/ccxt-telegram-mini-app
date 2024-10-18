@@ -166,6 +166,7 @@ class Structure extends Base<Props, State> {
 	}
 
 	handleAmountChange(event: ChangeEvent<HTMLInputElement>) {
+
 		if (this.props.marketId) {
 			this.getTotalPrice(this.props.marketId).catch((error) => {
 				console.error('GetTotalPrice Error: ', error);
@@ -174,7 +175,7 @@ class Structure extends Base<Props, State> {
 		}
 
 		const isValidAmount = !(isNaN(parseFloat(event.target.value)) || parseFloat(event.target.value) < 0);
-		this.setState({ amount: isValidAmount ? event.target.value : '0' });
+		this.setState({ amount: isValidAmount ? event.target.value : '' });
 	}
 
 	handlePriceChange(event: ChangeEvent<HTMLInputElement>) {
@@ -375,9 +376,11 @@ class Structure extends Base<Props, State> {
 
 					<ButtonGroupToggle buttons={orderSideButtons} defaultButton={0} />
 					<ButtonGroupToggle buttons={orderTypeButtons} defaultButton={0} />
-					<NumberInput label={'AMOUNT'} value={amount ?? '0'} precision={marketPrecision} onChange={this.handleAmountChange} />
+
+					<NumberInput label={'AMOUNT'} value={amount === '0' ? '' : amount || ''} precision={marketPrecision} onChange={this.handleAmountChange} />
+
 					{orderType === OrderType.LIMIT &&
-						<NumberInput label={'SET PRICE'} value={price ?? '0'} precision={marketPrecision}
+						<NumberInput label={'SET PRICE'} value={price === '0' ? '' : price || ''} precision={marketPrecision}
 							onChange={this.handlePriceChange} />}
 				</InputsContainer>
 				<Divider />
