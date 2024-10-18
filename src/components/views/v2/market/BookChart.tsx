@@ -71,10 +71,10 @@ const Structure = ({ orderBook, height, market}: Props) => {
 				<StyledTable>
 					<TableHead>
 						<TableRow>
-							<CompactTableCell align="right">Amount</CompactTableCell>
-							<CompactTableCell sx={{px: 3}} align="right">Bid</CompactTableCell>
-							<CompactTableCell sx={{px: 2}} align="right">Ask</CompactTableCell>
-							<CompactTableCell sx={{px: 3}} align="left">Amount</CompactTableCell>
+							<CompactTableCell sx={{px: 2}} align="right">Amount</CompactTableCell>
+							<CompactTableCell sx={{px: 2}} align="right">Bid</CompactTableCell>
+							<CompactTableCell sx={{px: 4}} align="right">Ask</CompactTableCell>
+							<CompactTableCell sx={{px: 1}} align="left">Amount</CompactTableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -85,14 +85,14 @@ const Structure = ({ orderBook, height, market}: Props) => {
 							// @ts-ignore
 							return (
 								<TableRow key={index}>
-									<CompactTableCell align="right">{bid ? formatPrice(bid[1], null, false, marketPrecision) : '-'}</CompactTableCell>
-									<CompactTableCell align="right">
+									<CompactTableCell sx={{px: 2}} align="right">{bid ? formatPrice(bid[1], null, false, marketPrecision) : '-'}</CompactTableCell>
+									<CompactTableCell sx={{px: 3}} align="right">
 										{bid ? <GreenText>{formatPrice(bid[0], null, false, marketPrecision)}</GreenText> : '-'}
 									</CompactTableCell>
-									<CompactTableCell align="right">
+									<CompactTableCell sx={{px: 4}} align="right">
 										{ask ? <RedText>{formatPrice(ask[0], null, false, marketPrecision)}</RedText> : '-'}
 									</CompactTableCell>
-									<CompactTableCell align="right">{ask ? formatPrice(ask[1], null, false, marketPrecision) : '-'}</CompactTableCell>
+									<CompactTableCell sx={{px: -1}} align="right">{ask ? formatPrice(ask[1], null, false, marketPrecision) : '-'}</CompactTableCell>
 								</TableRow>
 							);
 						})}
