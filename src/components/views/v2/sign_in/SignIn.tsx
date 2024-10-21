@@ -9,6 +9,7 @@ import { Base, BaseProps, BaseState } from 'components/base/Base';
 import { useHandleUnauthorized } from 'model/hooks/useHandleUnauthorized';
 import { dispatch } from 'model/state/redux/store';
 import {
+	apiGetFetchBalance,
 	apiGetFetchCurrencies,
 	apiGetFetchMarkets,
 	apiPostAuthIsSignedIn,
@@ -267,7 +268,7 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 			this.props.navigate(this.state.queryRedirect);
 		} catch (exception: any) {
 			console.error(exception);
-			this.setState({ error: exception.message, openSnackbar: true });
+			// this.setState({ error: exception.message, openSnackbar: true });
 			toast.error(exception.message);
 		} finally {
 			this.setState({ isLoading: false });
@@ -313,37 +314,34 @@ class SignInStructure extends Base<SignInProps, SignInState> {
 	async initializeAfterSignIn() {
 		await this.loadMarkets();
 		await this.loadCurrencies();
+		await this.loadBalances();
 	}
 
 	loadMarkets = async () => {
-		this.setState({ isLoading: true });
-		try {
-			const response = await apiGetFetchMarkets ({},	this.props.handleUnAuthorized	);
+		const response = await apiGetFetchMarkets ({},	this.props.handleUnAuthorized	);
 
-			if (response.status !== 200) throw new Error('Network response was not OK');
-			dispatch('api.updateMarkets', response.data.result);
-		} catch (exception: any) {
-			console.error(exception);
-			this.setState({ error: exception.message, openSnackbar: true });
-			toast.error(exception.message);
-		} finally {
-			this.setState({ isLoading: false });
-		}
+		if (response.status !== 200) throw new Error('Network response was not OK');
+
+		dispatch('api.updateMarkets', response.data.result);
 	};
 
 	loadCurrencies = async () => {
-		this.setState({ isLoading: true });
+		const response = await apiGetFetchCurrencies ({}, this.props.handleUnAuthorized	);
+
+		if (response.status !== 200) throw new Error('Network response was not OK');
+
+		dispatch('api.updateCurrencies', response.data.result);
+	};
+
+	loadBalances = async () => {
 		try {
-			const response = await apiGetFetchCurrencies ({}, this.props.handleUnAuthorized	);
+			const response = await apiGetFetchBalance({}, this.props.handleUnAuthorized);
 
 			if (response.status !== 200) throw new Error('Network response was not OK');
-			dispatch('api.updateCurrencies', response.data.result);
 		} catch (exception: any) {
 			console.error(exception);
-			this.setState({ error: exception.message, openSnackbar: true });
-			toast.error(exception.message);
-		} finally {
-			this.setState({ isLoading: false });
+
+			throw new Error('Invalid credentials.');
 		}
 	};
 }
