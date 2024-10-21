@@ -11,7 +11,7 @@ import { Market as V1Market } from 'components/views/v1/market/Market';
 import { Orders as V1Orders } from 'components/views/v1/orders/Orders';
 import { CreateOrder as V1CreateOrder } from 'components/views/v1/order/CreateOrder';
 // import { Rewards as V1Rewards } from 'components/views/v1/rewards/Rewards';
-import WhereToGetIt from "components/views/v2/sign_in/WhereToGetIt.tsx";
+import WhereToGetIt from "components/views/v2/sign_in/WhereToGetIt";
 
 import { Layout as V2Layout } from 'components/views/v2/layout/layout/Layout';
 import { SignIn as V2SignIn } from 'components/views/v2/sign_in/SignIn';
